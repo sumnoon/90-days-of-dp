@@ -1,0 +1,57 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "C++: build active file",
+      "type": "shell",
+      "command": "g++",
+      "args": [
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Wshadow",
+        "-g",
+        "-D_GLIBCXX_ASSERTIONS",
+        "${file}",
+        "-o",
+        "${fileDirname}/${fileBasenameNoExtension}.exe"
+      ],
+      "options": {
+        "cwd": "${fileDirname}"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "silent",
+        "clear": true,
+        "panel": "shared"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "detail": "g++ -std=c++20 with warnings, debug info and libstdc++ bounds assertions"
+    },
+    {
+      "label": "C++: build and run active file",
+      "type": "shell",
+      "command": "${fileDirname}/${fileBasenameNoExtension}.exe",
+      "options": {
+        "cwd": "${fileDirname}"
+      },
+      "dependsOn": "C++: build active file",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "clear": true,
+        "panel": "shared"
+      },
+      "problemMatcher": [],
+      "detail": "Build the open file, then run it in the terminal"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "// Code Runner": "Ctrl+Alt+N runs the open file. runInTerminal is required so cin works.",
+  "code-runner.runInTerminal": true,
+  "code-runner.saveFileBeforeRun": true,
+  "code-runner.clearPreviousOutput": true,
+  "code-runner.ignoreSelection": true,
+  "code-runner.executorMap": {
+    "cpp": "cd \"$dir\" && g++ -std=c++20 -Wall -Wextra -Wshadow -g -D_GLIBCXX_ASSERTIONS \"$fileName\" -o \"$fileNameWithoutExt.exe\" && \"./$fileNameWithoutExt.exe\""
+  },
+
+  "// Editor": "C++ defaults for this repo",
+  "[cpp]": {
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "ms-vscode.cpptools"
+  },
+  "C_Cpp.default.cppStandard": "c++20",
+  "C_Cpp.default.compilerPath": "C:/msys64/ucrt64/bin/g++.exe",
+  "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, IndentWidth: 4, ColumnLimit: 100 }",
+  "files.eol": "\n",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.exclude": { "**/*.exe": true },
+
+  "// Terminal": "Use the MSYS2 UCRT64 toolchain from the integrated terminal too",
+  "terminal.integrated.env.windows": {
+    "PATH": "C:/msys64/ucrt64/bin;${env:PATH}"
+  }
+}
