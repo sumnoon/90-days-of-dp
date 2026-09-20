@@ -29,7 +29,12 @@
 // 2. Leap of faith: if factorial(n - 1) already gave you the right
 //    answer, what one operation turns it into the answer for n?
 int64_t factorial(int64_t n) {
-    TODO(n);
+    
+    if (n == 0) {
+        return 1;
+    }
+
+    return n * factorial(n - 1);
 }
 
 // Sum the decimal digits of a non-negative n, recursively.
@@ -39,7 +44,12 @@ int64_t factorial(int64_t n) {
 //    everything else. If sum_of_digits(n / 10) is already correct,
 //    how do you finish?
 int64_t sum_of_digits(int64_t n) {
-    TODO(n);
+    
+    if (n == 0) {
+        return 0;
+    }
+
+    return (n % 10) + sum_of_digits(n / 10);
 }
 
 struct Case {
