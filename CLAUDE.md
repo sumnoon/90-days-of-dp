@@ -7,9 +7,17 @@ This repo is Sumnoon's personal **90 Days of DP** training log (#90DaysOfDP), sh
 - Started **Sun Sep 20, 2026** (Day 0). Week 1 = Sep 21–27 … Week 12 = Dec 7–13. Mastery test Dec 14–20.
 - Schedule is built around a Mon–Fri job: weekdays 1–1.5 h, Saturday 3–4 h (hard problems + videos), Sunday 2–3 h (redo, checkpoint, preview).
 
+## Language
+- All solutions are written in **C++** (g++ 15.2, MSYS2, on Windows). Use `.cpp` files and modern C++ (C++20).
+- Build and run a single file:
+  ```bash
+  g++ -std=c++20 -Wall -Wextra -g -o warmup warmup_recursion.cpp && ./warmup
+  ```
+- Don't write solutions in Python. If a snippet is needed for illustration, still use C++.
+
 ## Repo layout
 - `weeks/week-NN-topic/README.md`: that week's schedule, problem checklist, checkpoint, notes.
-- `weeks/week-NN-topic/solutions/`: solution files named `lcXXXX_short_name.ext`, `cses_name.ext`, or `atcoder_dp_x.ext`.
+- `weeks/week-NN-topic/solutions/`: solution files named `lcXXXX_short_name.cpp`, `cses_name.cpp`, or `atcoder_dp_x.cpp`.
 - `redo-list.md`: problems that needed a hint or solution; re-solved on Sundays.
 - `templates/problem-notes.md`: notes template (state, transition, base case, complexity, key insight).
 - `README.md`: overview and progress table.

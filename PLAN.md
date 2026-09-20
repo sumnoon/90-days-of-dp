@@ -29,7 +29,7 @@ You don't need to finish all of these. Choose **one video series and one text re
 | [CSES Problem Set](https://cses.fi/problemset/), DP section | Practice | Clean, classic DP problems |
 | [AtCoder Educational DP Contest](https://atcoder.jp/contests/dp) (A–Z) | Practice | 26 problems that cover nearly every DP pattern |
 | [NeetCode Roadmap](https://neetcode.io/roadmap) | Practice + video solutions | Short video explanations for LeetCode problems |
-| [Python Tutor](https://pythontutor.com) | Tool | Watch the call stack step by step |
+| [Python Tutor](https://pythontutor.com) | Tool | Watch the call stack step by step (it has a C++ mode) |
 
 > **Tip:** When a video series covers the same problem you are working on, watch it **only after** you have spent at least 30 minutes on the problem yourself.
 
@@ -60,7 +60,7 @@ You don't need to finish all of these. Choose **one video series and one text re
 
 1. **Setup (30 min):** Create or log in to your LeetCode, CSES, and AtCoder accounts. Start a notebook (paper or a doc) and, if you like, a GitHub repo for your solutions. Make a "redo list".
 2. **First reading (60 min):** Read Jeff Erickson's *Algorithms*, Ch 1, sections 1.1–1.3, or watch the first 3 videos of Striver's recursion playlist.
-3. **First code (45 min):** Write factorial and sum of digits recursively, then step through both in [Python Tutor](https://pythontutor.com) and watch the call stack.
+3. **First code (45 min):** Write factorial and sum of digits recursively, then step through both in [Python Tutor](https://pythontutor.com) (set the language to C++) and watch the call stack.
 4. **Preview (15 min):** Skim the Week 1 section below.
 
 Because today covers Week 1's reading, Week 1's weekdays are shifted one step earlier (see its study guide).
@@ -118,7 +118,7 @@ Every DP solution is a recursion with its repeated work cached. This month build
 
 - 📖 Jeff Erickson, *Algorithms*, Ch 1 (Recursion): read sections 1.1–1.3, on reductions, simplify-and-delegate, and Tower of Hanoi.
 - 🎥 Striver's Recursion playlist: the first 5–6 videos, on basics, parameterized vs. functional recursion, and multiple recursive calls.
-- 🛠 [Python Tutor](https://pythontutor.com): step through recursive factorial and Fibonacci and watch the stack grow and shrink.
+- 🛠 [Python Tutor](https://pythontutor.com) (C++ mode): step through recursive factorial and Fibonacci and watch the stack grow and shrink.
 - 📝 LeetCode Explore card: *Recursion I*.
 
 ### Study Guide

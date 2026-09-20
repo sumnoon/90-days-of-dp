@@ -39,7 +39,7 @@ The plan runs from **Sun Sep 20, 2026** (Day 0) to **Sun Dec 13, 2026**, with a 
 ```
 weeks/week-NN-topic/
   README.md      schedule, problem checklist, checkpoint, notes
-  solutions/     your code (e.g. lc0509_fibonacci.py)
+  solutions/     your code (e.g. lc0509_fibonacci.cpp)
 ```
 
 Name solution files `lcXXXX_short_name.ext` (or `cses_name.ext`, `atcoder_dp_x.ext`). Commit after each session.
