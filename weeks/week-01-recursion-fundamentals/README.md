@@ -21,7 +21,7 @@
 
 - [ ] ⭐ LC 509 Fibonacci Number
 - [ ] ⭐ LC 50 Pow(x, n)
-- [ ] LC 344 Reverse String (solve it recursively)
+- [x] LC 344 Reverse String (solve it recursively)
 - [ ] ⭐ LC 206 Reverse Linked List (solve it recursively)
 - [ ] LC 21 Merge Two Sorted Lists
 - [ ] LC 231 Power of Two
