@@ -26,4 +26,4 @@ This repo is Sumnoon's personal **90 Days of DP** training log (#90DaysOfDP), sh
 - When a problem is solved: add the solution file, tick it in the week's README, and add notes if asked.
 - Don't reveal full solutions unless asked. Give hints first, following the "When you're stuck" steps in `PLAN.md`.
 - When a week's checkpoint passes, mark that week ☑ in the README progress table.
-- Commit messages: `Day N: <what was done>` (Day 0 = Sep 20, 2026).
+- Commit messages: `Day N: <what was done>`. N is the **plan day** the work belongs to, not the calendar date: Day 0 is the Sep 20 kickoff, Week 1 Mon = Day 1, Week 1 Sun = Day 7, Week 2 Mon = Day 8. Work done late keeps its plan day (Week 1 Monday's problems are Day 1 even if solved on Tuesday).
