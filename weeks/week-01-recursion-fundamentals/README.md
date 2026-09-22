@@ -19,7 +19,7 @@
 
 ⭐ = core, don't skip
 
-- [ ] ⭐ LC 509 Fibonacci Number
+- [x] ⭐ LC 509 Fibonacci Number
 - [ ] ⭐ LC 50 Pow(x, n)
 - [x] LC 344 Reverse String (solve it recursively)
 - [ ] ⭐ LC 206 Reverse Linked List (solve it recursively)
