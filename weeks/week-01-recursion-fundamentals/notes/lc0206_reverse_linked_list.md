@@ -96,9 +96,9 @@ every DP recurrence: solve the smaller thing, *then* combine.
 
 ## See it
 
-- **Interactive step-through** (private link, opens for the repo owner only):
-  https://claude.ai/artifact/UxDwXqDRvicrjWT7xfSmLv — 28 steps, live pointer
-  diagram, call stack and code line.
+- **Interactive step-through:** https://sumnoon.github.io/90-days-of-dp/lc206/ — 28 steps, live
+  pointer diagram, call stack and code line.
+  ([source](../../../docs/lc206/index.html))
 - **In the debugger:** breakpoint on `head->next->next = head;`, run with
   **F5**, Continue four times. `head->val` arrives as 4, 3, 2, 1 — innermost
   first.

@@ -17,6 +17,16 @@ The plan runs from **Sun Sep 20, 2026** (Day 0) to **Sun Dec 13, 2026**, with a 
 | Saturday | 3–4 h | Hardest problems + main videos and reading |
 | Sunday | 2–3 h | Redo, checkpoint, preview next week |
 
+## Visualizations
+
+Interactive pages for the ideas a static diagram can't carry:
+**https://sumnoon.github.io/90-days-of-dp/**
+
+- [Reverse a linked list, one frame at a time](https://sumnoon.github.io/90-days-of-dp/lc206/) — LC 206, 28 steps
+- [The same answer, computed again and again](https://sumnoon.github.io/90-days-of-dp/fib/) — LC 509, the recursion tree
+
+Source in [`docs/`](docs/).
+
 ## Progress
 
 | Week | Dates | Topic | Done |

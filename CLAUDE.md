@@ -22,6 +22,7 @@ This repo is Sumnoon's personal **90 Days of DP** training log (#90DaysOfDP), sh
 - `redo-list.md`: problems that needed a hint or solution; re-solved on Sundays.
 - `templates/problem-notes.md`: notes template (state, transition, base case, complexity, key insight).
 - `README.md`: overview and progress table.
+- `docs/`: the GitHub Pages site (https://sumnoon.github.io/90-days-of-dp/) holding interactive visualizations. One folder per page with a standalone `index.html`; add a card to `docs/index.html` when adding one. These are public, so never put a private link in a note.
 
 ## How to help
 - When a problem is solved: add the solution file, tick it in the week's README, and add notes if asked.

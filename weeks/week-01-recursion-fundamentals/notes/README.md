@@ -19,13 +19,13 @@ re-read before a redo, not while solving.
 
 ## Visualizations
 
-Interactive step-throughs built alongside the notes. **Private links** — they
-open for the repo owner only, not for other readers of this repo.
+Interactive step-throughs built alongside the notes, published at
+**https://sumnoon.github.io/90-days-of-dp/** and served from [`docs/`](../../../docs/).
 
 | Page | What it shows |
 |---|---|
-| [LC 206 Frame by Frame](https://claude.ai/artifact/UxDwXqDRvicrjWT7xfSmLv) | 28 steps of `reverseList([1,2,3,4,5])` with live pointer diagram, call stack and code line. Nothing rewires on the way down. |
-| [Fibonacci's Repeated Work](https://claude.ai/artifact/KHDeW7nXX3127jS4QmPfcP) | The recursion tree for n up to 9. Click a node to see every recomputation; toggle memoization to collapse it. |
+| [LC 206 Frame by Frame](https://sumnoon.github.io/90-days-of-dp/lc206/) | 28 steps of `reverseList([1,2,3,4,5])` with live pointer diagram, call stack and code line. Nothing rewires on the way down. |
+| [Fibonacci's Repeated Work](https://sumnoon.github.io/90-days-of-dp/fib/) | The recursion tree for n up to 9. Click a node to see every recomputation; toggle memoization to collapse it. |
 
 ## The thread through Week 1
 
