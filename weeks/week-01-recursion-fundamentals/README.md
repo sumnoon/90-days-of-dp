@@ -19,12 +19,12 @@
 
 ⭐ = core, don't skip
 
-- [x] ⭐ LC 509 Fibonacci Number
+- [x] ⭐ LC 509 Fibonacci Number — [notes](notes/lc0509_fibonacci_number.md)
 - [ ] ⭐ LC 50 Pow(x, n)
-- [x] LC 344 Reverse String (solve it recursively)
-- [x] ⭐ LC 206 Reverse Linked List (solve it recursively)
+- [x] LC 344 Reverse String (solve it recursively) — [notes](notes/lc0344_reverse_string.md)
+- [x] ⭐ LC 206 Reverse Linked List (solve it recursively) — [notes](notes/lc0206_reverse_linked_list.md)
 - [ ] LC 21 Merge Two Sorted Lists
-- [x] LC 231 Power of Two
+- [x] LC 231 Power of Two — [notes](notes/lc0231_power_of_two.md)
 
 ## Checkpoint
 
@@ -32,4 +32,12 @@
 
 ## Notes
 
-<!-- For each problem: state, transition, base case, key insight. -->
+One note per problem in [`notes/`](notes/) — what the call returns, the
+recursive case, the base case, complexity, and the idea that unlocked it.
+Start at the [notes index](notes/README.md).
+
+Not from the problem list, but solved this week:
+
+- [Day 0 warm-ups: factorial and sum of digits](notes/warmup_recursion.md)
+- [Print 1..N and N..1](notes/print_1_to_n.md)
+- [Recursive palindrome check](notes/palindrome_check.md)
