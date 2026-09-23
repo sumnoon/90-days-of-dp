@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="sumnoon">
+<meta name="description" content="Interactive visualizations built alongside a 12-week journey from recursion to dynamic programming.">
+<title>90 Days of DP — Visualizations</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; }
+  img { max-width: 100%; }
+
+  :root {
+    color-scheme: light;
+    --bg: #E9EEF2; --surface: #FDFEFE; --surface-2: #DFE7EC;
+    --ink: #0F1B24; --muted: #576875; --faint: #8598A5; --line: #C4D2DB;
+    --accent: #0A6E6C; --accent-soft: #CDE6E4; --hot: #B2451A;
+    --shadow: 0 1px 2px rgba(15,27,36,.06), 0 8px 24px -12px rgba(15,27,36,.18);
+    --f-display: "Bricolage Grotesque", "Trebuchet MS", sans-serif;
+    --f-body: "Source Sans 3", -apple-system, "Segoe UI", sans-serif;
+    --f-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #0B1318; --surface: #131F27; --surface-2: #1B2A34;
+      --ink: #E5EEF3; --muted: #94A7B3; --faint: #6B808D; --line: #273A46;
+      --accent: #3FC6BE; --accent-soft: #123833; --hot: #FF9058;
+      --shadow: 0 1px 2px rgba(0,0,0,.5), 0 10px 28px -14px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0B1318; --surface: #131F27; --surface-2: #1B2A34;
+    --ink: #E5EEF3; --muted: #94A7B3; --faint: #6B808D; --line: #273A46;
+    --accent: #3FC6BE; --accent-soft: #123833; --hot: #FF9058;
+    --shadow: 0 1px 2px rgba(0,0,0,.5), 0 10px 28px -14px rgba(0,0,0,.7);
+  }
+
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: var(--f-body); font-size: 16px; line-height: 1.55;
+    padding-inline: 20px; padding-block: 44px 60px;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+
+  .eyebrow { font-family: var(--f-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+  h1 { font-family: var(--f-display); font-weight: 700; font-size: clamp(32px, 7vw, 52px); line-height: 1.03; letter-spacing: -.025em; margin: 8px 0 12px; text-wrap: balance; }
+  header p { margin: 0; color: var(--muted); max-width: 60ch; }
+  header a { color: var(--accent); }
+
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+
+  a.card {
+    display: flex; flex-direction: column; gap: 9px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 7px;
+    padding: 20px; box-shadow: var(--shadow); text-decoration: none; color: inherit;
+  }
+  a.card:hover { border-color: var(--accent); }
+  a.card .tag { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); }
+  a.card h2 { font-family: var(--f-display); font-weight: 700; font-size: 21px; letter-spacing: -.01em; margin: 0; line-height: 1.2; }
+  a.card p { margin: 0; color: var(--muted); font-size: 14.5px; }
+  a.card .go { font-family: var(--f-mono); font-size: 12px; color: var(--accent); font-weight: 700; margin-top: 2px; }
+
+  .about { background: var(--surface); border: 1px solid var(--line); border-radius: 7px; padding: 20px 22px; box-shadow: var(--shadow); }
+  .about h3 { font-family: var(--f-display); font-size: 18px; margin: 0 0 8px; }
+  .about p { margin: 0 0 10px; color: var(--muted); }
+  .about p:last-child { margin-bottom: 0; }
+  .about code { font-family: var(--f-mono); font-size: .88em; background: var(--surface-2); padding: 1px 5px; border-radius: 3px; color: var(--ink); }
+  .about a { color: var(--accent); }
+
+  footer { color: var(--faint); font-size: 13px; border-top: 1px solid var(--line); padding-top: 16px; }
+  footer a { color: var(--muted); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">#90DaysOfDP</div>
+    <h1>Seeing recursion before it becomes DP</h1>
+    <p>Interactive pages built alongside a 12-week climb from plain recursion to dynamic programming. Each one exists because a static diagram couldn&rsquo;t show the thing that actually matters — usually <em>when</em> the work happens. Source and notes live in <a href="https://github.com/sumnoon/90-days-of-dp">the repo</a>.</p>
+  </header>
+
+  <div class="grid">
+    <a class="card" href="lc206/">
+      <span class="tag">Week 1 &middot; Day 3 &middot; LC 206</span>
+      <h2>Reverse a linked list, one frame at a time</h2>
+      <p>Twenty-eight steps through <code>reverseList([1,2,3,4,5])</code>, with a live pointer diagram, the call stack and the executing line. Nothing is rewired on the way down.</p>
+      <span class="go">Step through &rarr;</span>
+    </a>
+
+    <a class="card" href="fib/">
+      <span class="tag">Week 1 &middot; Day 2 &middot; LC 509</span>
+      <h2>The same answer, computed again and again</h2>
+      <p>The naive Fibonacci recursion tree. Click a node to light up every recomputation of that value, then toggle memoization and watch 109 calls collapse to 17.</p>
+      <span class="go">Explore the tree &rarr;</span>
+    </a>
+  </div>
+
+  <div class="about">
+    <h3>Why these two first</h3>
+    <p><strong>LC 206</strong> is where tracing stops working and trusting starts. You cannot hold five stack frames in your head, and the page makes that unnecessary: watch five frames pile up changing nothing, then one link flip per return on the way back up.</p>
+    <p><strong>LC 509</strong> is where dynamic programming is first visible. At n = 30 the recursion makes 2,692,537 calls to compute 31 distinct values. That gap — between <em>distinct subproblems</em> and <em>calls made</em> — is the whole idea, arriving nine weeks before the word is needed.</p>
+  </div>
+
+  <footer>
+    Part of <a href="https://github.com/sumnoon/90-days-of-dp">90 Days of DP</a> — solutions in C++, notes per problem, one week at a time. More pages as the harder weeks arrive.
+  </footer>
+</div>
+</body>
+</html>

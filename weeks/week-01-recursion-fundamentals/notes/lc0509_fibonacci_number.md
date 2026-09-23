@@ -88,10 +88,10 @@ changes; only how many times it runs.
 
 ## See it
 
-- **Interactive recursion tree** (private link, opens for the repo owner
-  only): https://claude.ai/artifact/KHDeW7nXX3127jS4QmPfcP — drag n from 2 to
-  9, click any node to light up every place that value is recomputed, then
+- **Interactive recursion tree:** https://sumnoon.github.io/90-days-of-dp/fib/ — drag n from 2
+  to 9, click any node to light up every place that value is recomputed, then
   tick *memoize* and watch the tree collapse to a spine.
+  ([source](../../../docs/fib/index.html))
 
 ## Worth trying
 
