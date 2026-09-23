@@ -18,6 +18,7 @@ This repo is Sumnoon's personal **90 Days of DP** training log (#90DaysOfDP), sh
 ## Repo layout
 - `weeks/week-NN-topic/README.md`: that week's schedule, problem checklist, checkpoint, notes.
 - `weeks/week-NN-topic/solutions/`: solution files named `lcXXXX_short_name.cpp`, `cses_name.cpp`, or `atcoder_dp_x.cpp`.
+- `weeks/week-NN-topic/notes/`: one note per solved problem, named after its solution file (`lc0206_reverse_linked_list.md`), plus a `README.md` index. Each note covers what the call returns / state, the recursive case or transition, the base case, complexity, and the key insight — following `templates/problem-notes.md`.
 - `redo-list.md`: problems that needed a hint or solution; re-solved on Sundays.
 - `templates/problem-notes.md`: notes template (state, transition, base case, complexity, key insight).
 - `README.md`: overview and progress table.
