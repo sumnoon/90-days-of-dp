@@ -22,6 +22,8 @@ The plan runs from **Sun Sep 20, 2026** (Day 0) to **Sun Dec 13, 2026**, with a 
 Interactive pages for the ideas a static diagram can't carry:
 **https://sumnoon.github.io/90-days-of-dp/**
 
+- [Where the work happens](https://sumnoon.github.io/90-days-of-dp/order/) — pre-order vs post-order, four ways
+- [Meeting in the middle](https://sumnoon.github.io/90-days-of-dp/twopointer/) — palindrome check and LC 344
 - [Reverse a linked list, one frame at a time](https://sumnoon.github.io/90-days-of-dp/lc206/) — LC 206, 28 steps
 - [The same answer, computed again and again](https://sumnoon.github.io/90-days-of-dp/fib/) — LC 509, the recursion tree
 

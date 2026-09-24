@@ -41,6 +41,13 @@ order for you: the unwinding is what plays it back.
 
 Time: O(n). Space: O(n) for the call stack.
 
+## See it
+
+- **Side by side:** https://sumnoon.github.io/90-days-of-dp/order/ — step both versions
+  through the same call stack and watch when each frame prints. The factorial
+  and sum-of-digits modes are the same skeleton returning a value.
+  ([source](../../../docs/order/index.html))
+
 ## Key insight
 
 **Work before the recursive call happens top-down; work after it happens
