@@ -13,6 +13,7 @@ re-read before a redo, not while solving.
 | [⭐ LC 509 Fibonacci](lc0509_fibonacci_number.md) | 2 | clean | 2.7M calls for 31 distinct values. That gap **is** dynamic programming. |
 | [LC 231 Power of Two](lc0231_power_of_two.md) | 3 | clean | Short-circuit `&&` is doing the work of a base case. |
 | [⭐ LC 206 Reverse Linked List](lc0206_reverse_linked_list.md) | 3 | clean | Grant that the rest is reversed; then exactly one link needs changing. |
+| [LC 21 Merge Two Sorted Lists](lc0021_merge_two_sorted_lists.md) | 4 | clean | The smaller head *is* the answer's head; hand the rest to the recursion. |
 
 "clean" = solved without a hint. Anything else is on the
 [redo list](../../../redo-list.md).
@@ -42,4 +43,5 @@ What changes is the shape of "smaller":
 | Two pointers moving inward | palindrome, LC 344 |
 | Halving (`n / 2`) | LC 231, and LC 50 next |
 | Following a pointer (`head->next`) | LC 206 |
+| Two inputs, advance one | LC 21 — the shape Week 8 string DP reuses |
 | **Two recursive calls** | **LC 509** — and this is the one that becomes DP |
