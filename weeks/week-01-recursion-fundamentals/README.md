@@ -23,7 +23,7 @@
 - [ ] ⭐ LC 50 Pow(x, n)
 - [x] LC 344 Reverse String (solve it recursively) — [notes](notes/lc0344_reverse_string.md)
 - [x] ⭐ LC 206 Reverse Linked List (solve it recursively) — [notes](notes/lc0206_reverse_linked_list.md)
-- [ ] LC 21 Merge Two Sorted Lists
+- [x] LC 21 Merge Two Sorted Lists — [notes](notes/lc0021_merge_two_sorted_lists.md)
 - [x] LC 231 Power of Two — [notes](notes/lc0231_power_of_two.md)
 
 ## Checkpoint
