@@ -44,6 +44,13 @@ Both stop at `n == 0`:
 Time: O(n) for factorial, O(log₁₀ n) for sum of digits (one call per digit).
 Space: the same, for the call stack.
 
+## See it
+
+- **Stack, building then unwinding:** https://sumnoon.github.io/90-days-of-dp/order/ —
+  pick *factorial* or *sum of digits* and watch the value assemble on the way
+  back up from the identity at the base case.
+  ([source](../../../docs/order/index.html))
+
 ## Key insight
 
 A base case isn't just "where it stops" — it's the **identity value** for

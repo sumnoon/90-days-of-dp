@@ -61,6 +61,13 @@ one string.
 Both times the fix was to ask *what does reaching this state tell me?*
 rather than *what should I compare here?*
 
+## See it
+
+- **Two pointers walking inward:** https://sumnoon.github.io/90-days-of-dp/twopointer/ —
+  run *abba* to watch the pointers cross, *racecar* to watch them meet, and
+  *(empty)* to see why both need the same base case.
+  ([source](../../../docs/twopointer/index.html))
+
 ## Related
 
 Same two-pointer shape as [LC 344](lc0344_reverse_string.md), which swaps the

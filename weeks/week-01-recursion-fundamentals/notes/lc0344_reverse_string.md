@@ -47,6 +47,13 @@ Once the traversal shape is right, changing the problem often just means
 changing the one line in the middle. Spotting that a new problem reuses a
 shape you already have is most of what "pattern recognition" means later on.
 
+## See it
+
+- **The same traversal, both jobs:** https://sumnoon.github.io/90-days-of-dp/twopointer/ —
+  switch between *compare* and *swap* on one word and watch the pointers move
+  identically while only the middle line changes.
+  ([source](../../../docs/twopointer/index.html))
+
 ## Note on the file
 
 The `Solution` class is exactly what was submitted to LeetCode. The includes

@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="sumnoon">
+<meta name="description" content="One recursion, one line moved: see why work before the call happens top-down and work after it happens bottom-up.">
+<title>Where the Work Happens</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; }
+  img { max-width: 100%; }
+
+  :root {
+    color-scheme: light;
+    --bg: #E9EEF2; --surface: #FDFEFE; --surface-2: #DFE7EC;
+    --ink: #0F1B24; --muted: #576875; --faint: #8598A5; --line: #C4D2DB;
+    --accent: #0A6E6C; --accent-soft: #CDE6E4;
+    --down: #1F5FA8; --down-soft: #D4E3F5;
+    --hot: #B2451A; --hot-soft: #F6DED3;
+    --shadow: 0 1px 2px rgba(15,27,36,.06), 0 8px 24px -12px rgba(15,27,36,.18);
+    --f-display: "Bricolage Grotesque", "Trebuchet MS", sans-serif;
+    --f-body: "Source Sans 3", -apple-system, "Segoe UI", sans-serif;
+    --f-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #0B1318; --surface: #131F27; --surface-2: #1B2A34;
+      --ink: #E5EEF3; --muted: #94A7B3; --faint: #6B808D; --line: #273A46;
+      --accent: #3FC6BE; --accent-soft: #123833;
+      --down: #6BA8F0; --down-soft: #14283F;
+      --hot: #FF9058; --hot-soft: #3A1F14;
+      --shadow: 0 1px 2px rgba(0,0,0,.5), 0 10px 28px -14px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0B1318; --surface: #131F27; --surface-2: #1B2A34;
+    --ink: #E5EEF3; --muted: #94A7B3; --faint: #6B808D; --line: #273A46;
+    --accent: #3FC6BE; --accent-soft: #123833;
+    --down: #6BA8F0; --down-soft: #14283F;
+    --hot: #FF9058; --hot-soft: #3A1F14;
+    --shadow: 0 1px 2px rgba(0,0,0,.5), 0 10px 28px -14px rgba(0,0,0,.7);
+  }
+
+  body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.55; padding-inline: 20px; padding-block: 32px 56px; }
+  .wrap { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+  .eyebrow { font-family: var(--f-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+  h1 { font-family: var(--f-display); font-weight: 700; font-size: clamp(28px, 6vw, 46px); line-height: 1.04; letter-spacing: -.02em; margin: 6px 0 10px; text-wrap: balance; }
+  header p { margin: 0; color: var(--muted); max-width: 64ch; }
+  code { font-family: var(--f-mono); font-size: .88em; }
+
+  .stage { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; box-shadow: var(--shadow); overflow: hidden; }
+  .bar { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; padding: 11px 18px; background: var(--surface-2); border-bottom: 1px solid var(--line); }
+  .bar .grp { font-family: var(--f-mono); font-size: 12px; color: var(--muted); display: inline-flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+  button { font-family: var(--f-body); font-size: 13.5px; font-weight: 600; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 6px 11px; cursor: pointer; }
+  button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  button:disabled { opacity: .4; cursor: default; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+  button.primary:hover { color: var(--surface); filter: brightness(1.08); }
+  button.mode.sel { background: var(--hot-soft); border-color: var(--hot); color: var(--hot); }
+  input[type="range"] { flex: 1 1 130px; min-width: 110px; accent-color: var(--accent); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  @media (max-width: 720px) { .split { grid-template-columns: 1fr; } }
+  .col { padding: 14px 18px 18px; }
+  .col + .col { border-left: 1px solid var(--line); }
+  @media (max-width: 720px) { .col + .col { border-left: none; border-top: 1px solid var(--line); } }
+  .col h3 { font-family: var(--f-mono); font-size: 11px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; color: var(--faint); margin: 0 0 10px; }
+
+  .stack { display: flex; flex-direction: column; gap: 5px; min-height: 240px; }
+  .frame {
+    font-family: var(--f-mono); font-size: 13px;
+    border: 1px solid var(--line); border-radius: 4px; background: var(--surface-2);
+    padding: 8px 11px; color: var(--muted);
+    display: flex; justify-content: space-between; align-items: baseline; gap: 10px;
+  }
+  .frame .ret { font-size: 11.5px; color: var(--faint); }
+  .frame.top { border-color: var(--hot); background: var(--hot-soft); color: var(--ink); }
+  .frame.top .ret { color: var(--hot); }
+  .frame.base { border-color: var(--accent); background: var(--accent-soft); color: var(--ink); }
+  .frame.fired { border-style: dashed; }
+  .stack .empty { border: 1px dashed var(--line); border-radius: 4px; padding: 8px; text-align: center; color: var(--faint); font-family: var(--f-mono); font-size: 12px; }
+
+  .out { display: flex; flex-wrap: wrap; gap: 6px; min-height: 40px; align-items: flex-start; }
+  .tok {
+    font-family: var(--f-mono); font-size: 14px; font-weight: 700;
+    min-width: 32px; height: 32px; padding: 0 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 1.5px solid var(--line); border-radius: 4px; background: var(--surface);
+  }
+  .tok.down { border-color: var(--down); background: var(--down-soft); }
+  .tok.up { border-color: var(--accent); background: var(--accent-soft); }
+  .tok.fresh { outline: 3px solid var(--hot); outline-offset: 2px; }
+  .value { font-family: var(--f-mono); font-size: 15px; color: var(--muted); margin-top: 12px; }
+  .value b { color: var(--ink); font-size: 18px; }
+
+  .cmp { padding: 12px 18px; border-top: 1px solid var(--line); }
+  .cmp .dir { font-family: var(--f-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 3px; }
+  .cmp .dir.d { color: var(--down); }
+  .cmp .dir.u { color: var(--accent); }
+  .cmp p { margin: 0; color: var(--muted); }
+  .cmp b { color: var(--ink); }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 9px; align-items: center; padding: 11px 18px; border-top: 1px solid var(--line); background: var(--surface-2); }
+  .counter { font-family: var(--f-mono); font-size: 12px; color: var(--faint); margin-left: auto; }
+
+  .codepanel { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; box-shadow: var(--shadow); overflow: hidden; }
+  .codepanel h3 { font-family: var(--f-mono); font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0; padding: 11px 16px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+  .code { margin: 0; padding: 12px 0; overflow-x: auto; }
+  .code .row { display: flex; gap: 12px; padding: 1px 16px; font-family: var(--f-mono); font-size: 12.5px; white-space: pre; }
+  .code .ln { color: var(--faint); min-width: 1.4em; text-align: right; user-select: none; }
+  .code .src { color: var(--muted); }
+  .code .row.on { background: var(--hot-soft); }
+  .code .row.on .src { color: var(--ink); font-weight: 700; }
+  .code .row.on .ln { color: var(--hot); font-weight: 700; }
+
+  .notes { display: flex; flex-direction: column; gap: 13px; }
+  h2 { font-family: var(--f-display); font-weight: 700; font-size: 22px; letter-spacing: -.01em; margin: 8px 0 0; }
+  .notes p { margin: 0; color: var(--muted); max-width: 68ch; }
+  .notes b { color: var(--ink); }
+  .notes code { background: var(--surface-2); padding: 1px 4px; border-radius: 3px; color: var(--ink); }
+  .pull { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 12px 16px; border-radius: 0 4px 4px 0; font-size: 17px; color: var(--ink); max-width: 64ch; }
+  footer { color: var(--faint); font-size: 13px; border-top: 1px solid var(--line); padding-top: 14px; }
+  footer a { color: var(--muted); }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Week 1 &middot; Days 0&ndash;1 &middot; the shape everything reuses</div>
+    <h1>Where the work happens</h1>
+    <p>Four recursions with the same skeleton. The only thing that changes is whether the work sits <em>before</em> the recursive call or <em>after</em> it &mdash; and that decides whether the answer comes out top-down or bottom-up.</p>
+  </header>
+
+  <div class="stage">
+    <div class="bar">
+      <span class="grp">
+        <button type="button" class="mode sel" data-m="0">print 1..N</button>
+        <button type="button" class="mode" data-m="1">print N..1</button>
+        <button type="button" class="mode" data-m="2">factorial</button>
+        <button type="button" class="mode" data-m="3">sum of digits</button>
+      </span>
+    </div>
+
+    <div class="split">
+      <div class="col">
+        <h3>Call stack</h3>
+        <div class="stack" id="stack"></div>
+      </div>
+      <div class="col">
+        <h3 id="outTitle">Output</h3>
+        <div class="out" id="out"></div>
+        <div class="value" id="value"></div>
+      </div>
+    </div>
+
+    <div class="cmp">
+      <div class="dir" id="dir">&nbsp;</div>
+      <p id="note">Press <b>Next</b> to make the first call.</p>
+    </div>
+
+    <div class="controls">
+      <button id="prev" type="button">&larr; Prev</button>
+      <button id="next" type="button" class="primary">Next &rarr;</button>
+      <input id="slider" type="range" min="0" value="0" step="1" aria-label="Step">
+      <button id="play" type="button">Play</button>
+      <button id="reset" type="button">Reset</button>
+      <span class="counter" id="counter">0 / 0</span>
+    </div>
+  </div>
+
+  <div class="codepanel"><h3 id="codeTitle">func</h3><div class="code" id="code"></div></div>
+
+  <div class="notes">
+    <h2>The same skeleton, twice</h2>
+    <p>Compare <b>print 1..N</b> and <b>print N..1</b>. The calls happen in the same order both times &mdash; 4, 3, 2, 1 &mdash; and the stack grows identically. What differs is <em>when</em> each frame does its job.</p>
+    <p><b>Work before the call</b> fires as the stack grows, so the largest argument acts first: you get N..1. <b>Work after the call</b> waits for every deeper frame to finish, so the smallest acts first: you get 1..N. Nothing is reversed, and no array is used. The call stack holds the order, and unwinding plays it back.</p>
+    <div class="pull">A recursive function has two places to put work. Choosing between them is most of what recursion design is.</div>
+
+    <h2>Why factorial and sum of digits are here</h2>
+    <p>They use the same skeleton with a returned value instead of a print. Watch the stack build to the base case doing <em>nothing</em>, then watch the value assemble on the way back up &mdash; <code>1</code>, then <code>2</code>, <code>6</code>, <code>24</code>. That is the post-order half again.</p>
+    <p>It is also why the base case must be the <b>identity</b> of the operation that combines: <code>1</code> for multiplication, <code>0</code> for addition. Get it wrong and the recursion still terminates, but every value above it is wrong.</p>
+
+    <h2>Where this goes</h2>
+    <p>Pre-order and post-order are the names for these two halves, and they keep coming back: tree traversals in Week 2, <a href="../lc206/">LC 206</a> rewiring links on the way back up, <a href="../lc21/">LC 21</a> choosing heads on the way down. Every DP recurrence is post-order &mdash; solve the smaller thing, then combine.</p>
+    <footer>Part of <a href="../">90 Days of DP</a> &middot; <a href="https://github.com/sumnoon/90-days-of-dp/blob/main/weeks/week-01-recursion-fundamentals/notes/print_1_to_n.md">the note</a></footer>
+  </div>
+</div>
+
+<script>
+  var E = function (id) { return document.getElementById(id); };
+
+  var MODES = [
+    {
+      name: "print 1..N", n: 4, arg: function (k) { return "func(" + k + ")"; },
+      outTitle: "Printed", kind: "print", when: "post",
+      code: ["void func(int n) {", "    if (n == 0) return;", "    func(n - 1);", "    cout << n << endl;", "}"],
+      lineBase: 2, lineCall: 3, lineWork: 4
+    },
+    {
+      name: "print N..1", n: 4, arg: function (k) { return "func(" + k + ")"; },
+      outTitle: "Printed", kind: "print", when: "pre",
+      code: ["void func(int n) {", "    if (n == 0) return;", "    cout << n << endl;", "    func(n - 1);", "}"],
+      lineBase: 2, lineCall: 4, lineWork: 3
+    },
+    {
+      name: "factorial", n: 4, arg: function (k) { return "factorial(" + k + ")"; },
+      outTitle: "Value returned", kind: "value", when: "post", baseVal: 1,
+      combine: function (k, child) { return k * child; },
+      expr: function (k, child) { return k + " * " + child; },
+      code: ["int64_t factorial(int64_t n) {", "    if (n == 0) return 1;", "    return n * factorial(n - 1);", "}"],
+      lineBase: 2, lineCall: 3, lineWork: 3
+    },
+    {
+      name: "sum of digits", n: 4821, arg: function (k) { return "sum_of_digits(" + k + ")"; },
+      outTitle: "Value returned", kind: "value", when: "post", baseVal: 0, digits: true,
+      combine: function (k, child) { return (k % 10) + child; },
+      expr: function (k, child) { return (k % 10) + " + " + child; },
+      code: ["int64_t sum_of_digits(int64_t n) {", "    if (n == 0) return 0;", "    return (n % 10) + sum_of_digits(n / 10);", "}"],
+      lineBase: 2, lineCall: 3, lineWork: 3
+    }
+  ];
+
+  var mode = 0, at = 0, STEPS = [], timer = null;
+
+  function chain(M) {
+    var xs = [], k = M.n;
+    while (k !== 0) { xs.push(k); k = M.digits ? Math.floor(k / 10) : k - 1; }
+    return xs;                      // arguments from outermost to innermost, excluding 0
+  }
+
+  function buildSteps(M) {
+    var steps = [], frames = [], out = [], value = null, expr = "";
+
+    function snap(o) {
+      steps.push({
+        frames: frames.map(function (f) { return { k: f.k, ret: f.ret, fired: f.fired }; }),
+        out: out.slice(), value: value, expr: expr,
+        line: o.line, dir: o.dir, note: o.note, fresh: o.fresh === undefined ? -1 : o.fresh
+      });
+    }
+
+    snap({ line: null, dir: "", note: "Press <b>Next</b> to make the first call." });
+
+    var xs = chain(M);
+
+    xs.forEach(function (k) {
+      frames.push({ k: k, ret: null, fired: false });
+      snap({ line: M.lineBase, dir: "down",
+             note: "<b>" + M.arg(k) + "</b> — not the base case, so this frame has work to do." });
+
+      if (M.when === "pre") {
+        out.push(k);
+        frames[frames.length - 1].fired = true;
+        snap({ line: M.lineWork, dir: "down", fresh: out.length - 1,
+               note: "Work sits <b>before</b> the call, so it fires now, on the way <b>down</b>. Printed <b>" + k + "</b>." });
+      }
+      snap({ line: M.lineCall, dir: "down",
+             note: "Recurse on " + (M.digits ? "n / 10" : "n - 1") + ". The frame stays open, waiting." });
+    });
+
+    frames.push({ k: 0, ret: M.kind === "value" ? M.baseVal : null, fired: true });
+    snap({ line: M.lineBase, dir: "base",
+           note: M.kind === "value"
+             ? "Base case: <b>n == 0</b> returns <b>" + M.baseVal + "</b> — the identity for " + (M.digits ? "addition" : "multiplication") + ", so it changes nothing when combined."
+             : "Base case: <b>n == 0</b> returns without printing. The stack stops growing here." });
+
+    if (M.kind === "value") { value = M.baseVal; }
+    frames.pop();
+
+    for (var i = xs.length - 1; i >= 0; i--) {
+      var k = xs[i];
+      if (M.when === "post") {
+        if (M.kind === "print") {
+          out.push(k);
+          snap({ line: M.lineWork, dir: "up", fresh: out.length - 1,
+                 note: "Work sits <b>after</b> the call, so it only fires now, on the way back <b>up</b>. Printed <b>" + k + "</b>." });
+        } else {
+          expr = M.expr(k, value);
+          value = M.combine(k, value);
+          out.push(value);
+          snap({ line: M.lineWork, dir: "up", fresh: out.length - 1,
+                 note: "<b>" + M.arg(k) + "</b> combines its own part with what came back: <code>" + expr + " = " + value + "</code>." });
+        }
+      }
+      frames.pop();
+      snap({ line: null, dir: "up",
+             note: "Frame for " + M.arg(k) + " returns and is gone." + (frames.length ? "" : " The stack is empty.") });
+    }
+
+    snap({ line: null, dir: "done",
+           note: M.kind === "print"
+             ? "Done. Printed <b>" + out.join(", ") + "</b> — " + (M.when === "pre" ? "largest first, because each frame acted on the way down." : "smallest first, because each frame waited for the deeper ones.")
+             : "Done. The answer <b>" + value + "</b> was assembled entirely on the way back up." });
+
+    return steps;
+  }
+
+  function drawCode(M) {
+    var el = E("code");
+    el.textContent = "";
+    M.code.forEach(function (src, i) {
+      var row = document.createElement("div");
+      row.className = "row";
+      row.dataset.line = String(i + 1);
+      var ln = document.createElement("span");
+      ln.className = "ln"; ln.textContent = String(i + 1);
+      var s = document.createElement("span");
+      s.className = "src"; s.textContent = src === "" ? " " : src;
+      row.appendChild(ln); row.appendChild(s);
+      el.appendChild(row);
+    });
+    E("codeTitle").textContent = M.name;
+  }
+
+  function render() {
+    var M = MODES[mode], st = STEPS[at];
+
+    var sk = E("stack");
+    sk.textContent = "";
+    if (!st.frames.length) {
+      var e = document.createElement("div");
+      e.className = "empty"; e.textContent = "empty";
+      sk.appendChild(e);
+    } else {
+      st.frames.forEach(function (f, i) {
+        var d = document.createElement("div");
+        d.className = "frame" + (i === st.frames.length - 1 ? " top" : "") + (f.k === 0 ? " base" : "") + (f.fired ? " fired" : "");
+        var a = document.createElement("span");
+        a.textContent = M.arg(f.k);
+        var b = document.createElement("span");
+        b.className = "ret";
+        b.textContent = f.fired ? (M.when === "pre" ? "printed" : "") : "waiting";
+        d.appendChild(a); d.appendChild(b);
+        sk.appendChild(d);
+      });
+    }
+
+    var o = E("out");
+    o.textContent = "";
+    E("outTitle").textContent = M.outTitle;
+    st.out.forEach(function (v, i) {
+      var t = document.createElement("span");
+      t.className = "tok " + (st.dir === "down" ? "down" : "up") + (i === st.fresh ? " fresh" : "");
+      if (M.when === "pre") t.className = "tok down" + (i === st.fresh ? " fresh" : "");
+      else t.className = "tok up" + (i === st.fresh ? " fresh" : "");
+      t.textContent = String(v);
+      o.appendChild(t);
+    });
+
+    E("value").innerHTML = (M.kind === "value" && st.value !== null)
+      ? "current value: <b>" + st.value + "</b>" + (st.expr ? " &nbsp;<span style='color:var(--faint)'>(" + st.expr + ")</span>" : "")
+      : "";
+
+    var dir = E("dir");
+    if (st.dir === "down") { dir.className = "dir d"; dir.textContent = "on the way down"; }
+    else if (st.dir === "up") { dir.className = "dir u"; dir.textContent = "on the way back up"; }
+    else if (st.dir === "base") { dir.className = "dir u"; dir.textContent = "base case"; }
+    else { dir.className = "dir"; dir.innerHTML = "&nbsp;"; }
+
+    E("note").innerHTML = st.note;
+    E("counter").textContent = at + " / " + (STEPS.length - 1);
+    E("slider").value = String(at);
+
+    var rows = E("code").querySelectorAll(".row");
+    for (var i = 0; i < rows.length; i++) {
+      rows[i].classList.toggle("on", st.line !== null && Number(rows[i].dataset.line) === st.line);
+    }
+
+    E("prev").disabled = at === 0;
+    E("next").disabled = at === STEPS.length - 1;
+    if (at === STEPS.length - 1) stop();
+  }
+
+  function stop() { if (timer) { clearInterval(timer); timer = null; } E("play").textContent = "Play"; }
+  function go(i) { at = Math.max(0, Math.min(STEPS.length - 1, i)); render(); }
+
+  function setMode(m) {
+    mode = m;
+    var btns = document.querySelectorAll("button.mode");
+    for (var i = 0; i < btns.length; i++) btns[i].classList.toggle("sel", Number(btns[i].dataset.m) === m);
+    STEPS = buildSteps(MODES[m]);
+    E("slider").max = String(STEPS.length - 1);
+    at = 0;
+    drawCode(MODES[m]);
+    render();
+  }
+
+  E("prev").addEventListener("click", function () { stop(); go(at - 1); });
+  E("next").addEventListener("click", function () { stop(); go(at + 1); });
+  E("reset").addEventListener("click", function () { stop(); go(0); });
+  E("slider").addEventListener("input", function () { stop(); go(Number(E("slider").value)); });
+  E("play").addEventListener("click", function () {
+    if (timer) { stop(); return; }
+    if (at === STEPS.length - 1) go(0);
+    E("play").textContent = "Pause";
+    timer = setInterval(function () { if (at >= STEPS.length - 1) { stop(); return; } go(at + 1); }, 1050);
+  });
+  var mb = document.querySelectorAll("button.mode");
+  for (var i = 0; i < mb.length; i++) {
+    mb[i].addEventListener("click", function () { stop(); setMode(Number(this.dataset.m)); });
+  }
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowRight") { stop(); go(at + 1); }
+    else if (e.key === "ArrowLeft") { stop(); go(at - 1); }
+  });
+
+  setMode(0);
+</script>
+</body>
+</html>

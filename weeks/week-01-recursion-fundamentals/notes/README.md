@@ -25,6 +25,8 @@ Interactive step-throughs built alongside the notes, published at
 
 | Page | What it shows |
 |---|---|
+| [Where the Work Happens](https://sumnoon.github.io/90-days-of-dp/order/) | Print 1..N, print N..1, factorial and sum of digits on one stack. Work before the call fires top-down; work after it fires bottom-up. |
+| [Meeting in the Middle](https://sumnoon.github.io/90-days-of-dp/twopointer/) | The palindrome check and LC 344 as one recursion, with a compare/swap toggle. |
 | [LC 206 Frame by Frame](https://sumnoon.github.io/90-days-of-dp/lc206/) | 28 steps of `reverseList([1,2,3,4,5])` with live pointer diagram, call stack and code line. Nothing rewires on the way down. |
 | [Fibonacci's Repeated Work](https://sumnoon.github.io/90-days-of-dp/fib/) | The recursion tree for n up to 9. Click a node to see every recomputation; toggle memoization to collapse it. |
 | [Which Head Goes First](https://sumnoon.github.io/90-days-of-dp/lc21/) | LC 21 step by step. Heads chosen on the way down, links written on the way back up; the `<=` toggle makes stability visible. |
