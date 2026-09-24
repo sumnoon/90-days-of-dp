@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="sumnoon">
+<meta name="description" content="Watch a recursive merge decide each head on the way down and write each link on the way back up — and see what the <= comparison protects.">
+<title>Which Head Goes First</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+
+  :root {
+    color-scheme: light;
+    --bg: #E9EEF2; --surface: #FDFEFE; --surface-2: #DFE7EC;
+    --ink: #0F1B24; --muted: #576875; --faint: #8598A5; --line: #C4D2DB;
+    --accent: #0A6E6C; --accent-soft: #CDE6E4;
+    --blue: #1F5FA8; --blue-soft: #D4E3F5;
+    --hot: #B2451A; --hot-soft: #F6DED3;
+    --shadow: 0 1px 2px rgba(15,27,36,.06), 0 8px 24px -12px rgba(15,27,36,.18);
+    --f-display: "Bricolage Grotesque", "Trebuchet MS", sans-serif;
+    --f-body: "Source Sans 3", -apple-system, "Segoe UI", sans-serif;
+    --f-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #0B1318; --surface: #131F27; --surface-2: #1B2A34;
+      --ink: #E5EEF3; --muted: #94A7B3; --faint: #6B808D; --line: #273A46;
+      --accent: #3FC6BE; --accent-soft: #123833;
+      --blue: #6BA8F0; --blue-soft: #14283F;
+      --hot: #FF9058; --hot-soft: #3A1F14;
+      --shadow: 0 1px 2px rgba(0,0,0,.5), 0 10px 28px -14px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0B1318; --surface: #131F27; --surface-2: #1B2A34;
+    --ink: #E5EEF3; --muted: #94A7B3; --faint: #6B808D; --line: #273A46;
+    --accent: #3FC6BE; --accent-soft: #123833;
+    --blue: #6BA8F0; --blue-soft: #14283F;
+    --hot: #FF9058; --hot-soft: #3A1F14;
+    --shadow: 0 1px 2px rgba(0,0,0,.5), 0 10px 28px -14px rgba(0,0,0,.7);
+  }
+
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: var(--f-body); font-size: 16px; line-height: 1.55;
+    padding-inline: 20px; padding-block: 32px 56px;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+  .eyebrow { font-family: var(--f-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+  h1 { font-family: var(--f-display); font-weight: 700; font-size: clamp(28px, 6vw, 46px); line-height: 1.04; letter-spacing: -.02em; margin: 6px 0 10px; text-wrap: balance; }
+  header p { margin: 0; color: var(--muted); max-width: 64ch; }
+  code { font-family: var(--f-mono); font-size: .88em; }
+
+  .stage { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; box-shadow: var(--shadow); overflow: hidden; }
+  .bar { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; padding: 11px 18px; background: var(--surface-2); border-bottom: 1px solid var(--line); }
+  .bar label, .bar .grp { font-family: var(--f-mono); font-size: 12px; color: var(--muted); display: inline-flex; align-items: center; gap: 8px; }
+  select, button { font-family: var(--f-body); font-size: 14px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 6px 11px; }
+  button { font-weight: 600; cursor: pointer; }
+  button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  button:disabled { opacity: .4; cursor: default; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+  button.primary:hover { color: var(--surface); filter: brightness(1.08); }
+  button.op { font-family: var(--f-mono); font-weight: 700; }
+  button.op.sel { background: var(--hot-soft); border-color: var(--hot); color: var(--hot); }
+  input[type="range"] { flex: 1 1 130px; min-width: 110px; accent-color: var(--accent); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .lanes { padding: 16px 18px 6px; display: flex; flex-direction: column; gap: 12px; }
+  .lane { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .lane .name { font-family: var(--f-mono); font-size: 11.5px; color: var(--faint); min-width: 58px; }
+  .cells { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .cell {
+    font-family: var(--f-mono); font-size: 14px; font-weight: 700;
+    min-width: 34px; height: 34px; padding: 0 6px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 1.5px solid var(--line); border-radius: 4px; background: var(--surface);
+  }
+  .cell.a { border-color: var(--accent); background: var(--accent-soft); color: var(--ink); }
+  .cell.b { border-color: var(--blue); background: var(--blue-soft); color: var(--ink); }
+  .cell.done { opacity: .32; }
+  .cell.cur { outline: 3px solid var(--hot); outline-offset: 2px; }
+  .cell.empty { color: var(--faint); font-weight: 400; border-style: dashed; }
+  .link { width: 16px; height: 2px; background: var(--ink); opacity: .45; }
+  .link.pending { background: none; border-top: 2px dashed var(--faint); }
+
+  .cmp { padding: 12px 18px; border-top: 1px solid var(--line); background: var(--surface); }
+  .cmp .expr { font-family: var(--f-mono); font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+  .cmp .expr .a { color: var(--accent); }
+  .cmp .expr .b { color: var(--blue); }
+  .cmp p { margin: 0; color: var(--muted); }
+  .cmp b { color: var(--ink); }
+  .cmp .flag { color: var(--hot); font-weight: 600; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 9px; align-items: center; padding: 11px 18px; border-top: 1px solid var(--line); background: var(--surface-2); }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 18px; padding: 10px 18px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .chip { width: 13px; height: 13px; border-radius: 3px; flex: none; border: 1.5px solid var(--line); }
+
+  .panels { display: grid; grid-template-columns: 1.2fr .8fr; gap: 18px; align-items: start; }
+  @media (max-width: 720px) { .panels { grid-template-columns: 1fr; } }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; box-shadow: var(--shadow); overflow: hidden; }
+  .panel h3 { font-family: var(--f-mono); font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0; padding: 11px 16px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+  .code { margin: 0; padding: 12px 0; overflow-x: auto; }
+  .code .row { display: flex; gap: 12px; padding: 1px 16px; font-family: var(--f-mono); font-size: 12.5px; white-space: pre; }
+  .code .ln { color: var(--faint); min-width: 1.4em; text-align: right; user-select: none; font-variant-numeric: tabular-nums; }
+  .code .src { color: var(--muted); }
+  .code .row.on { background: var(--hot-soft); }
+  .code .row.on .src { color: var(--ink); font-weight: 700; }
+  .code .row.on .ln { color: var(--hot); font-weight: 700; }
+  .frames { list-style: none; margin: 0; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+  .frames li { font-family: var(--f-mono); font-size: 12px; padding: 6px 9px; border-radius: 4px; border: 1px solid var(--line); background: var(--surface-2); color: var(--muted); }
+  .frames li.top { border-color: var(--hot); background: var(--hot-soft); color: var(--ink); }
+  .frames .empty { border-style: dashed; text-align: center; color: var(--faint); }
+
+  .notes { display: flex; flex-direction: column; gap: 13px; }
+  h2 { font-family: var(--f-display); font-weight: 700; font-size: 22px; letter-spacing: -.01em; margin: 8px 0 0; }
+  .notes p { margin: 0; color: var(--muted); max-width: 68ch; }
+  .notes b { color: var(--ink); }
+  .notes code { background: var(--surface-2); padding: 1px 4px; border-radius: 3px; color: var(--ink); }
+  .pull { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 12px 16px; border-radius: 0 4px 4px 0; font-size: 17px; color: var(--ink); max-width: 64ch; }
+  footer { color: var(--faint); font-size: 13px; border-top: 1px solid var(--line); padding-top: 14px; }
+  footer a { color: var(--muted); }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Week 1 &middot; Day 4 &middot; LC 21</div>
+    <h1>Which head goes first</h1>
+    <p>A recursive merge decides the answer&rsquo;s head <em>on the way down</em>, then writes the links <em>on the way back up</em>. Switch the comparison between <code>&lt;=</code> and <code>&lt;</code> and watch which list wins a tie.</p>
+  </header>
+
+  <div class="stage">
+    <div class="bar">
+      <label for="preset">inputs
+        <select id="preset">
+          <option value="0">[1,2,4] and [1,3,4] — LeetCode example</option>
+          <option value="1">[1,1,2] and [1,1] — ties everywhere</option>
+          <option value="2">[5] and [1,2] — one runs out early</option>
+          <option value="3">[] and [0] — empty list</option>
+        </select>
+      </label>
+      <span class="grp">compare
+        <button type="button" class="op sel" id="opLe">list1-&gt;val &lt;= list2-&gt;val</button>
+        <button type="button" class="op" id="opLt">&lt;</button>
+      </span>
+    </div>
+
+    <div class="lanes">
+      <div class="lane"><span class="name">list1</span><span class="cells" id="laneA"></span></div>
+      <div class="lane"><span class="name">list2</span><span class="cells" id="laneB"></span></div>
+      <div class="lane"><span class="name">merged</span><span class="cells" id="laneOut"></span></div>
+    </div>
+
+    <div class="cmp">
+      <div class="expr" id="expr">&nbsp;</div>
+      <p id="note">Press <b>Next</b> to make the first call.</p>
+    </div>
+
+    <div class="controls">
+      <button id="prev" type="button">&larr; Prev</button>
+      <button id="next" type="button" class="primary">Next &rarr;</button>
+      <input id="slider" type="range" min="0" value="0" step="1" aria-label="Step">
+      <button id="play" type="button">Play</button>
+      <button id="reset" type="button">Reset</button>
+      <span class="grp" style="margin-left:auto"><span id="counter">0 / 0</span></span>
+    </div>
+
+    <div class="legend">
+      <span><i class="chip" style="background: var(--accent-soft); border-color: var(--accent)"></i> came from list1</span>
+      <span><i class="chip" style="background: var(--blue-soft); border-color: var(--blue)"></i> came from list2</span>
+      <span><i class="chip" style="background: transparent; border-color: var(--hot); border-width: 3px"></i> current head</span>
+      <span><i style="width:16px;border-top:2px dashed var(--faint);flex:none"></i> link not written yet</span>
+    </div>
+  </div>
+
+  <div class="panels">
+    <div class="panel"><h3 id="codeTitle">func</h3><div class="code" id="code"></div></div>
+    <div class="panel"><h3>Call stack</h3><ul class="frames" id="frames"></ul></div>
+  </div>
+
+  <div class="notes">
+    <h2>Two halves of one call</h2>
+    <p>Watch the <b>merged</b> row fill left to right during the descent, with every link dashed. Each frame picks the smaller head and passes the rest along &mdash; but it cannot finish, because it does not yet know what follows. Then the base case returns the leftover list <b>whole</b>, and the links solidify right to left on the way back up.</p>
+    <div class="pull">The order of the answer is decided going down. The answer itself is assembled coming back up.</div>
+    <p>That is the difference from <a href="../lc206/">LC 206</a>, where nothing at all happens on the way down. Same leap of faith, opposite half of the call.</p>
+
+    <h2>What <code>&lt;=</code> is protecting</h2>
+    <p>Load <b>ties everywhere</b> and flip the comparison. The merged values are identical either way &mdash; <code>[1,1,1,1,2]</code> both times &mdash; but the <em>colours</em> change: with <code>&lt;=</code> the teal list1 nodes come first on every tie, with <code>&lt;</code> the blue list2 nodes do.</p>
+    <p>That is <b>stability</b>. LC 21 cannot detect it, since equal values are interchangeable here. Inside merge sort, where each element carries other fields, it is the whole difference between a stable sort and an unstable one.</p>
+
+    <h2>Why no remainder loop</h2>
+    <p>When one list empties, the base case returns the other one <b>as it stands</b> &mdash; already sorted, already linked. The iterative version has to walk and append that tail by hand. Here it is one <code>return</code>. Load <b>one runs out early</b>: list2 empties first, and the whole of <code>[5]</code> arrives in a single step.</p>
+
+    <footer>Part of <a href="../">90 Days of DP</a> &middot; <a href="https://github.com/sumnoon/90-days-of-dp/blob/main/weeks/week-01-recursion-fundamentals/notes/lc0021_merge_two_sorted_lists.md">the note</a> &middot; <a href="https://leetcode.com/problems/merge-two-sorted-lists/">LC 21</a></footer>
+  </div>
+</div>
+
+<script>
+  var PRESETS = [
+    { a: [1, 2, 4], b: [1, 3, 4] },
+    { a: [1, 1, 2], b: [1, 1] },
+    { a: [5], b: [1, 2] },
+    { a: [], b: [0] }
+  ];
+
+  var CODE = [
+    "ListNode* func(ListNode* list1, ListNode* list2) {",
+    "    if (list1 == nullptr) return list2;",
+    "    if (list2 == nullptr) return list1;",
+    "",
+    "    if (list1->val OP list2->val) {",
+    "        list1->next = func(list1->next, list2);",
+    "        return list1;",
+    "    } else {",
+    "        list2->next = func(list1, list2->next);",
+    "        return list2;",
+    "    }",
+    "}"
+  ];
+
+  var op = "<=";
+  var preset = 0;
+  var STEPS = [];
+  var at = 0;
+  var timer = null;
+
+  var E = function (id) { return document.getElementById(id); };
+
+  function buildSteps(A, B, opStr) {
+    var steps = [];
+    var taken = [];        // {v, src}
+    var frames = [];       // {i, j}
+    var solid = 0;         // links written from the end of `taken`
+    var tail = [];         // nodes returned whole by the base case
+    var i = 0, j = 0;
+
+    function snap(o) {
+      steps.push({
+        i: o.i, j: o.j,
+        taken: taken.map(function (t) { return { v: t.v, src: t.src }; }),
+        tail: tail.slice(),
+        solid: solid,
+        frames: frames.map(function (f) { return { i: f.i, j: f.j }; }),
+        line: o.line, expr: o.expr || "", note: o.note, cur: !!o.cur
+      });
+    }
+
+    snap({ i: 0, j: 0, line: null, note: "Press <b>Next</b> to make the first call.", cur: true });
+
+    while (true) {
+      frames.push({ i: i, j: j });
+      if (i >= A.length) {
+        snap({ i: i, j: j, line: 2, expr: "list1 == nullptr",
+               note: "<b>list1 is empty.</b> Return list2 whole &mdash; it is already sorted and already linked. No remainder loop." });
+        tail = B.slice(j).map(function (v) { return { v: v, src: "b" }; });
+        snap({ i: i, j: j, line: 2, note: "The rest of list2 arrives in <b>one step</b>: " + (tail.length ? tail.map(function (t) { return t.v; }).join(", ") : "nothing") + "." });
+        break;
+      }
+      if (j >= B.length) {
+        snap({ i: i, j: j, line: 3, expr: "list2 == nullptr",
+               note: "<b>list2 is empty.</b> Return list1 whole &mdash; already sorted, already linked." });
+        tail = A.slice(i).map(function (v) { return { v: v, src: "a" }; });
+        snap({ i: i, j: j, line: 3, note: "The rest of list1 arrives in <b>one step</b>: " + (tail.length ? tail.map(function (t) { return t.v; }).join(", ") : "nothing") + "." });
+        break;
+      }
+
+      var takeA = (opStr === "<=") ? (A[i] <= B[j]) : (A[i] < B[j]);
+      var tie = A[i] === B[j];
+      var expr = '<span class="a">' + A[i] + "</span> " + opStr + ' <span class="b">' + B[j] + "</span> &rarr; " + (takeA ? "true" : "false");
+      var why = tie
+        ? 'A <span class="flag">tie</span>. With <code>' + opStr + '</code> the node from <b>list' + (takeA ? "1" : "2") + "</b> goes first."
+        : "The smaller head is <b>" + (takeA ? A[i] : B[j]) + "</b>, from <b>list" + (takeA ? "1" : "2") + "</b>.";
+      snap({ i: i, j: j, line: 5, expr: expr, cur: true,
+             note: why + " Nothing else can come before it, because both lists are sorted." });
+
+      taken.push({ v: takeA ? A[i] : B[j], src: takeA ? "a" : "b" });
+      if (takeA) i++; else j++;
+      snap({ i: i, j: j, line: takeA ? 6 : 9, cur: true,
+             note: "Keep that node, then recurse on <b>the rest of list" + (takeA ? "1" : "2") +
+                   " plus all of list" + (takeA ? "2" : "1") + "</b>. Its <code>next</code> is not known yet &mdash; the link stays dashed." });
+    }
+
+    solid = 0;
+    frames.pop();
+    while (frames.length) {
+      var f = frames[frames.length - 1];
+      solid++;
+      frames.pop();
+      var node = taken[taken.length - solid];
+      snap({ i: f.i, j: f.j, line: node.src === "a" ? 6 : 9,
+             note: "Returning into the frame that chose <b>" + node.v + "</b>: its <code>next</code> is written now. " +
+                   "Links solidify <b>right to left</b>, the reverse of how they were decided." });
+    }
+
+    var all = taken.concat(tail).map(function (t) { return t.v; });
+    snap({ i: A.length, j: B.length, line: null,
+           note: "Done. <b>[" + all.join(",") + "]</b> &mdash; heads chosen on the way down, links written on the way back up." });
+
+    return steps;
+  }
+
+  function cellEl(v, src, cls) {
+    var s = document.createElement("span");
+    s.className = "cell " + (src || "") + (cls ? " " + cls : "");
+    s.textContent = String(v);
+    return s;
+  }
+
+  function linkEl(pending) {
+    var s = document.createElement("span");
+    s.className = "link" + (pending ? " pending" : "");
+    return s;
+  }
+
+  function renderLane(el, vals, src, from, curIdx) {
+    el.textContent = "";
+    if (!vals.length) { el.appendChild(cellEl("empty", "", "empty")); return; }
+    vals.forEach(function (v, k) {
+      var cls = k < from ? "done" : (k === curIdx ? "cur" : "");
+      el.appendChild(cellEl(v, src, cls));
+    });
+  }
+
+  function render() {
+    var st = STEPS[at];
+    var P = PRESETS[preset];
+
+    renderLane(E("laneA"), P.a, "a", st.i, st.cur ? st.i : -1);
+    renderLane(E("laneB"), P.b, "b", st.j, st.cur ? st.j : -1);
+
+    var out = E("laneOut");
+    out.textContent = "";
+    var chain = st.taken.concat(st.tail);
+    if (!chain.length) {
+      out.appendChild(cellEl("empty", "", "empty"));
+    } else {
+      var firstSolid = st.taken.length - st.solid;
+      chain.forEach(function (t, k) {
+        if (k > 0) {
+          // this link is chain[k-1]'s `next`. Tail nodes are already linked;
+          // a taken node's link exists only once its frame has returned.
+          var src = k - 1;
+          var pending = src < st.taken.length && src < firstSolid;
+          out.appendChild(linkEl(pending));
+        }
+        out.appendChild(cellEl(t.v, t.src, ""));
+      });
+    }
+
+    E("expr").innerHTML = st.expr || "&nbsp;";
+    E("note").innerHTML = st.note;
+    E("counter").textContent = at + " / " + (STEPS.length - 1);
+    E("slider").value = String(at);
+
+    var rows = E("code").querySelectorAll(".row");
+    for (var k = 0; k < rows.length; k++) {
+      rows[k].classList.toggle("on", st.line !== null && Number(rows[k].dataset.line) === st.line);
+    }
+
+    var fr = E("frames");
+    fr.textContent = "";
+    if (!st.frames.length) {
+      var li = document.createElement("li");
+      li.className = "empty"; li.textContent = "empty";
+      fr.appendChild(li);
+    } else {
+      for (var q = st.frames.length - 1; q >= 0; q--) {
+        var f = st.frames[q];
+        var row = document.createElement("li");
+        if (q === st.frames.length - 1) row.className = "top";
+        var av = P.a.slice(f.i), bv = P.b.slice(f.j);
+        row.textContent = "func([" + av.join(",") + "], [" + bv.join(",") + "])";
+        fr.appendChild(row);
+      }
+    }
+
+    E("prev").disabled = at === 0;
+    E("next").disabled = at === STEPS.length - 1;
+    if (at === STEPS.length - 1) stop();
+  }
+
+  function drawCode() {
+    var el = E("code");
+    el.textContent = "";
+    CODE.forEach(function (src, k) {
+      var row = document.createElement("div");
+      row.className = "row";
+      row.dataset.line = String(k + 1);
+      var ln = document.createElement("span");
+      ln.className = "ln"; ln.textContent = String(k + 1);
+      var s = document.createElement("span");
+      s.className = "src";
+      s.textContent = (src === "" ? " " : src.replace("OP", op));
+      row.appendChild(ln); row.appendChild(s);
+      el.appendChild(row);
+    });
+  }
+
+  function rebuild(keepStep) {
+    var P = PRESETS[preset];
+    STEPS = buildSteps(P.a, P.b, op);
+    E("slider").max = String(STEPS.length - 1);
+    at = keepStep ? Math.min(at, STEPS.length - 1) : 0;
+    drawCode();
+    render();
+  }
+
+  function stop() { if (timer) { clearInterval(timer); timer = null; } E("play").textContent = "Play"; }
+  function go(k) { at = Math.max(0, Math.min(STEPS.length - 1, k)); render(); }
+
+  E("prev").addEventListener("click", function () { stop(); go(at - 1); });
+  E("next").addEventListener("click", function () { stop(); go(at + 1); });
+  E("reset").addEventListener("click", function () { stop(); go(0); });
+  E("slider").addEventListener("input", function () { stop(); go(Number(E("slider").value)); });
+  E("play").addEventListener("click", function () {
+    if (timer) { stop(); return; }
+    if (at === STEPS.length - 1) go(0);
+    E("play").textContent = "Pause";
+    timer = setInterval(function () { if (at >= STEPS.length - 1) { stop(); return; } go(at + 1); }, 1150);
+  });
+  E("preset").addEventListener("change", function () { stop(); preset = Number(this.value); rebuild(false); });
+  E("opLe").addEventListener("click", function () {
+    op = "<="; this.classList.add("sel"); E("opLt").classList.remove("sel");
+    E("opLe").textContent = "list1->val <= list2->val"; E("opLt").textContent = "<";
+    stop(); rebuild(true);
+  });
+  E("opLt").addEventListener("click", function () {
+    op = "<"; this.classList.add("sel"); E("opLe").classList.remove("sel");
+    E("opLt").textContent = "list1->val < list2->val"; E("opLe").textContent = "<=";
+    stop(); rebuild(true);
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowRight") { stop(); go(at + 1); }
+    else if (e.key === "ArrowLeft") { stop(); go(at - 1); }
+  });
+
+  rebuild(false);
+</script>
+</body>
+</html>

@@ -83,6 +83,14 @@ prefixes, where each transition decides which input to consume. The only
 difference there is that both branches get explored and the best one is kept,
 instead of the comparison telling you which single branch to take.
 
+## See it
+
+- **Interactive merge:** https://sumnoon.github.io/90-days-of-dp/lc21/ — step
+  through the comparisons, watch the links stay dashed until each frame
+  returns, and flip `<=` to `<` on the *ties everywhere* preset to see
+  stability change the colours without changing the values.
+  ([source](../../../docs/lc21/index.html))
+
 ## Tested
 
 | list1 | list2 | merged |
