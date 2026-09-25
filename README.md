@@ -26,6 +26,8 @@ Interactive pages for the ideas a static diagram can't carry:
 - [Meeting in the middle](https://sumnoon.github.io/90-days-of-dp/twopointer/) — palindrome check and LC 344
 - [Reverse a linked list, one frame at a time](https://sumnoon.github.io/90-days-of-dp/lc206/) — LC 206, 28 steps
 - [The same answer, computed again and again](https://sumnoon.github.io/90-days-of-dp/fib/) — LC 509, the recursion tree
+- [Which head goes first](https://sumnoon.github.io/90-days-of-dp/lc21/) — LC 21, heads chosen going down
+- [Reading n one bit at a time](https://sumnoon.github.io/90-days-of-dp/lc50/) — LC 50, fast exponentiation in binary
 
 Source in [`docs/`](docs/).
 

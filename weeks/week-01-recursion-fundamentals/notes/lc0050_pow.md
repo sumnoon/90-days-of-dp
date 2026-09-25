@@ -94,6 +94,14 @@ negation would run on the `int` first and overflow, and only then get widened.
 Handling it costs one extra frame: the table shows `INT_MIN` at 34 calls, 32
 bits plus the base case plus the negative wrapper.
 
+## See it
+
+- **Reading n in binary:** https://sumnoon.github.io/90-days-of-dp/lc50/ — watch each
+  call read and drop the lowest bit on the way down, then the 1-bits multiply
+  back in, highest first, on the way up. Load `INT_MIN` to see thirty-one
+  even frames and the extra wrapper frame.
+  ([source](../../../docs/lc50/index.html))
+
 ## Tested
 
 13 cases, each checked against `std::pow`:
