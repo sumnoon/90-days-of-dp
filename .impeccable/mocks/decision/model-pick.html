@@ -1,0 +1,52 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>The Schematic</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Spline+Sans+Mono:wght@400;700&display=swap">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#EDEDEF;color:#16181D;font:400 15px/1.5 Archivo,system-ui,sans-serif}
+.pg{min-height:100vh;padding:34px 44px;display:flex;flex-direction:column;gap:18px}
+.rail{display:flex;justify-content:space-between;align-items:baseline;border-bottom:3px solid #16181D;padding-bottom:9px}
+.eyebrow{font:700 11px/1 "Spline Sans Mono",monospace;letter-spacing:.18em;text-transform:uppercase}
+.count{font:700 12px/1 "Spline Sans Mono",monospace;color:#6B7079}
+h1{font:700 40px/1.03 Archivo,sans-serif;letter-spacing:-.03em;margin:0;max-width:17ch}
+.claim{font:600 15px/1.3 Archivo,sans-serif;background:#16181D;color:#EDEDEF;display:inline-block;padding:7px 13px;margin:0}
+.work{display:grid;grid-template-columns:1fr 232px;gap:32px;flex:1;align-items:start}
+.diagram{background:#fff;border:2px solid #16181D;padding:30px 26px;margin-top:6px}
+.nodes{display:flex;align-items:center}
+.n{width:50px;height:50px;border:3px solid #16181D;background:#fff;display:grid;place-items:center;
+ font:700 18px/1 "Spline Sans Mono",monospace;border-radius:50%}
+.n.hot{border-color:#D6202F;color:#D6202F}
+.n.done{border-color:#0A5BD3;color:#0A5BD3}
+.seg{width:42px;height:6px;background:#0A5BD3}
+.seg.pending{background:repeating-linear-gradient(90deg,#B9BCC2 0 7px,transparent 7px 13px);height:4px}
+.legend{display:flex;gap:18px;margin-top:22px;font:700 10px/1 "Spline Sans Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:#4A4F57}
+.key{display:flex;align-items:center;gap:7px}.sw{width:16px;height:5px}
+.stack{border:2px solid #16181D;background:#fff}
+.stack h3{font:700 10px/1 "Spline Sans Mono",monospace;letter-spacing:.16em;text-transform:uppercase;margin:0;padding:9px 12px;background:#16181D;color:#EDEDEF}
+.f{font:400 12.5px/1.6 "Spline Sans Mono",monospace;padding:7px 12px;border-bottom:1px solid #D7D9DD;color:#4A4F57}
+.f.top{color:#D6202F;font-weight:700;border-left:5px solid #D6202F}
+.say{font:400 16px/1.5 Archivo,sans-serif;color:#3A3F47;max-width:56ch;margin:22px 0 0}
+.say b{color:#16181D}
+.ctl{display:flex;gap:9px;align-items:center;border-top:2px solid #16181D;padding-top:13px}
+.btn{font:600 13px/1 Archivo,sans-serif;color:#16181D;background:#fff;border:2px solid #16181D;padding:7px 14px}
+.btn.p{background:#D6202F;border-color:#D6202F;color:#fff}
+.scrub{flex:1;height:4px;background:#C9CCD1;position:relative}
+.scrub:after{content:"";position:absolute;left:44%;top:-5px;width:14px;height:14px;background:#D6202F}
+</style></head><body><div class="pg">
+<div class="rail"><span class="eyebrow">Week 1 / Day 3 / LC 206</span><span class="count">12 / 27</span></div>
+<h1>Reverse a linked list, one frame at a time</h1>
+<p><span class="claim">Nothing is rewired on the way down</span></p>
+<div class="work"><div>
+ <div class="diagram">
+  <div class="nodes"><div class="n">1</div><div class="seg pending"></div><div class="n">2</div><div class="seg pending"></div><div class="n hot">3</div><div class="seg"></div><div class="n done">4</div><div class="seg"></div><div class="n done">5</div></div>
+  <div class="legend">
+    <span class="key"><i class="sw" style="background:#0A5BD3"></i>reversed</span>
+    <span class="key"><i class="sw" style="background:#B9BCC2"></i>not yet written</span>
+    <span class="key"><i class="sw" style="background:#D6202F"></i>this frame</span>
+  </div>
+ </div>
+ <p class="say">Line 7: <b>head-&gt;next-&gt;next = head</b>. Node 4 now points back at node 3. One link changed.</p>
+</div>
+<div class="stack"><h3>Call stack</h3><div class="f top">reverseList(3)</div><div class="f">reverseList(2)</div><div class="f">reverseList(1)</div></div></div>
+<div class="ctl"><button class="btn">&larr; Prev</button><button class="btn p">Next &rarr;</button><div class="scrub"></div><button class="btn">Play</button></div>
+</div></body></html>

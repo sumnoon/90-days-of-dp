@@ -1,0 +1,63 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Five worlds, one page</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Spline+Sans+Mono:wght@400;700&display=swap">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#141517;color:#EDEDEF;font:400 15px/1.55 Archivo,system-ui,sans-serif;padding:28px 24px 60px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1{font:700 32px/1.05 Archivo,sans-serif;letter-spacing:-.02em;margin:0}
+.lede{color:#A8ABB2;max-width:70ch;margin:0}
+.lede b{color:#EDEDEF}
+.card{border:1px solid #2C2E33;border-radius:6px;overflow:hidden;background:#1B1C1F}
+.head{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;padding:13px 16px;border-bottom:1px solid #2C2E33}
+.kick{font:700 10px/1 "Spline Sans Mono",monospace;letter-spacing:.16em;text-transform:uppercase;padding:4px 7px;border-radius:3px}
+.kick.roll{background:#3A2E12;color:#E8C44A}
+.kick.pick{background:#12303A;color:#7FD3E8}
+.kick.comp{background:#22262B;color:#9AA3AE}
+h2{font:700 19px/1.2 Archivo,sans-serif;margin:0}
+.note{color:#8B9099;font-size:13.5px;margin:0;flex:1 1 320px}
+.frame{width:100%;height:620px;border:0;display:block;background:#000}
+.foot{padding:11px 16px;border-top:1px solid #2C2E33;color:#8B9099;font-size:13px}
+.foot b{color:#C9CDD3}
+@media(max-width:700px){.frame{height:460px}}
+</style></head><body><div class="wrap">
+<h1>Five worlds, one page</h1>
+<p class="lede">Each frame below is the <b>same first viewport</b> &mdash; the LC 206 stepper at step 12, mid-unwind &mdash; rendered in a different visual world. Real HTML and CSS, not images, so what you see is what the build would be. Equal fidelity in each card&rsquo;s own grammar.</p>
+
+<div class="card">
+ <div class="head"><span class="kick roll">The roll</span><h2>The Lecture Board</h2>
+  <p class="note">Slate ground, pressed chalk. The surface where recursion is actually taught &mdash; built as software, not imitated as texture.</p></div>
+ <iframe class="frame" src="assigned.html" title="The Lecture Board"></iframe>
+ <div class="foot"><b>Watch for:</b> phase colours the whole ground, one chalked claim per page, and no grey that the program did not put there.</div>
+</div>
+
+<div class="card">
+ <div class="head"><span class="kick pick">Impeccable&rsquo;s pick</span><h2>The Schematic</h2>
+  <p class="note">Transit-diagram wayfinding. Fixed geometry, named lines, one legend that never lies.</p></div>
+ <iframe class="frame" src="model-pick.html" title="The Schematic"></iframe>
+ <div class="foot"><b>Honest risk:</b> this is where algorithm sites land once they get serious about colour-coding. Competent, not distinctive.</div>
+</div>
+
+<div class="card">
+ <div class="head"><span class="kick comp">Competitive</span><h2>The Select Rail</h2>
+  <p class="note">A film cutting bench flattened into a sheet. State is a mark, not a hue.</p></div>
+ <iframe class="frame" src="challenger-cutting-bench.html" title="The Select Rail"></iframe>
+ <div class="foot"><b>Its discipline:</b> marks survive colour-blindness and the scrub snaps to step pitch. <b>Its cost:</b> one ink on black has no room for a third identity, which LC 21 needs.</div>
+</div>
+
+<div class="card">
+ <div class="head"><span class="kick comp">Competitive</span><h2>Thirty-Two Folds</h2>
+  <p class="note">One square of washi, numbered folds, nothing added or removed.</p></div>
+ <iframe class="frame" src="challenger-orizuru.html" title="Thirty-Two Folds"></iframe>
+ <div class="foot"><b>Its discipline:</b> an uncut sheet is exactly what LC 206 does to a list, and every step is walk-back-able. <b>Its cost:</b> fits pointers, fits nothing in Week 9&rsquo;s knapsack tables.</div>
+</div>
+
+<div class="card">
+ <div class="head"><span class="kick comp">Competitive</span><h2>The Fixed-Scale Folio</h2>
+  <p class="note">Every stage drawn at the same scale on the same ground, so change is the only thing that moves.</p></div>
+ <iframe class="frame" src="challenger-botanical.html" title="The Fixed-Scale Folio"></iframe>
+ <div class="foot"><b>Its discipline:</b> fixed scale makes two steps comparable at a glance. <b>Its cost:</b> warm cream and engraved labels is the look most models reach for unprompted.</div>
+</div>
+
+</div></body></html>

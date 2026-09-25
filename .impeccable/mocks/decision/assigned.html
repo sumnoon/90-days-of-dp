@@ -1,0 +1,52 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>The Lecture Board</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Spline+Sans+Mono:wght@400;700&display=swap">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#16211D;color:#F2EFE6;font:400 15px/1.5 Archivo,system-ui,sans-serif;
+ background-image:radial-gradient(circle at 18% 12%,rgba(255,255,255,.04),transparent 55%),
+                  radial-gradient(circle at 82% 74%,rgba(255,255,255,.028),transparent 50%);}
+.board{min-height:100vh;padding:34px 44px;display:flex;flex-direction:column;gap:20px}
+.rail{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid rgba(242,239,230,.18);padding-bottom:10px}
+.eyebrow{font:700 11px/1 "Spline Sans Mono",monospace;letter-spacing:.18em;color:#8FC7DE;text-transform:uppercase}
+.count{font:700 12px/1 "Spline Sans Mono",monospace;color:rgba(242,239,230,.45)}
+h1{font:700 42px/1.02 Archivo,sans-serif;letter-spacing:-.022em;margin:0;max-width:16ch}
+.claim{font:600 20px/1.35 Archivo,sans-serif;color:#E8C44A;margin:0;max-width:46ch;border-left:3px solid #E8C44A;padding-left:14px}
+.work{display:grid;grid-template-columns:1fr 240px;gap:34px;align-items:start;flex:1}
+.nodes{display:flex;align-items:center;margin-top:24px}
+.n{width:58px;height:54px;border:2px solid #F2EFE6;border-radius:3px;display:grid;place-items:center;
+ font:700 20px/1 "Spline Sans Mono",monospace;background:rgba(242,239,230,.04)}
+.n.hot{border-color:#E4849B;color:#E4849B;box-shadow:0 0 0 5px rgba(228,132,155,.13)}
+.n.done{border-color:#8FC7DE;color:#8FC7DE}
+.arc{width:44px;height:2px;background:#8FC7DE}
+.arc.pending{background:none;border-top:2px dashed rgba(242,239,230,.32)}
+.stack{border:1px solid rgba(242,239,230,.2);border-radius:3px;padding:12px;background:rgba(0,0,0,.2)}
+.stack h3{font:700 10px/1 "Spline Sans Mono",monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(242,239,230,.5);margin:0 0 10px}
+.f{font:400 12.5px/1.7 "Spline Sans Mono",monospace;padding:5px 8px;border-radius:2px;color:rgba(242,239,230,.55)}
+.f.top{background:rgba(228,132,155,.14);color:#F2EFE6;border-left:3px solid #E4849B}
+.say{font:400 16px/1.5 Archivo,sans-serif;color:rgba(242,239,230,.78);max-width:56ch;margin:28px 0 0}
+.say b{color:#F2EFE6}
+.ctl{display:flex;gap:9px;align-items:center;border-top:1px solid rgba(242,239,230,.18);padding-top:14px}
+.btn{font:600 13px/1 Archivo,sans-serif;color:#F2EFE6;background:none;border:1.5px solid rgba(242,239,230,.35);border-radius:2px;padding:8px 14px}
+.btn.p{background:#E8C44A;border-color:#E8C44A;color:#16211D;font-weight:700}
+.scrub{flex:1;height:2px;background:rgba(242,239,230,.25);position:relative}
+.scrub:after{content:"";position:absolute;left:44%;top:-4px;width:10px;height:10px;background:#E8C44A;border-radius:50%}
+</style></head><body><div class="board">
+<div class="rail"><span class="eyebrow">Week 1 &middot; Day 3 &middot; LC 206</span><span class="count">12 / 27</span></div>
+<h1>Reverse a linked list, one frame at a time</h1>
+<p class="claim">Nothing is rewired on the way down.</p>
+<div class="work"><div>
+  <div class="nodes">
+    <div class="n">1</div><div class="arc pending"></div>
+    <div class="n">2</div><div class="arc pending"></div>
+    <div class="n hot">3</div><div class="arc"></div>
+    <div class="n done">4</div><div class="arc"></div>
+    <div class="n done">5</div>
+  </div>
+  <p class="say">Line 7: <b>head-&gt;next-&gt;next = head</b>. Node 4 now points back at node 3. One link changed.</p>
+</div>
+<div class="stack"><h3>Call stack</h3>
+  <div class="f top">reverseList(3)</div><div class="f">reverseList(2)</div><div class="f">reverseList(1)</div>
+</div></div>
+<div class="ctl"><button class="btn">&larr; Prev</button><button class="btn p">Next &rarr;</button><div class="scrub"></div><button class="btn">Play</button></div>
+</div></body></html>

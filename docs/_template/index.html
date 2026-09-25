@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="sumnoon">
+<meta name="description" content="One sentence describing what this page lets the reader see.">
+<title>Page title — 90 Days of DP</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Spline+Sans+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="../assets/system.css">
+<style>
+  /* Page-specific drawing only. Chrome, type, colour and motion all come
+     from system.css — if you are restyling a button here, stop and fix
+     the system instead. */
+</style>
+</head>
+<body>
+<div class="page">
+
+  <nav class="rail">
+    <a class="rail__home" href="../">90 Days of DP</a>
+    <span class="rail__where">Week <b>N</b> &middot; Day <b>N</b> &middot; LC XXXX</span>
+  </nav>
+
+  <header class="masthead">
+    <h1>What this page shows, as a statement</h1>
+    <p class="claim">The one claim this page exists to prove.</p>
+    <p class="lede">Two sentences for someone who arrived cold from a link and has not read the notes.</p>
+  </header>
+
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:var(--s4)">
+      <div class="plate">
+        <!-- the drawing. Keep elements persistent across steps so the
+             system's transitions can fire; rebuilding the DOM each step
+             throws the motion away. -->
+        <div class="legend">
+          <span><i style="background:var(--idle)"></i>not yet</span>
+          <span><i style="background:var(--set-line)"></i>settled</span>
+          <span><i style="background:var(--now-line)"></i>just changed</span>
+        </div>
+      </div>
+
+      <p class="say" id="say">Press <b>Next</b> to make the first call.</p>
+      <div class="transport" id="transport"></div>
+    </div>
+
+    <div class="aside">
+      <div class="panel"><h2 class="panel__head">Call stack</h2><ul class="frames" id="frames"></ul></div>
+      <div class="panel"><h2 class="panel__head">function</h2><div class="panel__body"><div class="code" id="code"></div></div></div>
+    </div>
+  </div>
+
+  <section class="read">
+    <h2>What the stepper shows</h2>
+    <p>The idea the reader should leave with, stated plainly.</p>
+    <p class="pull">The one line worth remembering.</p>
+  </section>
+
+  <footer class="foot">
+    <a href="../">All visualizations</a> &middot; <a href="https://github.com/sumnoon/90-days-of-dp">the repo</a>
+  </footer>
+
+</div>
+
+<script src="../assets/stepper.js"></script>
+<script>
+(function () {
+  "use strict";
+  var S = window.Schematic;
+
+  var CODE = [
+    "int solve(int n) {",
+    "    if (n == 0) return 0;",
+    "    return solve(n - 1);",
+    "}"
+  ];
+
+  /* Every state the reader can step to, built up front. Each entry carries
+     at least: line (which code row is executing), note (one sentence), and
+     frames (the call stack at that moment). Add whatever the drawing needs. */
+  function buildSteps() {
+    var steps = [], frames = [];
+    function snap(o) {
+      steps.push({
+        frames: frames.map(function (f) { return { n: f.n }; }),
+        line: o.line, note: o.note
+      });
+    }
+    snap({ line: null, note: "Press <b>Next</b> to make the first call." });
+    for (var n = 3; n >= 1; n--) {
+      frames.push({ n: n });
+      snap({ line: 2, note: "<b>solve(" + n + ")</b> is not the base case." });
+      snap({ line: 3, note: "Recurse on <code>n - 1</code>." });
+    }
+    while (frames.length) { frames.pop(); snap({ line: null, note: "A frame returns." }); }
+    snap({ line: null, note: "Done." });
+    return steps;
+  }
+
+  S.stepper({
+    id: "template",
+    steps: buildSteps(),
+    codeLines: CODE,
+    transport: document.getElementById("transport"),
+    say: document.getElementById("say"),
+    code: document.getElementById("code"),
+    frames: document.getElementById("frames"),
+    frameLabel: function (f) { return { main: "solve(" + f.n + ")" }; },
+    render: function (st) {
+      /* Draw this page's own picture for `st`. Update existing nodes;
+         do not recreate them. */
+    }
+  });
+})();
+</script>
+</body>
+</html>

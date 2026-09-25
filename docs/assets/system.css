@@ -1,0 +1,424 @@
+/* ============================================================
+   90 Days of DP — the schematic
+   Enamel wayfinding: fixed geometry, named lines, one legend.
+   Shared by every page. No build step: edit and ship.
+   ============================================================ */
+
+/* ---------- tokens ---------- */
+
+:root {
+  color-scheme: light;
+
+  /* ground and plate */
+  --ground: #EDEDEF;
+  --plate: #FFFFFF;
+  --plate-2: #F5F5F7;
+
+  /* ink */
+  --ink: #16181D;
+  --ink-2: #41464E;
+  --ink-3: #62676F;
+  --on-ink: #EDEDEF;
+
+  /* rules */
+  --rule: #16181D;
+  --hair: #C5C8CE;
+
+  /* routes — each colour means exactly one thing */
+  --now: #C81326;        /* the frame acting right now */
+  --now-line: #D6202F;
+  --on-now: #FFFFFF;
+  --now-wash: #FBE7E8;
+  --set: #0A50B8;        /* settled, already written */
+  --set-line: #0A5BD3;
+  --set-wash: #E3EDFB;
+  --base: #00684A;       /* the base case */
+  --base-line: #00875A;
+  --base-wash: #DFF1E9;
+  --idle: #9AA0A8;       /* not yet written */
+
+  /* type */
+  --voice: Archivo, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --data: "Spline Sans Mono", ui-monospace, Consolas, monospace;
+
+  /* space */
+  --s1: 4px;  --s2: 8px;  --s3: 12px; --s4: 16px;
+  --s5: 24px; --s6: 32px; --s7: 48px; --s8: 72px;
+
+  /* rules are heavy and corners are square: no radius token exists */
+  --w-rule: 2px;
+  --w-heavy: 3px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ground: #101215;
+    --plate: #181A1F;
+    --plate-2: #1F2227;
+    --ink: #ECEDEF;
+    --ink-2: #B7BCC4;
+    --ink-3: #8D939C;
+    --on-ink: #101215;
+    --rule: #ECEDEF;
+    --hair: #2F333B;
+    --now: #FF6A5C;
+    --now-line: #FF5C4D;
+    --on-now: #101215;
+    --now-wash: #331614;
+    --set: #6FAEFF;
+    --set-line: #5AA0FF;
+    --set-wash: #12243C;
+    --base: #45CE98;
+    --base-line: #35C08A;
+    --base-wash: #0F2A22;
+    --idle: #666C75;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground: #101215;
+  --plate: #181A1F;
+  --plate-2: #1F2227;
+  --ink: #ECEDEF;
+  --ink-2: #B7BCC4;
+  --ink-3: #8D939C;
+  --on-ink: #101215;
+  --rule: #ECEDEF;
+  --hair: #2F333B;
+  --now: #FF6A5C;
+  --now-line: #FF5C4D;
+  --on-now: #101215;
+  --now-wash: #331614;
+  --set: #6FAEFF;
+  --set-line: #5AA0FF;
+  --set-wash: #12243C;
+  --base: #45CE98;
+  --base-line: #35C08A;
+  --base-wash: #0F2A22;
+  --idle: #666C75;
+}
+
+/* ---------- reset ---------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; }
+img, svg { max-width: 100%; }
+[hidden] { display: none !important; }
+
+/* ---------- browser surfaces: these ship with the design, not the browser ---------- */
+
+::selection { background: var(--set-wash); color: var(--ink); }
+:root { accent-color: var(--now-line); caret-color: var(--now-line); }
+:focus-visible { outline: var(--w-heavy) solid var(--now-line); outline-offset: 2px; }
+a { color: var(--set); text-underline-offset: 3px; text-decoration-thickness: 1.5px; }
+a:hover { text-decoration-thickness: 3px; }
+* { scrollbar-color: var(--hair) transparent; scrollbar-width: thin; }
+*::-webkit-scrollbar { height: 10px; width: 10px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: var(--hair); border: 3px solid var(--ground); }
+*::-webkit-scrollbar-thumb:hover { background: var(--ink-3); }
+
+/* ---------- page frame ---------- */
+
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font: 400 16px/1.55 var(--voice);
+  font-synthesis-weight: none;
+}
+
+.page {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding-inline: 20px;
+  padding-block: 0 var(--s8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s5);
+}
+
+/* nav rail — wayfinding, never a label above a heading */
+.rail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2) var(--s4);
+  align-items: center;
+  justify-content: space-between;
+  padding-block: var(--s4);
+  border-bottom: var(--w-heavy) solid var(--rule);
+}
+.rail__home {
+  font: 700 12.5px/1 var(--data);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+}
+.rail__home:hover { color: var(--now); }
+.rail__where {
+  font: 400 12.5px/1 var(--data);
+  color: var(--ink-3);
+  display: flex;
+  gap: var(--s2);
+  align-items: center;
+}
+.rail__where b { color: var(--ink-2); font-weight: 700; }
+
+/* ---------- masthead ---------- */
+
+.masthead { display: flex; flex-direction: column; gap: var(--s4); }
+.masthead h1 {
+  font: 700 clamp(30px, 5.2vw, 46px)/1.02 var(--voice);
+  letter-spacing: -.03em;
+  margin: 0;
+  max-width: 19ch;
+  text-wrap: balance;
+}
+/* the page's single claim: one imperative, set large enough to be the spine */
+.claim {
+  font: 600 clamp(15px, 2.2vw, 18px)/1.3 var(--voice);
+  background: var(--ink);
+  color: var(--on-ink);
+  padding: var(--s2) var(--s3);
+  margin: 0;
+  align-self: flex-start;
+  max-width: 62ch;
+}
+.lede { margin: 0; color: var(--ink-2); max-width: 66ch; }
+
+/* ---------- plate: the drawing surface ---------- */
+
+.plate {
+  background: var(--plate);
+  border: var(--w-rule) solid var(--rule);
+  padding: var(--s5) var(--s4);
+  overflow-x: auto;
+}
+.plate--flush { padding: 0; }
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2) var(--s5);
+  margin-top: var(--s5);
+  font: 700 11px/1 var(--data);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.legend span { display: inline-flex; align-items: center; gap: var(--s2); }
+.legend i { width: 18px; height: 5px; flex: none; }
+.legend .dash { height: 0; border-top: 3px dashed var(--idle); }
+
+/* ---------- panels ---------- */
+
+.panel { border: var(--w-rule) solid var(--rule); background: var(--plate); }
+.panel__head {
+  font: 700 11px/1 var(--data);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  margin: 0;
+  padding: var(--s3) var(--s4);
+  background: var(--ink);
+  color: var(--on-ink);
+}
+.panel__body { padding: var(--s3) 0; }
+
+.work { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: var(--s5); align-items: start; }
+.aside { display: flex; flex-direction: column; gap: var(--s5); }
+@media (max-width: 800px) { .work { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- call stack ---------- */
+
+.frames { list-style: none; margin: 0; padding: 0; }
+.frames li {
+  font: 400 12.5px/1.6 var(--data);
+  padding: var(--s2) var(--s4);
+  border-bottom: 1px solid var(--hair);
+  color: var(--ink-2);
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s3);
+  border-left: var(--w-heavy) solid transparent;
+}
+.frames li:last-child { border-bottom: 0; }
+.frames li.is-top { border-left-color: var(--now-line); color: var(--ink); font-weight: 700; background: var(--now-wash); }
+.frames li .k { color: var(--ink-3); font-weight: 400; }
+.frames .is-empty { justify-content: center; color: var(--ink-3); font-style: italic; border-left-color: transparent; }
+
+/* ---------- code ---------- */
+
+.code { margin: 0; overflow-x: auto; }
+.code__row { display: flex; gap: var(--s3); padding: 1px var(--s4); font: 400 12.5px/1.75 var(--data); white-space: pre; }
+.code__n { color: var(--ink-3); min-width: 1.4em; text-align: right; user-select: none; font-variant-numeric: tabular-nums; }
+.code__s { color: var(--ink-2); }
+.code__row.is-on { background: var(--now-wash); }
+.code__row.is-on .code__s { color: var(--ink); font-weight: 700; }
+.code__row.is-on .code__n { color: var(--now); font-weight: 700; }
+
+/* ---------- narration ---------- */
+
+.say {
+  font: 400 clamp(15px, 2vw, 17px)/1.5 var(--voice);
+  color: var(--ink-2);
+  margin: 0;
+  max-width: 62ch;
+  min-height: 3.2em;
+}
+.say b { color: var(--ink); font-weight: 700; }
+.say code, .inline { font: 400 .9em/1 var(--data); background: var(--plate-2); padding: 2px 4px; color: var(--ink); }
+
+/* ---------- transport ---------- */
+
+.transport {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  align-items: center;
+  border-top: var(--w-heavy) solid var(--rule);
+  padding-top: var(--s3);
+}
+.btn {
+  font: 600 13.5px/1 var(--voice);
+  color: var(--ink);
+  background: var(--plate);
+  border: var(--w-rule) solid var(--rule);
+  padding: var(--s2) var(--s3);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+}
+.btn svg { width: 13px; height: 13px; display: block; }
+.btn:disabled { color: var(--ink-3); border-color: var(--hair); cursor: default; }
+.btn--go { background: var(--now-line); border-color: var(--now-line); color: var(--on-now); }
+.btn--go:disabled { background: var(--plate); border-color: var(--hair); color: var(--ink-3); }
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover:not(:disabled) { background: var(--ink); color: var(--on-ink); }
+  .btn--go:hover:not(:disabled) { background: var(--now); border-color: var(--now); color: var(--on-now); }
+}
+
+/* toggle: a pressed-state control. One declaration, three pages. */
+.toggle {
+  font: 600 13.5px/1 var(--voice);
+  color: var(--ink);
+  background: var(--plate);
+  border: var(--w-rule) solid var(--rule);
+  padding: var(--s2) var(--s3);
+  cursor: pointer;
+}
+.toggle--data { font-family: var(--data); font-weight: 700; font-size: 12.5px; }
+.toggle[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--on-ink); }
+.toggle--hot[aria-pressed="true"] { background: var(--now-line); border-color: var(--now-line); color: var(--on-now); }
+@media (hover: hover) and (pointer: fine) {
+  .toggle:hover[aria-pressed="false"] { border-color: var(--now-line); color: var(--now); }
+}
+
+.scrub { flex: 1 1 140px; min-width: 110px; height: 22px; background: none; border: 0; padding: 0; margin: 0; }
+.count { font: 700 12.5px/1 var(--data); color: var(--ink-3); font-variant-numeric: tabular-nums; margin-left: auto; }
+
+/* ---------- prose below the stage ---------- */
+
+.read { display: flex; flex-direction: column; gap: var(--s4); }
+.read h2 { font: 700 clamp(20px, 3vw, 24px)/1.15 var(--voice); letter-spacing: -.02em; margin: var(--s4) 0 0; max-width: 24ch; text-wrap: balance; }
+.read p { margin: 0; color: var(--ink-2); max-width: 66ch; }
+.read p b { color: var(--ink); }
+.read code { font: 400 .88em/1 var(--data); background: var(--plate-2); padding: 2px 5px; color: var(--ink); }
+.read ul { margin: 0; padding-left: 20px; color: var(--ink-2); max-width: 66ch; display: flex; flex-direction: column; gap: var(--s2); }
+.read li::marker { color: var(--now-line); }
+/* The accent bar down the left of a callout is the category's most worn
+   tell, and this world already has a structural device: the rule. A pull
+   quote is set between two of them, in ink, at the top of its own block. */
+.pull {
+  border-top: var(--w-heavy) solid var(--rule);
+  border-bottom: 1px solid var(--hair);
+  padding: var(--s4) 0;
+  font: 600 clamp(17px, 2.8vw, 22px)/1.3 var(--voice);
+  letter-spacing: -.02em;
+  color: var(--ink);
+  max-width: 58ch;
+}
+
+/* ---------- tables ---------- */
+
+.data-table { border-collapse: collapse; width: 100%; font-size: 14.5px; font-variant-numeric: tabular-nums; }
+.data-table th, .data-table td { text-align: right; padding: var(--s2) var(--s3); border-bottom: 1px solid var(--hair); color: var(--ink-2); }
+.data-table th:first-child, .data-table td:first-child { text-align: left; }
+.data-table th { font: 700 11px/1 var(--data); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); border-bottom: var(--w-rule) solid var(--rule); }
+.data-table tr.is-now td { background: var(--now-wash); color: var(--ink); }
+.scroll-x { overflow-x: auto; }
+
+/* ---------- foot ---------- */
+
+.foot { border-top: var(--w-rule) solid var(--rule); padding-top: var(--s3); color: var(--ink-3); font-size: 13.5px; }
+.foot a { color: var(--ink-2); }
+
+/* ============================================================
+   Motion
+   Stepping is fired tens of times per session and is keyboard
+   driven, so every transition here is deliberately near the edge
+   of perception. One authored moment per page: the route settling.
+   Transitions, never keyframes — a user can fire Next twice in a
+   second, and transitions retarget from wherever they are.
+   ============================================================ */
+
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --t-press: 100ms;   /* press down: snaps */
+  --t-release: 160ms; /* release: settles */
+  --t-state: 160ms;
+}
+
+/* feedback: the control confirms it was heard */
+.btn, .toggle {
+  transition: background-color var(--t-state) ease,
+              border-color var(--t-state) ease,
+              color var(--t-state) ease,
+              transform var(--t-release) var(--ease-out);
+}
+/* the press is the deliberate half and snaps; the release settles back */
+.btn:active:not(:disabled),
+.toggle:active {
+  transform: scale(0.97);
+  transition-duration: var(--t-press);
+}
+
+/* state indication: the executing line */
+.code__row { transition: background-color var(--t-state) ease; }
+.code__row .code__s, .code__row .code__n { transition: color var(--t-state) ease; }
+
+/* spatial consistency: the frame that owns the stack right now */
+.frames li { transition: background-color var(--t-state) ease, border-left-color var(--t-state) ease, color var(--t-state) ease; }
+
+/* the authored moment: a route segment settling into place */
+.seg {
+  transition: stroke var(--t-state) var(--ease-out),
+              stroke-width var(--t-state) var(--ease-out);
+}
+.node-ring {
+  transition: stroke var(--t-state) var(--ease-out),
+              stroke-width var(--t-state) var(--ease-out),
+              transform var(--t-state) var(--ease-out);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.node-ring.is-now { transform: scale(1.06); }
+
+/* links and rules */
+a, .stop::before, .stop a.stop__title { transition: color var(--t-state) ease, border-color var(--t-state) ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  /* fewer and gentler, not zero: colour still carries the state change,
+     movement and scaling do not */
+  .btn:active:not(:disabled),
+  .toggle:active { transform: none; }
+  .node-ring.is-now { transform: none; }
+  .btn, .toggle, .code__row, .frames li, a, .seg, .node-ring { transition-duration: 80ms; }
+}

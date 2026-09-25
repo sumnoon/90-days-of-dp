@@ -4,236 +4,140 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="author" content="sumnoon">
-<meta name="description" content="The palindrome check and LC 344 are the same recursion with one line changed — compare the ends, or swap them.">
-<title>Meeting in the Middle</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;700&display=swap">
+<meta name="description" content="The palindrome check and LC 344 are the same recursion with one line changed: compare the ends, or swap them.">
+<title>Meeting in the middle — 90 Days of DP</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Spline+Sans+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="../assets/system.css">
 <style>
-  html { -webkit-text-size-adjust: 100%; }
-  body { margin: 0; }
-  img { max-width: 100%; }
+  .setup { display: flex; flex-wrap: wrap; gap: var(--s3) var(--s5); align-items: center;
+    border-bottom: var(--w-rule) solid var(--rule); padding-bottom: var(--s3); }
+  .setup label, .setup .grp { font: 400 12.5px/1 var(--data); color: var(--ink-2); display: inline-flex; align-items: center; gap: var(--s2); flex-wrap: wrap; }
+  select { font: 400 13.5px/1 var(--voice); color: var(--ink); background: var(--plate); border: var(--w-rule) solid var(--rule); padding: 7px 9px; }
 
-  :root {
-    color-scheme: light;
-    --bg: #E9EEF2; --surface: #FDFEFE; --surface-2: #DFE7EC;
-    --ink: #0F1B24; --muted: #576875; --faint: #8598A5; --line: #C4D2DB;
-    --accent: #0A6E6C; --accent-soft: #CDE6E4;
-    --hot: #B2451A; --hot-soft: #F6DED3;
-    --bad: #97261F; --bad-soft: #F6D6D3;
-    --shadow: 0 1px 2px rgba(15,27,36,.06), 0 8px 24px -12px rgba(15,27,36,.18);
-    --f-display: "Bricolage Grotesque", "Trebuchet MS", sans-serif;
-    --f-body: "Source Sans 3", -apple-system, "Segoe UI", sans-serif;
-    --f-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      color-scheme: dark;
-      --bg: #0B1318; --surface: #131F27; --surface-2: #1B2A34;
-      --ink: #E5EEF3; --muted: #94A7B3; --faint: #6B808D; --line: #273A46;
-      --accent: #3FC6BE; --accent-soft: #123833;
-      --hot: #FF9058; --hot-soft: #3A1F14;
-      --bad: #FF7B72; --bad-soft: #3D1A18;
-      --shadow: 0 1px 2px rgba(0,0,0,.5), 0 10px 28px -14px rgba(0,0,0,.7);
-    }
-  }
-  :root[data-theme="dark"] {
-    color-scheme: dark;
-    --bg: #0B1318; --surface: #131F27; --surface-2: #1B2A34;
-    --ink: #E5EEF3; --muted: #94A7B3; --faint: #6B808D; --line: #273A46;
-    --accent: #3FC6BE; --accent-soft: #123833;
-    --hot: #FF9058; --hot-soft: #3A1F14;
-    --bad: #FF7B72; --bad-soft: #3D1A18;
-    --shadow: 0 1px 2px rgba(0,0,0,.5), 0 10px 28px -14px rgba(0,0,0,.7);
-  }
 
-  body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.55; padding-inline: 20px; padding-block: 32px 56px; }
-  .wrap { max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
-  .eyebrow { font-family: var(--f-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
-  h1 { font-family: var(--f-display); font-weight: 700; font-size: clamp(28px, 6vw, 46px); line-height: 1.04; letter-spacing: -.02em; margin: 6px 0 10px; text-wrap: balance; }
-  header p { margin: 0; color: var(--muted); max-width: 64ch; }
-  code { font-family: var(--f-mono); font-size: .88em; }
-
-  .stage { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; box-shadow: var(--shadow); overflow: hidden; }
-  .bar { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; padding: 11px 18px; background: var(--surface-2); border-bottom: 1px solid var(--line); }
-  .bar .grp, .bar label { font-family: var(--f-mono); font-size: 12px; color: var(--muted); display: inline-flex; align-items: center; gap: 7px; flex-wrap: wrap; }
-  button, select { font-family: var(--f-body); font-size: 13.5px; font-weight: 600; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 6px 11px; cursor: pointer; }
-  button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
-  button:disabled { opacity: .4; cursor: default; }
-  button.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); }
-  button.primary:hover { color: var(--surface); filter: brightness(1.08); }
-  button.mode.sel { background: var(--hot-soft); border-color: var(--hot); color: var(--hot); }
-  input[type="range"] { flex: 1 1 130px; min-width: 110px; accent-color: var(--accent); }
-  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-  .tape { padding: 24px 18px 8px; display: flex; justify-content: center; }
-  .cells { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; }
+  .tape { display: flex; justify-content: center; padding-block: var(--s4) var(--s2); }
+  .slots { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; }
   .slot { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-  .ch {
-    font-family: var(--f-mono); font-size: 19px; font-weight: 700;
-    width: 42px; height: 46px;
-    display: inline-flex; align-items: center; justify-content: center;
-    border: 1.5px solid var(--line); border-radius: 5px; background: var(--surface);
-  }
-  .ch.settled { border-color: var(--accent); background: var(--accent-soft); }
-  .ch.active { border-color: var(--hot); border-width: 3px; background: var(--hot-soft); }
-  .ch.bad { border-color: var(--bad); border-width: 3px; background: var(--bad-soft); color: var(--bad); }
-  .ch.mid { border-style: dashed; }
-  .ptr { font-family: var(--f-mono); font-size: 11px; font-weight: 700; color: var(--hot); height: 14px; }
-  .idx { font-family: var(--f-mono); font-size: 10px; color: var(--faint); }
+  .ptr { font: 700 11px/1 var(--data); color: var(--now); height: 12px; letter-spacing: .1em; }
+  .ch { font: 700 20px/1 var(--data); width: 46px; height: 50px; display: inline-flex; align-items: center; justify-content: center;
+    border: var(--w-rule) solid var(--rule); background: var(--plate); }
+  .ch.settled { border-color: var(--set-line); background: var(--set-wash); }
+  .ch.active { border-color: var(--now-line); border-width: 4px; }
+  .ch.bad { border-color: var(--now-line); border-width: 4px; background: var(--now-wash); color: var(--now); }
+  .ch.nil { border-style: dashed; border-color: var(--idle); color: var(--ink-3); font-weight: 400; }
+  .ix { font: 400 11px/1 var(--data); color: var(--ink-3); font-variant-numeric: tabular-nums; }
 
-  .cmp { padding: 12px 18px; border-top: 1px solid var(--line); }
-  .cmp .expr { font-family: var(--f-mono); font-size: 17px; font-weight: 700; margin-bottom: 3px; min-height: 24px; }
-  .cmp .expr.ok { color: var(--accent); }
-  .cmp .expr.no { color: var(--bad); }
-  .cmp p { margin: 0; color: var(--muted); }
-  .cmp b { color: var(--ink); }
-
-  .verdict { padding: 12px 18px; border-top: 1px solid var(--line); font-family: var(--f-mono); font-size: 14px; display: flex; gap: 10px; flex-wrap: wrap; align-items: baseline; }
-  .verdict .k { color: var(--faint); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
-  .verdict .v { font-weight: 700; }
-  .verdict .v.t { color: var(--accent); }
-  .verdict .v.f { color: var(--bad); }
-
-  .controls { display: flex; flex-wrap: wrap; gap: 9px; align-items: center; padding: 11px 18px; border-top: 1px solid var(--line); background: var(--surface-2); }
-  .counter { font-family: var(--f-mono); font-size: 12px; color: var(--faint); margin-left: auto; }
-
-  .panels { display: grid; grid-template-columns: 1.15fr .85fr; gap: 18px; align-items: start; }
-  @media (max-width: 720px) { .panels { grid-template-columns: 1fr; } }
-  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; box-shadow: var(--shadow); overflow: hidden; }
-  .panel h3 { font-family: var(--f-mono); font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0; padding: 11px 16px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
-  .code { margin: 0; padding: 12px 0; overflow-x: auto; }
-  .code .row { display: flex; gap: 12px; padding: 1px 16px; font-family: var(--f-mono); font-size: 12.5px; white-space: pre; }
-  .code .ln { color: var(--faint); min-width: 1.4em; text-align: right; user-select: none; }
-  .code .src { color: var(--muted); }
-  .code .row.on { background: var(--hot-soft); }
-  .code .row.on .src { color: var(--ink); font-weight: 700; }
-  .code .row.on .ln { color: var(--hot); font-weight: 700; }
-  .frames { list-style: none; margin: 0; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
-  .frames li { font-family: var(--f-mono); font-size: 12px; padding: 6px 9px; border-radius: 4px; border: 1px solid var(--line); background: var(--surface-2); color: var(--muted); }
-  .frames li.top { border-color: var(--hot); background: var(--hot-soft); color: var(--ink); }
-  .frames .empty { border-style: dashed; text-align: center; color: var(--faint); }
-
-  .notes { display: flex; flex-direction: column; gap: 13px; }
-  h2 { font-family: var(--f-display); font-weight: 700; font-size: 22px; letter-spacing: -.01em; margin: 8px 0 0; }
-  .notes p { margin: 0; color: var(--muted); max-width: 68ch; }
-  .notes b { color: var(--ink); }
-  .notes code { background: var(--surface-2); padding: 1px 4px; border-radius: 3px; color: var(--ink); }
-  .pull { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 12px 16px; border-radius: 0 4px 4px 0; font-size: 17px; color: var(--ink); max-width: 64ch; }
-  table { border-collapse: collapse; font-size: 14px; }
-  th, td { text-align: left; padding: 6px 14px 6px 0; border-bottom: 1px solid var(--line); color: var(--muted); }
-  th { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .09em; text-transform: uppercase; color: var(--faint); }
-  td b { color: var(--ink); }
-  footer { color: var(--faint); font-size: 13px; border-top: 1px solid var(--line); padding-top: 14px; }
-  footer a { color: var(--muted); }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  .verdict { font: 700 clamp(17px,2.6vw,21px)/1.2 var(--data); margin: 0 0 var(--s2); min-height: 1.2em; }
+  .verdict.ok { color: var(--set); } .verdict.no { color: var(--now); }
+  .result { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s5); font: 400 13px/1 var(--data); color: var(--ink-3);
+    border-top: 1px solid var(--hair); padding-top: var(--s3); }
+  .result b { color: var(--ink); font-weight: 700; }
+  .result .t { color: var(--set); } .result .f { color: var(--now); }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="eyebrow">Week 1 &middot; Day 1 &middot; palindrome check &amp; LC 344</div>
+<div class="page">
+
+  <nav class="rail">
+    <a class="rail__home" href="../">90 Days of DP</a>
+    <span class="rail__where">Week <b>1</b> &middot; Day <b>1</b> &middot; palindrome &amp; LC 344</span>
+  </nav>
+
+  <header class="masthead">
     <h1>Meeting in the middle</h1>
-    <p>Two problems, one recursion. Walk two pointers inward and stop when they meet &mdash; the only difference is whether each frame <em>compares</em> the two ends or <em>swaps</em> them.</p>
+    <p class="claim">Two problems, one recursion, one changed line.</p>
+    <p class="lede">Walk two pointers inward and stop when they meet. The only difference is whether each frame compares the two ends or swaps them.</p>
   </header>
 
-  <div class="stage">
-    <div class="bar">
-      <span class="grp">job
-        <button type="button" class="mode sel" data-m="0">compare — is it a palindrome?</button>
-        <button type="button" class="mode" data-m="1">swap — LC 344</button>
-      </span>
-      <label for="word">input
-        <select id="word">
-          <option value="racecar">racecar</option>
-          <option value="abba">abba</option>
-          <option value="abca">abca</option>
-          <option value="hello">hello</option>
-          <option value="aa">aa</option>
-          <option value="a">a</option>
-          <option value="">(empty)</option>
-        </select>
-      </label>
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:var(--s4)">
+      <div class="setup">
+        <span class="grp">job
+          <button type="button" class="toggle" id="jobCmp" aria-pressed="true">compare &mdash; is it a palindrome?</button>
+          <button type="button" class="toggle" id="jobSwap" aria-pressed="false">swap &mdash; LC 344</button>
+        </span>
+        <label for="word">input
+          <select id="word">
+            <option value="racecar">racecar</option>
+            <option value="abba">abba</option>
+            <option value="abca">abca</option>
+            <option value="hello">hello</option>
+            <option value="aa">aa</option>
+            <option value="a">a</option>
+            <option value="">(empty)</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="plate">
+        <div class="tape"><div class="slots" id="slots"></div></div>
+        <div class="result">
+          <span>l, r <b id="lr">&mdash;</b></span>
+          <span id="resKey">result <b id="res">&mdash;</b></span>
+        </div>
+      </div>
+
+      <div>
+        <p class="verdict" id="expr">&nbsp;</p>
+        <p class="say" id="say">Press <b>Next</b> to make the first call.</p>
+      </div>
+      <div class="transport" id="transport"></div>
     </div>
 
-    <div class="tape"><div class="cells" id="cells"></div></div>
-
-    <div class="cmp">
-      <div class="expr" id="expr">&nbsp;</div>
-      <p id="note">Press <b>Next</b> to make the first call.</p>
-    </div>
-
-    <div class="verdict">
-      <span class="k">l, r</span><span class="v" id="lr">—</span>
-      <span class="k" style="margin-left:14px" id="resKey">result</span><span class="v" id="res">—</span>
-    </div>
-
-    <div class="controls">
-      <button id="prev" type="button">&larr; Prev</button>
-      <button id="next" type="button" class="primary">Next &rarr;</button>
-      <input id="slider" type="range" min="0" value="0" step="1" aria-label="Step">
-      <button id="play" type="button">Play</button>
-      <button id="reset" type="button">Reset</button>
-      <span class="counter" id="counter">0 / 0</span>
+    <div class="aside">
+      <div class="panel"><h2 class="panel__head">Call stack</h2><ul class="frames" id="frames"></ul></div>
+      <div class="panel"><h2 class="panel__head" id="codeTitle">check</h2><div class="panel__body"><div class="code" id="code"></div></div></div>
     </div>
   </div>
 
-  <div class="panels">
-    <div class="panel"><h3 id="codeTitle">check</h3><div class="code" id="code"></div></div>
-    <div class="panel"><h3>Call stack</h3><ul class="frames" id="frames"></ul></div>
-  </div>
-
-  <div class="notes">
+  <section class="read">
     <h2>One base case, three situations</h2>
-    <p>Both versions stop at <code>r &lt;= l</code>, and that single condition covers everything:</p>
-    <table>
-      <tr><th>situation</th><th>how it stops</th><th>try</th></tr>
-      <tr><td>odd length</td><td>the pointers <b>meet</b>, <code>l == r</code></td><td><b>racecar</b></td></tr>
-      <tr><td>even length</td><td>the pointers <b>cross</b>, <code>r &lt; l</code></td><td><b>abba</b></td></tr>
-      <tr><td>empty</td><td>already crossed before the first step</td><td><b>(empty)</b></td></tr>
-    </table>
-    <p>The pointers only reach a crossed state by matching at every step on the way in, so <code>true</code> is the only correct answer there. My first attempt returned <code>false</code>, which passed every odd-length palindrome and failed every even-length one &mdash; run <b>abba</b> and watch where it lands.</p>
+    <p>Both versions stop at <code>r &lt;= l</code>, and that single condition covers everything.</p>
+    <div class="scroll-x"><table class="data-table">
+      <thead><tr><th>situation</th><th>how it stops</th><th>try</th></tr></thead>
+      <tbody>
+        <tr><td>odd length</td><td>the pointers <b>meet</b>, <code>l == r</code></td><td><b>racecar</b></td></tr>
+        <tr><td>even length</td><td>the pointers <b>cross</b>, <code>r &lt; l</code></td><td><b>abba</b></td></tr>
+        <tr><td>empty</td><td>already crossed before the first step</td><td><b>(empty)</b></td></tr>
+      </tbody>
+    </table></div>
+    <p>The pointers only reach a crossed state by matching at every step on the way in, so <code>true</code> is the only correct answer there. My first attempt returned <code>false</code>, which passed every odd-length palindrome and failed every even-length one. Run <b>abba</b> and watch where it lands.</p>
 
     <h2>Same traversal, different job</h2>
-    <p>Flip between the two modes on the same word. The pointers move identically; only the work at each level changes.</p>
-    <div class="pull">Once the traversal is right, a new problem is often just a different line in the middle.</div>
-    <p>Note where the work sits: both act <b>before</b> recursing, so the outermost pair is handled first. That makes these pre-order, like <a href="../lc21/">LC 21</a> and unlike <a href="../lc206/">LC 206</a> &mdash; see <a href="../order/">where the work happens</a>.</p>
+    <p>Flip between the two jobs on the same word. The pointers move identically; only the work at each level changes.</p>
+    <p class="pull">Once the traversal is right, a new problem is often just a different line in the middle.</p>
+    <p>Note where the work sits: both act <b>before</b> recursing, so the outermost pair is handled first. That makes these pre-order, like <a href="../lc21/">LC 21</a> and unlike <a href="../lc206/">LC 206</a>. See <a href="../order/">where the work happens</a>.</p>
 
     <h2>The cost you cannot see</h2>
-    <p>Both are O(n) time and <b>O(n) space</b>, because about n/2 frames are open at the deepest point &mdash; the stack on the right is that space. An iterative two-pointer loop does the same work in O(1). LC 344 asks for O(1) extra memory, so the recursive version is accepted but not strictly what the problem wants.</p>
-    <p>And pass the string by <code>const&amp;</code> with two indices, never by value: copying it at every level turns O(n) into O(n&sup2;).</p>
-    <footer>Part of <a href="../">90 Days of DP</a> &middot; notes: <a href="https://github.com/sumnoon/90-days-of-dp/blob/main/weeks/week-01-recursion-fundamentals/notes/palindrome_check.md">palindrome</a>, <a href="https://github.com/sumnoon/90-days-of-dp/blob/main/weeks/week-01-recursion-fundamentals/notes/lc0344_reverse_string.md">LC 344</a></footer>
-  </div>
+    <p>Both are O(n) time and <b>O(n) space</b>, because about n/2 frames are open at the deepest point. That stack on the right is the space. An iterative two-pointer loop does the same work in O(1), and LC 344 asks for O(1) extra memory, so the recursive version is accepted but not strictly what the problem wants.</p>
+    <p>Pass the string by <code>const&amp;</code> with two indices, never by value. Copying it at every level turns O(n) into O(n&sup2;).</p>
+  </section>
+
+  <footer class="foot">
+    <a href="../">All visualizations</a> &middot; notes: <a href="https://github.com/sumnoon/90-days-of-dp/blob/main/weeks/week-01-recursion-fundamentals/notes/palindrome_check.md">palindrome</a>, <a href="https://github.com/sumnoon/90-days-of-dp/blob/main/weeks/week-01-recursion-fundamentals/notes/lc0344_reverse_string.md">LC 344</a>
+  </footer>
+
 </div>
 
+<script src="../assets/stepper.js"></script>
 <script>
+(function () {
+  "use strict";
+  var S = window.Schematic;
   var E = function (id) { return document.getElementById(id); };
 
   var CODE = [
-    [
-      "bool check(const string& s, int l, int r) {",
-      "    if (r <= l) return true;",
-      "",
-      "    if (s[l] == s[r])",
-      "        return check(s, l + 1, r - 1);",
-      "    else",
-      "        return false;",
-      "}"
-    ],
-    [
-      "void func(vector<char>& s, int l, int r) {",
-      "    if (r <= l) return;",
-      "",
-      "    swap(s[l], s[r]);",
-      "    func(s, l + 1, r - 1);",
-      "",
-      "",
-      "}"
-    ]
+    ["bool check(const string& s, int l, int r) {", "    if (r <= l) return true;", "",
+     "    if (s[l] == s[r])", "        return check(s, l + 1, r - 1);", "    else", "        return false;", "}"],
+    ["void func(vector<char>& s, int l, int r) {", "    if (r <= l) return;", "",
+     "    swap(s[l], s[r]);", "    func(s, l + 1, r - 1);", "", "", "}"]
   ];
 
-  var mode = 0, word = "racecar", at = 0, STEPS = [], timer = null;
+  var job = 0, word = "racecar", ctl = null;
 
   function buildSteps(w, m) {
-    var steps = [], chars = w.split(""), frames = [], result = null;
+    var steps = [], chars = w.split(""), frames = [], result = null, settled = 0;
     var l = 0, r = chars.length - 1;
 
     function snap(o) {
@@ -241,31 +145,25 @@
         chars: chars.slice(), l: o.l, r: o.r,
         frames: frames.map(function (f) { return { l: f.l, r: f.r }; }),
         settled: o.settled, active: o.active === undefined ? true : o.active,
-        bad: o.bad === undefined ? false : o.bad,
-        line: o.line, expr: o.expr || "", note: o.note, result: result
+        bad: !!o.bad, line: o.line, expr: o.expr || "", note: o.note, result: result
       });
     }
 
-    var settled = 0;
-    snap({ l: l, r: r, settled: 0, active: false, line: null,
-           note: "Press <b>Next</b> to make the first call." });
+    snap({ l: l, r: r, settled: 0, active: false, line: null, note: "Press <b>Next</b> to make the first call." });
 
     while (true) {
       frames.push({ l: l, r: r });
-
       if (r <= l) {
         var why = chars.length === 0 ? "the string is empty, so the pointers start already crossed"
-                : (r === l ? "the pointers <b>met</b> — an odd-length string leaves one character in the middle"
-                           : "the pointers <b>crossed</b> — an even-length string has no middle character");
+          : (r === l ? "the pointers <b>met</b>, and an odd-length string leaves one character in the middle"
+                     : "the pointers <b>crossed</b>, and an even-length string has no middle character");
         if (m === 0) {
           result = true;
-          snap({ l: l, r: r, settled: settled, active: false, line: 2,
-                 expr: r + " <= " + l + " → true",
+          snap({ l: l, r: r, settled: settled, active: false, line: 2, expr: r + " <= " + l + " → true",
                  note: "Base case: " + why + ". Everything outside already matched, so the answer is <b>true</b>." });
         } else {
-          snap({ l: l, r: r, settled: settled, active: false, line: 2,
-                 expr: r + " <= " + l,
-                 note: "Base case: " + why + ". Nothing left to swap — return." });
+          snap({ l: l, r: r, settled: settled, active: false, line: 2, expr: r + " <= " + l,
+                 note: "Base case: " + why + ". Nothing left to swap, so return." });
         }
         break;
       }
@@ -274,24 +172,18 @@
         var same = chars[l] === chars[r];
         snap({ l: l, r: r, settled: settled, active: true, bad: !same, line: 4,
                expr: "'" + chars[l] + "' == '" + chars[r] + "' → " + (same ? "true" : "false"),
-               note: same
-                 ? "The ends match. The answer for the whole slice is now the answer for the middle — hand it to the recursion."
-                 : "The ends <b>differ</b>. That settles it immediately: return <b>false</b> without recursing further." });
+               note: same ? "The ends match. The answer for the whole slice is now the answer for the middle, so hand it to the recursion."
+                          : "The ends <b>differ</b>. That settles it immediately: return <b>false</b> without recursing further." });
         if (!same) { result = false; break; }
-        settled++;
-        l++; r--;
-        snap({ l: l, r: r, settled: settled, active: true, line: 5,
-               note: "Recurse on <code>l + 1</code> and <code>r - 1</code> — the slice shrinks by two." });
+        settled++; l++; r--;
+        snap({ l: l, r: r, settled: settled, active: true, line: 5, note: "Recurse on <code>l + 1</code> and <code>r - 1</code>. The slice shrinks by two." });
       } else {
         var a = chars[l], b = chars[r];
         chars[l] = b; chars[r] = a;
-        snap({ l: l, r: r, settled: settled, active: true, line: 4,
-               expr: "swap('" + a + "', '" + b + "')",
+        snap({ l: l, r: r, settled: settled, active: true, line: 4, expr: "swap('" + a + "', '" + b + "')",
                note: "Swap the two ends. That pair is now in its final place." });
-        settled++;
-        l++; r--;
-        snap({ l: l, r: r, settled: settled, active: true, line: 5,
-               note: "Recurse on <code>l + 1</code> and <code>r - 1</code> — the slice shrinks by two." });
+        settled++; l++; r--;
+        snap({ l: l, r: r, settled: settled, active: true, line: 5, note: "Recurse on <code>l + 1</code> and <code>r - 1</code>. The slice shrinks by two." });
       }
     }
 
@@ -305,146 +197,77 @@
     }
 
     snap({ l: -1, r: -1, settled: settled, active: false, line: null,
-           note: m === 0
-             ? "Done. <b>" + (result ? "It is a palindrome." : "Not a palindrome.") + "</b>"
-             : "Done. Reversed in place: <b>" + chars.join("") + "</b>" });
-
+           note: m === 0 ? "Done. <b>" + (result ? "It is a palindrome." : "Not a palindrome.") + "</b>"
+                         : "Done. Reversed in place: <b>" + chars.join("") + "</b>" });
     return steps;
   }
 
-  function render() {
-    var st = STEPS[at];
-    var cells = E("cells");
-    cells.textContent = "";
-
+  function render(st) {
+    var host = E("slots");
+    host.textContent = "";
     if (!st.chars.length) {
-      var em = document.createElement("div");
-      em.className = "slot";
-      var c = document.createElement("div");
-      c.className = "ch mid"; c.textContent = "″";
-      em.appendChild(document.createElement("div")).className = "ptr";
-      em.appendChild(c);
-      cells.appendChild(em);
+      var s0 = S.el("div", "slot");
+      s0.appendChild(S.el("div", "ptr"));
+      s0.appendChild(S.el("div", "ch nil", "—"));
+      s0.appendChild(S.el("div", "ix"));
+      host.appendChild(s0);
     } else {
+      var n = st.chars.length;
       st.chars.forEach(function (ch, i) {
-        var slot = document.createElement("div");
-        slot.className = "slot";
-        var p = document.createElement("div");
-        p.className = "ptr";
-        p.textContent = (i === st.l && i === st.r) ? "l r" : (i === st.l ? "l" : (i === st.r ? "r" : ""));
-        var c = document.createElement("div");
+        var slot = S.el("div", "slot");
+        var p = S.el("div", "ptr", (i === st.l && i === st.r) ? "l r" : (i === st.l ? "l" : (i === st.r ? "r" : "")));
         var cls = "ch";
-        var n = st.chars.length;
         if (i < st.settled || i > n - 1 - st.settled) cls += " settled";
         if (st.active && (i === st.l || i === st.r)) cls += st.bad ? " bad" : " active";
-        c.className = cls;
-        c.textContent = ch;
-        var ix = document.createElement("div");
-        ix.className = "idx"; ix.textContent = String(i);
-        slot.appendChild(p); slot.appendChild(c); slot.appendChild(ix);
-        cells.appendChild(slot);
+        slot.appendChild(p);
+        slot.appendChild(S.el("div", cls, ch));
+        slot.appendChild(S.el("div", "ix", String(i)));
+        host.appendChild(slot);
       });
     }
 
     var ex = E("expr");
-    ex.className = "expr" + (st.bad ? " no" : (st.expr.indexOf("true") >= 0 ? " ok" : ""));
+    ex.className = "verdict" + (st.bad ? " no" : (st.expr.indexOf("true") >= 0 ? " ok" : ""));
     ex.innerHTML = st.expr || "&nbsp;";
-    E("note").innerHTML = st.note;
     E("lr").textContent = st.l < 0 ? "—" : st.l + ", " + st.r;
 
-    E("resKey").textContent = mode === 0 ? "result" : "string";
     var res = E("res");
-    if (mode === 0) {
-      res.className = "v" + (st.result === true ? " t" : (st.result === false ? " f" : ""));
+    if (job === 0) {
+      res.className = st.result === true ? "t" : (st.result === false ? "f" : "");
       res.textContent = st.result === null ? "—" : String(st.result);
     } else {
-      res.className = "v";
+      res.className = "";
       res.textContent = st.chars.join("") || "—";
     }
-
-    E("counter").textContent = at + " / " + (STEPS.length - 1);
-    E("slider").value = String(at);
-
-    var rows = E("code").querySelectorAll(".row");
-    for (var i = 0; i < rows.length; i++) {
-      rows[i].classList.toggle("on", st.line !== null && Number(rows[i].dataset.line) === st.line);
-    }
-
-    var fr = E("frames");
-    fr.textContent = "";
-    if (!st.frames.length) {
-      var li = document.createElement("li");
-      li.className = "empty"; li.textContent = "empty";
-      fr.appendChild(li);
-    } else {
-      for (var q = st.frames.length - 1; q >= 0; q--) {
-        var f = st.frames[q];
-        var row = document.createElement("li");
-        if (q === st.frames.length - 1) row.className = "top";
-        row.textContent = (mode === 0 ? "check(s, " : "func(s, ") + f.l + ", " + f.r + ")";
-        fr.appendChild(row);
-      }
-    }
-
-    E("prev").disabled = at === 0;
-    E("next").disabled = at === STEPS.length - 1;
-    if (at === STEPS.length - 1) stop();
   }
-
-  function drawCode() {
-    var el = E("code");
-    el.textContent = "";
-    CODE[mode].forEach(function (src, i) {
-      var row = document.createElement("div");
-      row.className = "row";
-      row.dataset.line = String(i + 1);
-      var ln = document.createElement("span");
-      ln.className = "ln"; ln.textContent = String(i + 1);
-      var s = document.createElement("span");
-      s.className = "src"; s.textContent = src === "" ? " " : src;
-      row.appendChild(ln); row.appendChild(s);
-      el.appendChild(row);
-    });
-    E("codeTitle").textContent = mode === 0 ? "check — palindrome" : "func — LC 344";
-  }
-
-  function stop() { if (timer) { clearInterval(timer); timer = null; } E("play").textContent = "Play"; }
-  function go(i) { at = Math.max(0, Math.min(STEPS.length - 1, i)); render(); }
 
   function rebuild() {
-    STEPS = buildSteps(word, mode);
-    E("slider").max = String(STEPS.length - 1);
-    at = 0;
-    drawCode();
-    render();
+    E("resKey").firstChild.nodeValue = job === 0 ? "result " : "string ";
+    E("codeTitle").textContent = job === 0 ? "check — palindrome" : "func — LC 344";
+    var steps = buildSteps(word, job);
+    if (!ctl) {
+      ctl = S.stepper({
+        id: "twopointer", steps: steps, codeLines: CODE[job],
+        transport: E("transport"), say: E("say"), code: E("code"), frames: E("frames"),
+        frameLabel: function (f) { return { main: (job === 0 ? "check(s, " : "func(s, ") + f.l + ", " + f.r + ")" }; },
+        render: render
+      });
+    } else {
+      ctl.opts.codeLines = CODE[job];
+      ctl.rebuild(steps, false);
+    }
   }
 
-  E("prev").addEventListener("click", function () { stop(); go(at - 1); });
-  E("next").addEventListener("click", function () { stop(); go(at + 1); });
-  E("reset").addEventListener("click", function () { stop(); go(0); });
-  E("slider").addEventListener("input", function () { stop(); go(Number(E("slider").value)); });
-  E("play").addEventListener("click", function () {
-    if (timer) { stop(); return; }
-    if (at === STEPS.length - 1) go(0);
-    E("play").textContent = "Pause";
-    timer = setInterval(function () { if (at >= STEPS.length - 1) { stop(); return; } go(at + 1); }, 1050);
+  E("word").addEventListener("change", function () { word = this.value; rebuild(); });
+  E("jobCmp").addEventListener("click", function () {
+    job = 0; this.setAttribute("aria-pressed", "true"); E("jobSwap").setAttribute("aria-pressed", "false"); rebuild();
   });
-  E("word").addEventListener("change", function () { stop(); word = this.value; rebuild(); });
-  var mb = document.querySelectorAll("button.mode");
-  for (var i = 0; i < mb.length; i++) {
-    mb[i].addEventListener("click", function () {
-      stop();
-      mode = Number(this.dataset.m);
-      for (var j = 0; j < mb.length; j++) mb[j].classList.toggle("sel", Number(mb[j].dataset.m) === mode);
-      rebuild();
-    });
-  }
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "ArrowRight") { stop(); go(at + 1); }
-    else if (e.key === "ArrowLeft") { stop(); go(at - 1); }
+  E("jobSwap").addEventListener("click", function () {
+    job = 1; this.setAttribute("aria-pressed", "true"); E("jobCmp").setAttribute("aria-pressed", "false"); rebuild();
   });
 
   rebuild();
+})();
 </script>
 </body>
 </html>

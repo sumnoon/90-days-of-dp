@@ -4,301 +4,83 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="author" content="sumnoon">
-<meta name="description" content="Step through the recursive reversal of a linked list one frame at a time.">
+<meta name="description" content="Step through the recursive reversal of a linked list one frame at a time: five frames pile up changing nothing, then one link flips per return.">
+<title>Reverse a linked list, one frame at a time — 90 Days of DP</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Spline+Sans+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="../assets/system.css">
 <style>
-  /* standalone reset (the artifact host normally supplies this) */
-  html { -webkit-text-size-adjust: 100%; }
-  body { margin: 0; }
-  img { max-width: 100%; }
-  [hidden] { display: none !important; }
-</style>
-<title>LC 206 Frame by Frame</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;700&display=swap">
-<style>
-  :root {
-    color-scheme: light;
-    --bg: #E9EEF2;
-    --surface: #FDFEFE;
-    --surface-2: #DFE7EC;
-    --ink: #0F1B24;
-    --muted: #576875;
-    --faint: #8598A5;
-    --line: #C4D2DB;
-    --accent: #0A6E6C;
-    --accent-soft: #CDE6E4;
-    --hot: #B2451A;
-    --hot-soft: #F6DED3;
-    --shadow: 0 1px 2px rgba(15, 27, 36, .06), 0 8px 24px -12px rgba(15, 27, 36, .18);
-
-    --f-display: "Bricolage Grotesque", "Trebuchet MS", sans-serif;
-    --f-body: "Source Sans 3", -apple-system, "Segoe UI", sans-serif;
-    --f-mono: "JetBrains Mono", ui-monospace, "Consolas", monospace;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      color-scheme: dark;
-      --bg: #0B1318;
-      --surface: #131F27;
-      --surface-2: #1B2A34;
-      --ink: #E5EEF3;
-      --muted: #94A7B3;
-      --faint: #6B808D;
-      --line: #273A46;
-      --accent: #3FC6BE;
-      --accent-soft: #123833;
-      --hot: #FF9058;
-      --hot-soft: #3A1F14;
-      --shadow: 0 1px 2px rgba(0, 0, 0, .5), 0 10px 28px -14px rgba(0, 0, 0, .7);
-    }
-  }
-  :root[data-theme="dark"] {
-    color-scheme: dark;
-    --bg: #0B1318;
-    --surface: #131F27;
-    --surface-2: #1B2A34;
-    --ink: #E5EEF3;
-    --muted: #94A7B3;
-    --faint: #6B808D;
-    --line: #273A46;
-    --accent: #3FC6BE;
-    --accent-soft: #123833;
-    --hot: #FF9058;
-    --hot-soft: #3A1F14;
-    --shadow: 0 1px 2px rgba(0, 0, 0, .5), 0 10px 28px -14px rgba(0, 0, 0, .7);
-  }
-
-  body {
-    background: var(--bg);
-    color: var(--ink);
-    font-family: var(--f-body);
-    font-size: 16px;
-    line-height: 1.55;
-    padding-inline: 20px;
-    padding-block: 32px 56px;
-  }
-  .wrap { max-width: 980px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
-
-  header .eyebrow {
-    font-family: var(--f-mono);
-    font-size: 11px;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--accent);
-  }
-  h1 {
-    font-family: var(--f-display);
-    font-weight: 700;
-    font-size: clamp(28px, 6vw, 46px);
-    line-height: 1.04;
-    letter-spacing: -.02em;
-    margin: 6px 0 10px;
-    text-wrap: balance;
-  }
-  header p { margin: 0; color: var(--muted); max-width: 62ch; }
-  header code { font-family: var(--f-mono); font-size: .9em; color: var(--ink); }
-
-  .stage {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    box-shadow: var(--shadow);
-    overflow: hidden;
-  }
-  .stage-head {
-    display: flex; flex-wrap: wrap; gap: 8px 16px;
-    align-items: baseline; justify-content: space-between;
-    padding: 12px 18px;
-    border-bottom: 1px solid var(--line);
-    background: var(--surface-2);
-  }
-  .stage-head h2 {
-    font-family: var(--f-mono); font-size: 12px; font-weight: 700;
-    letter-spacing: .1em; text-transform: uppercase;
-    margin: 0; color: var(--muted);
-  }
-  .counter { font-family: var(--f-mono); font-size: 12px; color: var(--faint); font-variant-numeric: tabular-nums; }
-
-  .diagram { padding: 10px 8px 0; }
-  svg { display: block; width: 100%; height: auto; max-width: 100%; }
-  .n-box { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
-  .n-box.is-head { stroke: var(--hot); stroke-width: 3; }
-  .n-box.is-newhead { stroke: var(--accent); stroke-width: 3; stroke-dasharray: 5 3; }
-  .n-val { font-family: var(--f-mono); font-size: 17px; font-weight: 700; fill: var(--ink); }
-  .n-tag { font-family: var(--f-mono); font-size: 9px; letter-spacing: .08em; fill: var(--faint); }
-  .lnk { fill: none; stroke: var(--faint); stroke-width: 2; }
-  .lnk.is-new { stroke: var(--hot); stroke-width: 3; }
-  .lnk.is-rev { stroke: var(--accent); }
-  .nul { font-family: var(--f-mono); font-size: 13px; fill: var(--muted); }
-  .nul-tick { stroke: var(--faint); stroke-width: 1.5; fill: none; }
-
-  .narrate {
-    margin: 0; padding: 14px 18px 16px;
-    border-top: 1px solid var(--line);
-    background: var(--surface);
-    min-height: 76px;
-    display: flex; gap: 12px; align-items: flex-start;
-  }
-  .narrate .bullet {
-    flex: none; margin-top: 7px; width: 7px; height: 7px; border-radius: 50%;
-    background: var(--hot);
-  }
-  .narrate p { margin: 0; }
-  .narrate b { color: var(--ink); }
-  .narrate code { font-family: var(--f-mono); font-size: .88em; background: var(--surface-2); padding: 1px 4px; border-radius: 3px; }
-
-  .controls {
-    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
-    padding: 12px 18px; border-top: 1px solid var(--line); background: var(--surface-2);
-  }
-  button {
-    font-family: var(--f-body); font-size: 14px; font-weight: 600;
-    color: var(--ink); background: var(--surface);
-    border: 1px solid var(--line); border-radius: 4px;
-    padding: 7px 14px; cursor: pointer;
-  }
-  button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
-  button:disabled { opacity: .4; cursor: default; }
-  button.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); }
-  button.primary:hover { color: var(--surface); filter: brightness(1.08); }
-  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  input[type="range"] { flex: 1 1 140px; min-width: 120px; accent-color: var(--accent); }
-
-  .panels { display: grid; grid-template-columns: 1.15fr .85fr; gap: 20px; align-items: start; }
-  @media (max-width: 720px) { .panels { grid-template-columns: 1fr; } }
-
-  .panel {
-    background: var(--surface); border: 1px solid var(--line);
-    border-radius: 6px; box-shadow: var(--shadow); overflow: hidden;
-  }
-  .panel h3 {
-    font-family: var(--f-mono); font-size: 11px; font-weight: 700;
-    letter-spacing: .12em; text-transform: uppercase; color: var(--muted);
-    margin: 0; padding: 11px 16px; border-bottom: 1px solid var(--line); background: var(--surface-2);
-  }
-
-  .code { margin: 0; padding: 12px 0; overflow-x: auto; }
-  .code .row { display: flex; gap: 12px; padding: 1px 16px; font-family: var(--f-mono); font-size: 12.5px; white-space: pre; }
-  .code .row .ln { color: var(--faint); user-select: none; min-width: 1.4em; text-align: right; font-variant-numeric: tabular-nums; }
-  .code .row .src { color: var(--muted); }
-  .code .row.on { background: var(--hot-soft); }
-  .code .row.on .src { color: var(--ink); font-weight: 700; }
-  .code .row.on .ln { color: var(--hot); font-weight: 700; }
-
-  .frames { list-style: none; margin: 0; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
-  .frames li {
-    display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline;
-    font-family: var(--f-mono); font-size: 12.5px;
-    padding: 7px 10px; border-radius: 4px;
-    border: 1px solid var(--line); background: var(--surface-2); color: var(--muted);
-  }
-  .frames li.top { border-color: var(--hot); background: var(--hot-soft); color: var(--ink); }
-  .frames li .k { color: var(--faint); font-size: 11px; }
-  .frames .empty { border-style: dashed; justify-content: center; color: var(--faint); }
-
-  .legend { display: flex; flex-wrap: wrap; gap: 8px 18px; padding: 11px 16px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
-  .legend span { display: inline-flex; align-items: center; gap: 7px; }
-  .swatch { width: 16px; height: 3px; border-radius: 2px; flex: none; }
-  .ring { width: 13px; height: 13px; border-radius: 3px; flex: none; }
-
-  .notes { display: flex; flex-direction: column; gap: 14px; }
-  .notes h2 {
-    font-family: var(--f-display); font-weight: 700; font-size: 22px;
-    letter-spacing: -.01em; margin: 10px 0 0;
-  }
-  .notes p { margin: 0; max-width: 68ch; color: var(--muted); }
-  .notes p b, .notes li b { color: var(--ink); }
-  .notes ul { margin: 0; padding-left: 20px; color: var(--muted); max-width: 68ch; display: flex; flex-direction: column; gap: 7px; }
-  .notes code { font-family: var(--f-mono); font-size: .88em; background: var(--surface-2); padding: 1px 4px; border-radius: 3px; color: var(--ink); }
-  .pull {
-    border-left: 3px solid var(--accent); background: var(--accent-soft);
-    padding: 12px 16px; border-radius: 0 4px 4px 0;
-    font-size: 17px; color: var(--ink); max-width: 64ch;
-  }
-  footer { color: var(--faint); font-size: 13px; border-top: 1px solid var(--line); padding-top: 14px; }
-
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
-  .lnk, .n-box { transition: stroke .18s ease, stroke-width .18s ease; }
+  .route { display: block; width: 100%; height: auto; min-width: 640px; }
+  .node-ring { fill: var(--plate); stroke: var(--rule); stroke-width: 3; }
+  .node-ring.is-now { stroke: var(--now-line); stroke-width: 5; }
+  .node-ring.is-head { stroke: var(--base-line); stroke-width: 5; }
+  .node-val { font: 700 19px/1 var(--data); fill: var(--ink); text-anchor: middle; }
+  .seg { fill: none; stroke: var(--idle); stroke-width: 5; stroke-linecap: butt; }
+  .seg.is-set { stroke: var(--set-line); }
+  .seg.is-now { stroke: var(--now-line); stroke-width: 7; }
+  .seg.is-pending { stroke: var(--idle); stroke-width: 3; stroke-dasharray: 7 7; }
+  .terminal { font: 700 11px/1 var(--data); fill: var(--ink-3); text-anchor: middle; letter-spacing: .08em; }
+  .tick { stroke: var(--idle); stroke-width: 3; }
+  .tag { font: 700 10.5px/1 var(--data); text-anchor: middle; letter-spacing: .1em; }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="eyebrow">Week 1 &middot; Day 3 &middot; Recursion</div>
+<div class="page">
+
+  <nav class="rail">
+    <a class="rail__home" href="../">90 Days of DP</a>
+    <span class="rail__where">Week <b>1</b> &middot; Day <b>3</b> &middot; LC 206</span>
+  </nav>
+
+  <header class="masthead">
     <h1>Reverse a linked list, one frame at a time</h1>
-    <p>LC 206 on the list <code>[1,2,3,4,5]</code>. Nothing is rewired on the way down. Every frame does its single link change on the way back <em>up</em> &mdash; step through and watch it happen.</p>
+    <p class="claim">Nothing is rewired on the way down.</p>
+    <p class="lede">Five frames pile up without changing a single pointer. Then, on the way back up, each frame flips exactly one link.</p>
   </header>
 
-  <div class="stage">
-    <div class="stage-head">
-      <h2 id="phase">The list at rest</h2>
-      <div class="counter"><span id="stepNo">0</span> / <span id="stepMax">0</span></div>
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:var(--s4)">
+      <div class="plate">
+        <svg id="route" class="route" viewBox="0 0 760 190" role="img" aria-labelledby="routeTitle">
+          <title id="routeTitle">The list and its pointers at the current step</title>
+          <g id="segs"></g>
+          <g id="nodes"></g>
+        </svg>
+        <div class="legend">
+          <span><i style="background:var(--idle)"></i>original</span>
+          <span><i style="background:var(--set-line)"></i>reversed</span>
+          <span><i style="background:var(--now-line)"></i>just changed</span>
+          <span><i class="dash"></i>not yet written</span>
+        </div>
+      </div>
+
+      <p class="say" id="say">Five nodes, each pointing at the next. Press <b>Next</b> to make the first call.</p>
+      <div class="transport" id="transport"></div>
     </div>
 
-    <div class="diagram">
-      <svg id="svg" viewBox="0 0 760 210" role="img" aria-labelledby="svgTitle">
-        <title id="svgTitle">Linked list nodes and their next pointers at the current step</title>
-        <defs>
-          <marker id="ah-faint" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--faint)"></path>
-          </marker>
-          <marker id="ah-hot" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--hot)"></path>
-          </marker>
-          <marker id="ah-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"></path>
-          </marker>
-        </defs>
-        <g id="links"></g>
-        <g id="nodes"></g>
-      </svg>
-    </div>
-
-    <div class="narrate">
-      <div class="bullet"></div>
-      <p id="note">Five nodes, each pointing at the next. Press <b>Next</b> to make the first call.</p>
-    </div>
-
-    <div class="controls">
-      <button id="prev" type="button">&larr; Prev</button>
-      <button id="next" type="button" class="primary">Next &rarr;</button>
-      <input id="slider" type="range" min="0" value="0" step="1" aria-label="Step">
-      <button id="play" type="button">Play</button>
-      <button id="reset" type="button">Reset</button>
-    </div>
-
-    <div class="legend">
-      <span><i class="swatch" style="background: var(--faint)"></i> original link</span>
-      <span><i class="swatch" style="background: var(--accent)"></i> already reversed</span>
-      <span><i class="swatch" style="background: var(--hot)"></i> just changed</span>
-      <span><i class="ring" style="border: 3px solid var(--hot)"></i> this frame&rsquo;s <code>head</code></span>
-      <span><i class="ring" style="border: 3px dashed var(--accent)"></i> <code>prev</code>, the new head</span>
+    <div class="aside">
+      <div class="panel">
+        <h2 class="panel__head">Call stack</h2>
+        <ul class="frames" id="frames"></ul>
+      </div>
+      <div class="panel">
+        <h2 class="panel__head">reverseList</h2>
+        <div class="panel__body"><div class="code" id="code"></div></div>
+      </div>
     </div>
   </div>
 
-  <div class="panels">
-    <div class="panel">
-      <h3>reverseList</h3>
-      <div class="code" id="code"></div>
-    </div>
-    <div class="panel">
-      <h3>Call stack <span style="text-transform: none; letter-spacing: 0">(innermost on top)</span></h3>
-      <ul class="frames" id="frames"></ul>
-    </div>
-  </div>
-
-  <div class="notes">
+  <section class="read">
     <h2>What the stepper shows</h2>
-    <p>Run it once end to end and three things stand out.</p>
     <ul>
-      <li><b>Steps 1&ndash;10 change nothing.</b> Five frames pile up and every arrow stays grey. The recursion is only travelling to the tail.</li>
-      <li><b>Node 5 is found once.</b> It becomes <code>prev</code> at the deepest call and then rides back up through all five returns untouched. That is why <code>return prev</code> is the same value in every frame.</li>
-      <li><b>Each frame changes exactly one link.</b> <code>head-&gt;next-&gt;next = head</code> flips one arrow; <code>head-&gt;next = nullptr</code> makes this node the tail. Four frames, four flips.</li>
+      <li><b>Steps 1&ndash;10 change nothing.</b> Five frames pile up and every segment stays grey. The recursion is only travelling to the tail.</li>
+      <li><b>Node 5 is found once.</b> It becomes <code>prev</code> at the deepest call and rides back up through all five returns untouched. That is why <code>return prev</code> is the same value in every frame.</li>
+      <li><b>Each frame changes exactly one link.</b> <code>head-&gt;next-&gt;next = head</code> flips one segment; <code>head-&gt;next = nullptr</code> makes this node the tail. Four frames, four flips.</li>
     </ul>
 
     <h2>The leap of faith, precisely</h2>
-    <p>At the moment <code>prev = reverseList(head-&gt;next)</code> returns in the frame for node 3, the picture is this: nodes 4 and 5 are already reversed, and <b>node 4 is now the tail of that reversed part</b>. Crucially, nobody touched node 3&rsquo;s <code>next</code>, so <code>head-&gt;next</code> still points straight at node 4.</p>
-    <div class="pull">You never verify the assumption &mdash; you grant it, then do one honest step of work with what it handed you.</div>
-    <p>That is the whole method. You don&rsquo;t trace five frames in your head; you reason about one, and the shape of the code makes the rest follow.</p>
+    <p>At the moment <code>prev = reverseList(head-&gt;next)</code> returns in the frame for node 3, nodes 4 and 5 are already reversed and <b>node 4 is now the tail of that reversed part</b>. Nobody touched node 3's <code>next</code>, so it still points straight at node 4.</p>
+    <p class="pull">You never verify the assumption. You grant it, then do one honest step of work with what it handed you.</p>
 
     <h2>Why the base case has two halves</h2>
     <ul>
@@ -307,16 +89,22 @@
     </ul>
 
     <h2>See it in your own debugger</h2>
-    <p>Put a breakpoint on <code>head-&gt;next-&gt;next = head;</code> in <code>lc0206_reverse_linked_list.cpp</code>, run with <b>F5</b>, and press Continue four times. The Call Stack panel shows the five frames, and <code>head-&gt;val</code> arrives as 4, then 3, 2, 1 &mdash; innermost first, exactly as above.</p>
-    <p><b>Cost:</b> O(n) time, one pass. O(n) space, because all n frames are open at the deepest point &mdash; visible here as a stack five deep for five nodes. The iterative two-pointer version is the O(1)-space answer.</p>
+    <p>Put a breakpoint on <code>head-&gt;next-&gt;next = head;</code>, run with <b>F5</b>, and press Continue four times. <code>head-&gt;val</code> arrives as 4, then 3, 2, 1 &mdash; innermost first, exactly as above.</p>
+    <p><b>Cost:</b> O(n) time, one pass. O(n) space, because all n frames are open at the deepest point. The iterative three-pointer version is the O(1)-space answer.</p>
+  </section>
 
-    <footer>Same shape as printing 1..N by recursing first and printing on the way back up &mdash; and the same shape as post-order traversal in Week 2, then every DP recurrence after it: solve the smaller thing, then combine.</footer>
-  </div>
+  <footer class="foot">
+    Same shape as printing 1..N by recursing first and doing the work on the way back up &mdash; see <a href="../order/">where the work happens</a>. Source and notes at <a href="https://github.com/sumnoon/90-days-of-dp">the repo</a>.
+  </footer>
+
 </div>
 
+<script src="../assets/stepper.js"></script>
 <script>
-  var N = 5;
-  var GEOM = { x0: 72, dx: 140, y: 110, w: 64, h: 44 };
+(function () {
+  "use strict";
+  var S = window.Schematic, NS = S.svgNS;
+  var N = 5, X0 = 76, DX = 148, CY = 104, R = 27;
 
   var CODE = [
     "ListNode* reverseList(ListNode* head) {",
@@ -333,52 +121,30 @@
   ];
 
   function buildSteps() {
-    var steps = [];
-    var next = {};
+    var steps = [], next = {}, frames = [], reversedFrom = N + 1;
     for (var i = 1; i <= N; i++) next[i] = (i < N) ? i + 1 : null;
-    var frames = [];
-    var reversedFrom = N + 1;
 
     function snap(o) {
       steps.push({
         next: Object.assign({}, next),
         frames: frames.map(function (f) { return { head: f.head, prev: f.prev }; }),
-        line: o.line,
-        phase: o.phase,
-        note: o.note,
+        line: o.line, note: o.note,
         hot: o.hot === undefined ? null : o.hot,
         newHead: o.newHead === undefined ? null : o.newHead,
         revFrom: reversedFrom
       });
     }
 
-    snap({
-      line: null, phase: "The list at rest",
-      note: "Five nodes, each pointing at the next. Press <b>Next</b> to make the first call."
-    });
+    snap({ line: null, note: "Five nodes, each pointing at the next. Press <b>Next</b> to make the first call." });
 
     for (var h = 1; h <= N; h++) {
       frames.push({ head: h, prev: null });
       if (h < N) {
-        snap({
-          line: 2, phase: "Descending &mdash; nothing changes yet",
-          note: "<b>reverseList(" + h + ")</b>: <code>head-&gt;next</code> is node " + (h + 1) +
-                ", not null, so this is not the base case."
-        });
-        snap({
-          line: 5, phase: "Descending &mdash; nothing changes yet",
-          note: "Line 5: recurse on <code>head-&gt;next</code>. A frame for <b>reverseList(" + (h + 1) +
-                ")</b> is pushed. Still not one link rewired."
-        });
+        snap({ line: 2, note: "<b>reverseList(" + h + ")</b>: <code>head-&gt;next</code> is node " + (h + 1) + ", not null, so this is not the base case." });
+        snap({ line: 5, note: "Line 5: recurse on <code>head-&gt;next</code>. A frame for <b>reverseList(" + (h + 1) + ")</b> is pushed. Still not one link rewired." });
       } else {
-        snap({
-          line: 2, phase: "Base case reached",
-          note: "<b>reverseList(5)</b>: <code>head-&gt;next == nullptr</code>. The base case is true."
-        });
-        snap({
-          line: 3, phase: "Base case reached", newHead: N,
-          note: "A single node is already reversed, so return it. <b>Node 5 is the new head</b> &mdash; found once, here, and it will not change again."
-        });
+        snap({ line: 2, note: "<b>reverseList(5)</b>: <code>head-&gt;next == nullptr</code>. The base case is true." });
+        snap({ line: 3, newHead: N, note: "A single node is already reversed, so return it. <b>Node 5 is the new head</b> &mdash; found once, here, and it will not change again." });
       }
     }
 
@@ -387,212 +153,119 @@
     for (var k = N - 1; k >= 1; k--) {
       var tail = k + 1;
       frames[frames.length - 1].prev = N;
-      snap({
-        line: 5, phase: "Unwinding &mdash; frame for node " + k, newHead: N,
-        note: "Back in <b>reverseList(" + k + ")</b>, and <code>prev</code> = 5. Grant the assumption: nodes " +
-              tail + "&ndash;5 are fully reversed, so <b>node " + tail + " is now their tail</b> &mdash; and <code>head-&gt;next</code> still points right at it."
-      });
+      snap({ line: 5, newHead: N, note: "Back in <b>reverseList(" + k + ")</b>, and <code>prev</code> = 5. Grant the assumption: nodes " + tail + "&ndash;5 are fully reversed, so <b>node " + tail + " is now their tail</b> &mdash; and <code>head-&gt;next</code> still points right at it." });
 
       next[tail] = k;
       reversedFrom = k + 1;
-      snap({
-        line: 7, phase: "Unwinding &mdash; frame for node " + k, newHead: N, hot: tail,
-        note: "Line 7: <code>head-&gt;next-&gt;next = head</code>. Node " + tail + " now points back at node " + k + ". <b>One link changed.</b>"
-      });
+      snap({ line: 7, newHead: N, hot: tail, note: "Line 7: <code>head-&gt;next-&gt;next = head</code>. Node " + tail + " now points back at node " + k + ". <b>One link changed.</b>" });
 
       next[k] = null;
-      snap({
-        line: 8, phase: "Unwinding &mdash; frame for node " + k, newHead: N, hot: tail,
-        note: "Line 8: <code>head-&gt;next = nullptr</code>. Node " + k + " becomes the new tail, so the list does not loop back on itself."
-      });
+      snap({ line: 8, newHead: N, hot: tail, note: "Line 8: <code>head-&gt;next = nullptr</code>. Node " + k + " becomes the new tail, so the list does not loop back on itself." });
 
       frames.pop();
       reversedFrom = k;
-      snap({
-        line: 10, phase: "Unwinding &mdash; frame for node " + k, newHead: N,
-        note: "Line 10: <code>return prev</code>. Node 5 travels up unchanged and the frame for node " + k + " is gone."
-      });
+      snap({ line: 10, newHead: N, note: "Line 10: <code>return prev</code>. Node 5 travels up unchanged and the frame for node " + k + " is gone." });
     }
 
-    snap({
-      line: null, phase: "Done", newHead: N,
-      note: "All five frames have returned. <code>head</code> = 5 and the list reads <b>5, 4, 3, 2, 1</b>. Four frames, four rewired links, all on the way back up."
-    });
-
+    snap({ line: null, newHead: N, note: "All five frames have returned. <code>head</code> = 5 and the list reads <b>5, 4, 3, 2, 1</b>. Four frames, four rewired links, all on the way back up." });
     return steps;
   }
 
   var STEPS = buildSteps();
-  var at = 0;
-  var timer = null;
+  var gSegs = document.getElementById("segs");
+  var gNodes = document.getElementById("nodes");
 
-  var elLinks = document.getElementById("links");
-  var elNodes = document.getElementById("nodes");
-  var elCode = document.getElementById("code");
-  var elFrames = document.getElementById("frames");
-  var elNote = document.getElementById("note");
-  var elPhase = document.getElementById("phase");
-  var elStepNo = document.getElementById("stepNo");
-  var elSlider = document.getElementById("slider");
-  var btnPrev = document.getElementById("prev");
-  var btnNext = document.getElementById("next");
-  var btnPlay = document.getElementById("play");
-
-  document.getElementById("stepMax").textContent = STEPS.length - 1;
-  elSlider.max = String(STEPS.length - 1);
-
-  CODE.forEach(function (src, i) {
-    var row = document.createElement("div");
-    row.className = "row";
-    row.dataset.line = String(i + 1);
-    var ln = document.createElement("span");
-    ln.className = "ln";
-    ln.textContent = String(i + 1);
-    var s = document.createElement("span");
-    s.className = "src";
-    s.textContent = src === "" ? " " : src;
-    row.appendChild(ln);
-    row.appendChild(s);
-    elCode.appendChild(row);
-  });
-
-  function cx(i) { return GEOM.x0 + (i - 1) * GEOM.dx; }
-
-  function svgEl(name, attrs) {
-    var e = document.createElementNS("http://www.w3.org/2000/svg", name);
+  function mk(tag, attrs) {
+    var e = document.createElementNS(NS, tag);
     for (var k in attrs) e.setAttribute(k, attrs[k]);
     return e;
   }
+  function cx(i) { return X0 + (i - 1) * DX; }
+
+  /* Elements are built once and then updated. Recreating them every step
+     would throw away the CSS transition, which is the whole moment. */
+  var segEls = {}, nodeEls = {};
+
+  function buildOnce() {
+    for (var i = 1; i <= N; i++) {
+      segEls[i] = mk("path", { "class": "seg", d: "" });
+      gSegs.appendChild(segEls[i]);
+
+      var g = mk("g", {});
+      var ring = mk("circle", { cx: cx(i), cy: CY, r: R, "class": "node-ring" });
+      var val = mk("text", { x: cx(i), y: CY + 7, "class": "node-val" });
+      val.textContent = String(i);
+      var tick = mk("line", { x1: cx(i), y1: CY + R, x2: cx(i), y2: CY + R + 14, "class": "tick" });
+      var term = mk("text", { x: cx(i), y: CY + R + 32, "class": "terminal" });
+      term.textContent = "nullptr";
+      var tag = mk("text", { x: cx(i), y: CY - R - 12, "class": "tag" });
+      g.appendChild(ring); g.appendChild(val); g.appendChild(tick); g.appendChild(term); g.appendChild(tag);
+      gNodes.appendChild(g);
+      nodeEls[i] = { ring: ring, tick: tick, term: term, tag: tag };
+    }
+  }
+
+  function drawSegs(st) {
+    for (var i = 1; i <= N; i++) {
+      var el = segEls[i], j = st.next[i];
+      if (j === null) { el.setAttribute("visibility", "hidden"); continue; }
+      el.setAttribute("visibility", "visible");
+      var fwd = j > i;
+      var sx = fwd ? cx(i) + R : cx(i) - R;
+      var ex = fwd ? cx(j) - R : cx(j) + R;
+      var lift = fwd ? 40 : 74;
+      el.setAttribute("d", "M " + sx + " " + CY + " C " + sx + " " + (CY - lift) + ", " + ex + " " + (CY - lift) + ", " + ex + " " + CY);
+      var cls = "seg";
+      if (st.hot === i) cls += " is-now";
+      else if (!fwd || i >= st.revFrom) cls += " is-set";
+      else cls += " is-pending";
+      el.setAttribute("class", cls);
+    }
+  }
 
   function drawNodes(st) {
-    elNodes.textContent = "";
     var headOf = st.frames.length ? st.frames[st.frames.length - 1].head : null;
     for (var i = 1; i <= N; i++) {
-      var x = cx(i) - GEOM.w / 2;
-      var cls = "n-box";
-      if (i === headOf) cls += " is-head";
-      else if (st.newHead === i) cls += " is-newhead";
-      elNodes.appendChild(svgEl("rect", {
-        x: x, y: GEOM.y, width: GEOM.w, height: GEOM.h, rx: 4, class: cls
-      }));
-      var t = svgEl("text", { x: cx(i), y: GEOM.y + 28, "text-anchor": "middle", class: "n-val" });
-      t.textContent = String(i);
-      elNodes.appendChild(t);
+      var e = nodeEls[i];
+      var cls = "node-ring";
+      if (i === headOf) cls += " is-now";
+      else if (st.newHead === i) cls += " is-head";
+      e.ring.setAttribute("class", cls);
 
-      if (st.next[i] === null) {
-        elNodes.appendChild(svgEl("path", {
-          d: "M " + cx(i) + " " + (GEOM.y + GEOM.h) + " L " + cx(i) + " " + (GEOM.y + GEOM.h + 14),
-          class: "nul-tick"
-        }));
-        var nt = svgEl("text", { x: cx(i), y: GEOM.y + GEOM.h + 30, "text-anchor": "middle", class: "nul" });
-        nt.textContent = "nullptr";
-        elNodes.appendChild(nt);
-      }
+      var terminal = st.next[i] === null;
+      e.tick.setAttribute("visibility", terminal ? "visible" : "hidden");
+      e.term.setAttribute("visibility", terminal ? "visible" : "hidden");
+
       if (i === headOf) {
-        var tag = svgEl("text", { x: cx(i), y: GEOM.y - 6, "text-anchor": "middle", class: "n-tag" });
-        tag.setAttribute("fill", "var(--hot)");
-        tag.textContent = "head";
-        elNodes.appendChild(tag);
+        e.tag.textContent = "HEAD";
+        e.tag.setAttribute("fill", "var(--now)");
+        e.tag.setAttribute("visibility", "visible");
+      } else if (st.newHead === i) {
+        e.tag.textContent = "PREV";
+        e.tag.setAttribute("fill", "var(--base)");
+        e.tag.setAttribute("visibility", "visible");
+      } else {
+        e.tag.setAttribute("visibility", "hidden");
       }
     }
   }
 
-  function drawLinks(st) {
-    elLinks.textContent = "";
-    for (var i = 1; i <= N; i++) {
-      var j = st.next[i];
-      if (j === null) continue;
-      var forward = j > i;
-      var startX = forward ? cx(i) + GEOM.w / 2 : cx(i) - GEOM.w / 2;
-      var endX = forward ? cx(j) - GEOM.w / 2 : cx(j) + GEOM.w / 2;
-      var yMid = GEOM.y + GEOM.h / 2;
-      var lift = forward ? 34 : 68;
-      var midX = (startX + endX) / 2;
-      var d = "M " + startX + " " + yMid +
-              " C " + startX + " " + (yMid - lift) +
-              ", " + endX + " " + (yMid - lift) +
-              ", " + endX + " " + yMid;
-      var cls = "lnk";
-      var marker = "ah-faint";
-      if (st.hot === i) { cls += " is-new"; marker = "ah-hot"; }
-      else if (!forward || i >= st.revFrom) { cls += " is-rev"; marker = "ah-acc"; }
-      var p = svgEl("path", { d: d, class: cls, "marker-end": "url(#" + marker + ")" });
-      elLinks.appendChild(p);
-      void midX;
-    }
-  }
+  buildOnce();
 
-  function drawFrames(st) {
-    elFrames.textContent = "";
-    if (!st.frames.length) {
-      var li = document.createElement("li");
-      li.className = "empty";
-      li.textContent = "empty";
-      elFrames.appendChild(li);
-      return;
-    }
-    for (var i = st.frames.length - 1; i >= 0; i--) {
-      var f = st.frames[i];
-      var row = document.createElement("li");
-      if (i === st.frames.length - 1) row.className = "top";
-      var a = document.createElement("span");
-      a.innerHTML = "reverseList(<b>" + f.head + "</b>)";
-      var b = document.createElement("span");
-      b.className = "k";
-      b.textContent = "prev = " + (f.prev === null ? "?" : f.prev);
-      row.appendChild(a);
-      row.appendChild(b);
-      elFrames.appendChild(row);
-    }
-  }
-
-  function render() {
-    var st = STEPS[at];
-    drawLinks(st);
-    drawNodes(st);
-    drawFrames(st);
-    elNote.innerHTML = st.note;
-    elPhase.innerHTML = st.phase;
-    elStepNo.textContent = String(at);
-    elSlider.value = String(at);
-    var rows = elCode.querySelectorAll(".row");
-    for (var i = 0; i < rows.length; i++) {
-      rows[i].classList.toggle("on", st.line !== null && Number(rows[i].dataset.line) === st.line);
-    }
-    btnPrev.disabled = at === 0;
-    btnNext.disabled = at === STEPS.length - 1;
-    if (at === STEPS.length - 1) stop();
-  }
-
-  function go(i) {
-    at = Math.max(0, Math.min(STEPS.length - 1, i));
-    render();
-  }
-
-  function stop() {
-    if (timer) { clearInterval(timer); timer = null; }
-    btnPlay.textContent = "Play";
-  }
-
-  btnPrev.addEventListener("click", function () { stop(); go(at - 1); });
-  btnNext.addEventListener("click", function () { stop(); go(at + 1); });
-  document.getElementById("reset").addEventListener("click", function () { stop(); go(0); });
-  elSlider.addEventListener("input", function () { stop(); go(Number(elSlider.value)); });
-  btnPlay.addEventListener("click", function () {
-    if (timer) { stop(); return; }
-    if (at === STEPS.length - 1) go(0);
-    btnPlay.textContent = "Pause";
-    timer = setInterval(function () {
-      if (at >= STEPS.length - 1) { stop(); return; }
-      go(at + 1);
-    }, 1100);
+  S.stepper({
+    id: "lc206",
+    steps: STEPS,
+    codeLines: CODE,
+    transport: document.getElementById("transport"),
+    say: document.getElementById("say"),
+    code: document.getElementById("code"),
+    frames: document.getElementById("frames"),
+    frameLabel: function (f) {
+      return { main: "reverseList(" + f.head + ")", aside: "prev = " + (f.prev === null ? "?" : f.prev) };
+    },
+    render: function (st) { drawSegs(st); drawNodes(st); }
   });
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "ArrowRight") { stop(); go(at + 1); }
-    else if (e.key === "ArrowLeft") { stop(); go(at - 1); }
-  });
-
-  render();
+})();
 </script>
 </body>
 </html>
