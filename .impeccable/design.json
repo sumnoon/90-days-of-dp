@@ -4,169 +4,186 @@
   "title": "Design System: 90 Days of DP",
   "extensions": {
     "colorMeta": {
-      "accent": {
-        "role": "primary",
-        "displayName": "Deep Teal",
-        "canonical": "#0A6E6C",
-        "darkValue": "#3FC6BE",
-        "tonalRamp": ["#04211F", "#063533", "#084F4D", "#0A6E6C", "#178C88", "#3FC6BE", "#8EDFDA", "#CDE6E4"]
-      },
-      "hot": {
-        "role": "secondary",
-        "displayName": "Burnt Orange",
-        "canonical": "#B2451A",
-        "darkValue": "#FF9058",
-        "tonalRamp": ["#2E1109", "#4A1D0E", "#7A2F13", "#B2451A", "#D8662F", "#FF9058", "#FFBB93", "#F6DED3"]
-      },
-      "blue": {
-        "role": "tertiary",
-        "displayName": "Plot Blue",
-        "canonical": "#1F5FA8",
-        "darkValue": "#6BA8F0",
-        "tonalRamp": ["#08162B", "#0C2340", "#153F70", "#1F5FA8", "#3B80C9", "#6BA8F0", "#A6CBF6", "#D4E3F5"]
-      },
-      "bad": {
-        "role": "tertiary",
-        "displayName": "Alarm Red",
-        "canonical": "#97261F",
-        "darkValue": "#FF7B72",
-        "tonalRamp": ["#2A0B09", "#451210", "#6C1C17", "#97261F", "#C4453C", "#FF7B72", "#FFB0AA", "#F6D6D3"]
-      },
-      "ink": {
-        "role": "neutral",
-        "displayName": "Deep Slate Ink",
-        "canonical": "#0F1B24",
-        "darkValue": "#E5EEF3",
-        "tonalRamp": ["#0B1318", "#0F1B24", "#1B2A34", "#273A46", "#576875", "#8598A5", "#C4D2DB", "#E9EEF2"]
-      },
-      "bg": {
-        "role": "neutral",
-        "displayName": "Slate Mist",
-        "canonical": "#E9EEF2",
-        "darkValue": "#0B1318",
-        "tonalRamp": ["#0B1318", "#131F27", "#1B2A34", "#273A46", "#8598A5", "#C4D2DB", "#DFE7EC", "#FDFEFE"]
-      }
+      "ground": { "role": "neutral", "displayName": "Concrete Ground", "canonical": "#EDEDEF", "darkTheme": "#101215", "tonalRamp": ["#26262A", "#3A3A40", "#4F4F56", "#6C6C74", "#8E8E96", "#B4B4BB", "#D5D5D9", "#F4F4F6"] },
+      "plate": { "role": "neutral", "displayName": "Plate White", "canonical": "#FFFFFF", "darkTheme": "#181A1F", "tonalRamp": ["#242424", "#3B3B3B", "#565656", "#757575", "#989898", "#BEBEBE", "#E0E0E0", "#FFFFFF"] },
+      "plate-2": { "role": "neutral", "displayName": "Plate Grey", "canonical": "#F5F5F7", "darkTheme": "#1F2227", "tonalRamp": ["#26262A", "#3A3A3E", "#515158", "#6E6E76", "#919199", "#B6B6BD", "#D8D8DC", "#F5F5F7"] },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#16181D", "darkTheme": "#ECEDEF", "tonalRamp": ["#0B0C0F", "#16181D", "#25282F", "#3A3E47", "#565B66", "#7C818B", "#ABAFB6", "#DDDFE3"] },
+      "ink-2": { "role": "neutral", "displayName": "Ink 2 (running prose)", "canonical": "#41464E", "darkTheme": "#B7BCC4", "tonalRamp": ["#14161A", "#22262B", "#31353C", "#41464E", "#5C626C", "#828893", "#AEB3BB", "#DCDEE2"] },
+      "ink-3": { "role": "neutral", "displayName": "Ink 3 (quiet metadata)", "canonical": "#62676F", "darkTheme": "#8D939C", "tonalRamp": ["#171A1D", "#262A2F", "#373B41", "#4A4F56", "#62676F", "#888D95", "#B2B6BC", "#DEE0E3"] },
+      "on-ink": { "role": "neutral", "displayName": "On Ink", "canonical": "#EDEDEF", "darkTheme": "#101215", "tonalRamp": ["#26262A", "#3A3A40", "#4F4F56", "#6C6C74", "#8E8E96", "#B4B4BB", "#D5D5D9", "#F4F4F6"] },
+      "rule": { "role": "neutral", "displayName": "Rule", "canonical": "#16181D", "darkTheme": "#ECEDEF", "tonalRamp": ["#0B0C0F", "#16181D", "#25282F", "#3A3E47", "#565B66", "#7C818B", "#ABAFB6", "#DDDFE3"] },
+      "hair": { "role": "neutral", "displayName": "Hair Divider", "canonical": "#C5C8CE", "darkTheme": "#2F333B", "tonalRamp": ["#1A1C21", "#2A2D34", "#3C4048", "#52565F", "#6E727B", "#939AA3", "#B3B8C0", "#DCDEE2"] },
+      "now": { "role": "primary", "displayName": "Signal Red (acting now)", "canonical": "#C81326", "darkTheme": "#FF6A5C", "tonalRamp": ["#3B0208", "#5C0511", "#7F0919", "#A30E20", "#C81326", "#E23A4A", "#F0848D", "#FBD3D7"] },
+      "now-line": { "role": "primary", "displayName": "Signal Red Line", "canonical": "#D6202F", "darkTheme": "#FF5C4D", "tonalRamp": ["#400309", "#620713", "#850C1C", "#AB1524", "#D6202F", "#E9505B", "#F49099", "#FCD8DB"] },
+      "on-now": { "role": "primary", "displayName": "On Signal Red", "canonical": "#FFFFFF", "darkTheme": "#101215", "tonalRamp": ["#242424", "#3B3B3B", "#565656", "#757575", "#989898", "#BEBEBE", "#E0E0E0", "#FFFFFF"] },
+      "now-wash": { "role": "primary", "displayName": "Signal Red Wash", "canonical": "#FBE7E8", "darkTheme": "#331614", "tonalRamp": ["#33100F", "#4E1A18", "#6C2523", "#8C3431", "#AE4C48", "#CE7D79", "#E6AFAD", "#FBE7E8"] },
+      "set": { "role": "secondary", "displayName": "Settled Blue", "canonical": "#0A50B8", "darkTheme": "#6FAEFF", "tonalRamp": ["#04173B", "#06265E", "#083883", "#0A4AA0", "#0A50B8", "#2C7AE0", "#79ADF0", "#D3E3FA"] },
+      "set-line": { "role": "secondary", "displayName": "Settled Blue Line", "canonical": "#0A5BD3", "darkTheme": "#5AA0FF", "tonalRamp": ["#041A45", "#062B6C", "#083F96", "#0A4FB6", "#0A5BD3", "#3583EC", "#82B4F3", "#D7E6FB"] },
+      "set-wash": { "role": "secondary", "displayName": "Settled Blue Wash", "canonical": "#E3EDFB", "darkTheme": "#12243C", "tonalRamp": ["#101E33", "#18304F", "#22446D", "#2E5A8C", "#4578AE", "#78A2CE", "#AFC8E6", "#E3EDFB"] },
+      "base": { "role": "tertiary", "displayName": "Base-Case Green", "canonical": "#00684A", "darkTheme": "#45CE98", "tonalRamp": ["#001F16", "#003324", "#004A34", "#005B40", "#00684A", "#0C9068", "#4BBE95", "#D5F0E5"] },
+      "base-line": { "role": "tertiary", "displayName": "Base-Case Green Line", "canonical": "#00875A", "darkTheme": "#35C08A", "tonalRamp": ["#00281B", "#00412C", "#005D3F", "#00744D", "#00875A", "#13AC78", "#5AD0A2", "#DAF3E8"] },
+      "base-wash": { "role": "tertiary", "displayName": "Base-Case Green Wash", "canonical": "#DFF1E9", "darkTheme": "#0F2A22", "tonalRamp": ["#0C2A21", "#134134", "#1B5B49", "#26775F", "#3E9A7E", "#75BCA4", "#ADD8C8", "#DFF1E9"] },
+      "idle": { "role": "neutral", "displayName": "Idle Grey (not yet written)", "canonical": "#9AA0A8", "darkTheme": "#666C75", "tonalRamp": ["#1D2024", "#2E3237", "#42474D", "#585E65", "#71777F", "#9AA0A8", "#C0C5CB", "#E6E8EB"] }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "The single page headline, one per page." },
-      "title": { "displayName": "Title", "purpose": "Section headings in the prose below the stage." },
-      "body": { "displayName": "Body", "purpose": "All prose, held to 64-68ch." },
-      "label": { "displayName": "Label", "purpose": "Uppercase mono panel headers, eyebrows and legend keys." },
-      "mono": { "displayName": "Mono", "purpose": "Every computed value: code lines, stack frames, counters, cells." }
+      "display": { "displayName": "Display", "purpose": "The page headline, top-left above a 3px rule. Capped at 19ch, text-wrap: balance." },
+      "headline": { "displayName": "Headline", "purpose": "Section headings in the prose below the stage. Capped at 24ch." },
+      "claim": { "displayName": "Claim", "purpose": "The page's single imperative, reversed out of a solid ink bar. One per page. Capped at 62ch." },
+      "body": { "displayName": "Body", "purpose": "Lede and running prose in ink-2, capped at 66ch. Narration under the diagram runs clamp(15px,2vw,17px) with a reserved min-height of 3.2em so stepping never reflows the page." },
+      "control": { "displayName": "Control", "purpose": "Transport buttons and mode toggles (Prev / Next / Play / Reset, aria-pressed toggles)." },
+      "mono": { "displayName": "Data Mono", "purpose": "Everything the program computed: call-stack frames, code rows, rail metadata, node labels, step counter. tabular-nums wherever a number changes between steps." },
+      "label": { "displayName": "Label", "purpose": "Legend entries, panel heads, table heads, readout captions. Uppercase, 0.12em; panel heads and the rail home link track wider at 0.16em." }
     },
-    "shadows": [
-      {
-        "name": "ambient-container",
-        "value": "0 1px 2px rgba(15,27,36,.06), 0 8px 24px -12px rgba(15,27,36,.18)",
-        "purpose": "The only shadow in the system. Applied to panels and cards, never changed on interaction."
-      },
-      {
-        "name": "ambient-container-dark",
-        "value": "0 1px 2px rgba(0,0,0,.5), 0 10px 28px -14px rgba(0,0,0,.7)",
-        "purpose": "Dark-mode counterpart of ambient-container."
-      }
-    ],
+    "shadows": [],
     "motion": [
-      {
-        "name": "state-transition",
-        "value": "stroke .18s ease, stroke-width .18s ease",
-        "purpose": "The system's only motion, on the LC 206 diagram. Every other page cuts between states with no transition. This is a gap, not a philosophy."
-      }
+      { "name": "ease-out", "value": "cubic-bezier(0.23, 1, 0.32, 1)", "purpose": "Settling: a route segment arriving, a control releasing, a station node taking the active scale." },
+      { "name": "ease-in-out", "value": "cubic-bezier(0.77, 0, 0.175, 1)", "purpose": "Declared for symmetric movement between two authored positions." },
+      { "name": "t-press", "value": "100ms", "purpose": "The press-down half: snaps. Applied to :active transform scale(0.97) on buttons and toggles." },
+      { "name": "t-release", "value": "160ms", "purpose": "The release half: settles back. Deliberately asymmetric with t-press." },
+      { "name": "t-state", "value": "160ms", "purpose": "All state colour changes: executing code row, top stack frame, segment stroke, link colour." },
+      { "name": "t-reduced", "value": "80ms", "purpose": "Under prefers-reduced-motion every transition shortens to 80ms; colour still carries the state change, movement and scaling are dropped entirely." },
+      { "name": "play-interval", "value": "1100ms", "purpose": "Auto-advance cadence of the transport's Play mode; 1800ms under prefers-reduced-motion." }
     ],
     "breakpoints": [
-      { "name": "stack-panels", "value": "720px" },
-      { "name": "stack-cards", "value": "640px" },
-      { "name": "stats-wrap", "value": "620px" }
+      { "name": "split", "value": "720px" },
+      { "name": "work", "value": "800px" },
+      { "name": "hero", "value": "860px" },
+      { "name": "container", "value": "1120px" }
+    ],
+    "strokes": [
+      { "name": "w-rule", "value": "2px", "purpose": "Standard structural border: plates, panels, buttons, tokens, control strips, footer rule." },
+      { "name": "w-heavy", "value": "3px", "purpose": "Heavy structural rule: under the nav rail, above the transport, the active stack frame's left border, station rings, the route line, focus outline." },
+      { "name": "hair", "value": "1px", "purpose": "Internal divider inside a panel, table or stop list." }
     ]
   },
   "components": [
     {
-      "name": "Primary Button",
+      "name": "Transport Button",
       "kind": "button",
-      "refersTo": "button-primary",
-      "description": "The Next control on every stepper; the only filled button in the system.",
-      "html": "<button class=\"ds-btn-primary\">Next &rarr;</button>",
-      "css": ".ds-btn-primary { font-family: 'Source Sans 3', -apple-system, sans-serif; font-size: 14px; font-weight: 600; color: #FDFEFE; background: #0A6E6C; border: 1px solid #0A6E6C; border-radius: 4px; padding: 7px 14px; cursor: pointer; } .ds-btn-primary:hover { filter: brightness(1.08); } .ds-btn-primary:focus-visible { outline: 2px solid #0A6E6C; outline-offset: 2px; } .ds-btn-primary:disabled { opacity: .4; cursor: default; }"
+      "refersTo": "button",
+      "description": "Default stepper control: square, 2px ink border, icon then label. Inverts to solid ink on hover.",
+      "html": "<button class=\"ds-btn\" type=\"button\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.25\" stroke-linecap=\"square\" stroke-linejoin=\"miter\"><path d=\"M10 3 L5 8 L10 13\"/></svg><span>Prev</span></button>",
+      "css": ".ds-btn { font: 600 13.5px/1 var(--voice, Archivo, system-ui, sans-serif); color: var(--ink, #16181D); background: var(--plate, #FFFFFF); border: 2px solid var(--rule, #16181D); padding: 8px 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms cubic-bezier(0.23,1,0.32,1); } .ds-btn svg { width: 13px; height: 13px; display: block; } .ds-btn:hover { background: var(--ink, #16181D); color: var(--on-ink, #EDEDEF); } .ds-btn:focus-visible { outline: 3px solid var(--now-line, #D6202F); outline-offset: 2px; } .ds-btn:active { transform: scale(0.97); transition-duration: 100ms; }"
     },
     {
-      "name": "Default Button",
+      "name": "Primary Button (Next)",
       "kind": "button",
-      "refersTo": "button-default",
-      "description": "Prev, Play and Reset. Hover recolors the border and text; nothing moves.",
-      "html": "<button class=\"ds-btn\">&larr; Prev</button>",
-      "css": ".ds-btn { font-family: 'Source Sans 3', -apple-system, sans-serif; font-size: 14px; font-weight: 600; color: #0F1B24; background: #FDFEFE; border: 1px solid #C4D2DB; border-radius: 4px; padding: 7px 14px; cursor: pointer; } .ds-btn:hover:not(:disabled) { border-color: #0A6E6C; color: #0A6E6C; } .ds-btn:focus-visible { outline: 2px solid #0A6E6C; outline-offset: 2px; } .ds-btn:disabled { opacity: .4; cursor: default; }"
+      "refersTo": "button-go",
+      "description": "The only red fill on a page. Label precedes the icon, unlike every other control.",
+      "html": "<button class=\"ds-btn-go\" type=\"button\"><span>Next</span><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.25\" stroke-linecap=\"square\" stroke-linejoin=\"miter\"><path d=\"M6 3 L11 8 L6 13\"/></svg></button>",
+      "css": ".ds-btn-go { font: 600 13.5px/1 var(--voice, Archivo, system-ui, sans-serif); color: var(--on-now, #FFFFFF); background: var(--now-line, #D6202F); border: 2px solid var(--now-line, #D6202F); padding: 8px 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms cubic-bezier(0.23,1,0.32,1); } .ds-btn-go svg { width: 13px; height: 13px; display: block; } .ds-btn-go:hover { background: var(--now, #C81326); border-color: var(--now, #C81326); } .ds-btn-go:focus-visible { outline: 3px solid var(--now-line, #D6202F); outline-offset: 2px; } .ds-btn-go:active { transform: scale(0.97); transition-duration: 100ms; } .ds-btn-go:disabled { background: var(--plate, #FFFFFF); border-color: var(--hair, #C5C8CE); color: var(--ink-3, #62676F); cursor: default; transform: none; }"
     },
     {
-      "name": "Toggle Button (selected)",
+      "name": "Mode Toggle",
       "kind": "chip",
-      "refersTo": "button-toggle-selected",
-      "description": "Mode switches such as the <= / < comparison toggle and the four order modes.",
-      "html": "<button class=\"ds-toggle ds-toggle-sel\">list1-&gt;val &lt;= list2-&gt;val</button>",
-      "css": ".ds-toggle { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13.5px; font-weight: 700; color: #0F1B24; background: #FDFEFE; border: 1px solid #C4D2DB; border-radius: 4px; padding: 6px 11px; cursor: pointer; } .ds-toggle-sel { background: #F6DED3; border-color: #B2451A; color: #B2451A; } .ds-toggle:focus-visible { outline: 2px solid #0A6E6C; outline-offset: 2px; }"
+      "refersTo": "toggle-pressed",
+      "description": "aria-pressed toggle for switching the thing being compared. Pressed inverts to solid ink.",
+      "html": "<div class=\"ds-modes\"><button class=\"ds-mode\" type=\"button\" aria-pressed=\"true\">print 1..N</button><button class=\"ds-mode\" type=\"button\" aria-pressed=\"false\">print N..1</button></div>",
+      "css": ".ds-modes { display: flex; flex-wrap: wrap; gap: 8px; border-bottom: 2px solid var(--rule, #16181D); padding-bottom: 12px; } .ds-mode { font: 600 13.5px/1 var(--voice, Archivo, system-ui, sans-serif); color: var(--ink, #16181D); background: var(--plate, #FFFFFF); border: 2px solid var(--rule, #16181D); padding: 8px 12px; cursor: pointer; transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms cubic-bezier(0.23,1,0.32,1); } .ds-mode[aria-pressed=\"true\"] { background: var(--ink, #16181D); border-color: var(--ink, #16181D); color: var(--on-ink, #EDEDEF); } .ds-mode:hover[aria-pressed=\"false\"] { background: var(--ink, #16181D); color: var(--on-ink, #EDEDEF); } .ds-mode:focus-visible { outline: 3px solid var(--now-line, #D6202F); outline-offset: 2px; } .ds-mode:active { transform: scale(0.97); transition-duration: 100ms; }"
     },
     {
-      "name": "Panel",
+      "name": "Claim Bar",
+      "kind": "custom",
+      "refersTo": "claim-bar",
+      "description": "The page's single imperative, reversed out of solid ink. One per page, never two.",
+      "html": "<p class=\"ds-claim\">A page exists only when the idea does not survive as prose.</p>",
+      "css": ".ds-claim { font: 600 clamp(15px, 2.2vw, 18px)/1.3 var(--voice, Archivo, system-ui, sans-serif); background: var(--ink, #16181D); color: var(--on-ink, #EDEDEF); padding: 8px 12px; margin: 0; align-self: flex-start; display: inline-block; max-width: 62ch; }"
+    },
+    {
+      "name": "Plate with Legend",
       "kind": "card",
-      "refersTo": "panel",
-      "description": "The one container idiom, reused for the code view, the call stack and every stage.",
-      "html": "<div class=\"ds-panel\"><h3 class=\"ds-panel-h\">Call stack</h3><div class=\"ds-panel-body\">innermost on top</div></div>",
-      "css": ".ds-panel { background: #FDFEFE; border: 1px solid #C4D2DB; border-radius: 6px; box-shadow: 0 1px 2px rgba(15,27,36,.06), 0 8px 24px -12px rgba(15,27,36,.18); overflow: hidden; } .ds-panel-h { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #576875; margin: 0; padding: 11px 16px; border-bottom: 1px solid #C4D2DB; background: #DFE7EC; } .ds-panel-body { padding: 12px 16px; font-family: 'Source Sans 3', sans-serif; font-size: 14px; color: #576875; }"
+      "refersTo": "plate",
+      "description": "The drawing surface: plate white, 2px ink border, square, with the legend locked at its foot naming every route colour used.",
+      "html": "<div class=\"ds-plate\"><div class=\"ds-legend\"><span><i style=\"background:var(--idle,#9AA0A8)\"></i>not yet</span><span><i style=\"background:var(--set-line,#0A5BD3)\"></i>settled</span><span><i style=\"background:var(--now-line,#D6202F)\"></i>just changed</span><span><i class=\"ds-dash\"></i>unwritten</span></div></div>",
+      "css": ".ds-plate { background: var(--plate, #FFFFFF); border: 2px solid var(--rule, #16181D); padding: 24px 16px; overflow-x: auto; } .ds-legend { display: flex; flex-wrap: wrap; gap: 8px 24px; font: 700 11px/1 var(--data, \"Spline Sans Mono\", ui-monospace, monospace); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2, #41464E); } .ds-legend span { display: inline-flex; align-items: center; gap: 8px; } .ds-legend i { width: 18px; height: 5px; flex: none; } .ds-legend .ds-dash { height: 0; border-top: 3px dashed var(--idle, #9AA0A8); }"
     },
     {
-      "name": "Stack Frame (top)",
+      "name": "Call Stack Panel",
       "kind": "custom",
-      "refersTo": "stack-frame-top",
-      "description": "One call-stack row. The innermost frame carries the orange 'active' treatment.",
-      "html": "<ul class=\"ds-frames\"><li class=\"ds-frame ds-frame-top\">reverseList(<b>5</b>)<span class=\"ds-frame-k\">prev = ?</span></li><li class=\"ds-frame\">reverseList(<b>4</b>)<span class=\"ds-frame-k\">prev = ?</span></li></ul>",
-      "css": ".ds-frames { list-style: none; margin: 0; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; background: #FDFEFE; } .ds-frame { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12.5px; padding: 7px 10px; border-radius: 4px; border: 1px solid #C4D2DB; background: #DFE7EC; color: #576875; } .ds-frame-top { border-color: #B2451A; background: #F6DED3; color: #0F1B24; } .ds-frame-k { color: #8598A5; font-size: 11px; }"
+      "refersTo": "frame-active",
+      "description": "Bordered panel with an inverted ink header, listing frames top-of-stack first. The top frame takes a 3px red left border and a red wash.",
+      "html": "<div class=\"ds-panel\"><h2 class=\"ds-panel-head\">Call stack</h2><ul class=\"ds-frames\"><li class=\"ds-top\"><span>reverseList(5)</span><span class=\"ds-k\">head=5</span></li><li><span>reverseList(4)</span><span class=\"ds-k\">head=4</span></li><li><span>reverseList(3)</span><span class=\"ds-k\">head=3</span></li></ul></div>",
+      "css": ".ds-panel { border: 2px solid var(--rule, #16181D); background: var(--plate, #FFFFFF); } .ds-panel-head { font: 700 11px/1 var(--data, \"Spline Sans Mono\", ui-monospace, monospace); letter-spacing: .16em; text-transform: uppercase; margin: 0; padding: 12px 16px; background: var(--ink, #16181D); color: var(--on-ink, #EDEDEF); } .ds-frames { list-style: none; margin: 0; padding: 0; } .ds-frames li { font: 400 12.5px/1.6 var(--data, \"Spline Sans Mono\", ui-monospace, monospace); padding: 8px 16px; border-bottom: 1px solid var(--hair, #C5C8CE); color: var(--ink-2, #41464E); display: flex; justify-content: space-between; gap: 12px; border-left: 3px solid transparent; transition: background-color 160ms ease, border-left-color 160ms ease, color 160ms ease; } .ds-frames li:last-child { border-bottom: 0; } .ds-frames li.ds-top { border-left-color: var(--now-line, #D6202F); color: var(--ink, #16181D); font-weight: 700; background: var(--now-wash, #FBE7E8); } .ds-frames .ds-k { color: var(--ink-3, #62676F); font-weight: 400; }"
     },
     {
-      "name": "Code Line (executing)",
+      "name": "Code Panel",
       "kind": "custom",
-      "refersTo": "panel",
-      "description": "The code panel's active-line treatment, synchronized with the stepper.",
-      "html": "<div class=\"ds-code\"><div class=\"ds-row\"><span class=\"ds-ln\">4</span><span class=\"ds-src\">    if (list1-&gt;val &lt;= list2-&gt;val) {</span></div><div class=\"ds-row ds-on\"><span class=\"ds-ln\">5</span><span class=\"ds-src\">        list1-&gt;next = func(list1-&gt;next, list2);</span></div></div>",
-      "css": ".ds-code { background: #FDFEFE; padding: 12px 0; overflow-x: auto; } .ds-row { display: flex; gap: 12px; padding: 1px 16px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12.5px; white-space: pre; } .ds-ln { color: #8598A5; min-width: 1.4em; text-align: right; user-select: none; } .ds-src { color: #576875; } .ds-on { background: #F6DED3; } .ds-on .ds-src { color: #0F1B24; font-weight: 700; } .ds-on .ds-ln { color: #B2451A; font-weight: 700; }"
+      "refersTo": "code-row-executing",
+      "description": "The function under discussion with the executing line washed red, its source bolded to full ink and its line number turned red.",
+      "html": "<div class=\"ds-panel\"><h2 class=\"ds-panel-head\">function</h2><div class=\"ds-code\"><div class=\"ds-row\"><span class=\"ds-n\">1</span><span class=\"ds-s\">ListNode* reverseList(ListNode* head) {</span></div><div class=\"ds-row ds-on\"><span class=\"ds-n\">2</span><span class=\"ds-s\">    if (!head || !head->next) return head;</span></div><div class=\"ds-row\"><span class=\"ds-n\">3</span><span class=\"ds-s\">    ListNode* rest = reverseList(head->next);</span></div><div class=\"ds-row\"><span class=\"ds-n\">4</span><span class=\"ds-s\">}</span></div></div></div>",
+      "css": ".ds-code { margin: 0; overflow-x: auto; padding: 12px 0; } .ds-row { display: flex; gap: 12px; padding: 1px 16px; font: 400 12.5px/1.75 var(--data, \"Spline Sans Mono\", ui-monospace, monospace); white-space: pre; transition: background-color 160ms ease; } .ds-n { color: var(--ink-3, #62676F); min-width: 1.4em; text-align: right; user-select: none; font-variant-numeric: tabular-nums; transition: color 160ms ease; } .ds-s { color: var(--ink-2, #41464E); transition: color 160ms ease; } .ds-row.ds-on { background: var(--now-wash, #FBE7E8); } .ds-row.ds-on .ds-s { color: var(--ink, #16181D); font-weight: 700; } .ds-row.ds-on .ds-n { color: var(--now, #C81326); font-weight: 700; }"
     },
     {
-      "name": "Stat Tile",
+      "name": "Route Index (line and stops)",
+      "kind": "nav",
+      "description": "The landing page index: a 3px settled-blue route behind the list with one circular station ring per stop. Replaces a card grid. The next unbuilt stop takes a dashed idle ring.",
+      "html": "<ul class=\"ds-line\"><li class=\"ds-stop\"><div class=\"ds-stop-body\"><a class=\"ds-stop-title\" href=\"#\">Where the work happens</a><p>Four recursions with one skeleton.</p><span class=\"ds-stop-meta\"><b>Week 1</b> Days 0&ndash;1 &middot; the shape everything reuses</span></div></li><li class=\"ds-stop ds-next\"><div class=\"ds-stop-body\"><span class=\"ds-stop-title\">Week 2 &mdash; recursion on trees</span><p>Next stop.</p><span class=\"ds-stop-meta\">Sep 28 &ndash; Oct 4</span></div></li></ul>",
+      "css": ".ds-line { list-style: none; margin: 0; padding: 0; position: relative; } .ds-line::before { content: \"\"; position: absolute; left: 11px; top: 14px; bottom: 14px; width: 3px; background: var(--set-line, #0A5BD3); } .ds-stop { position: relative; padding: 0 0 0 44px; } .ds-stop + .ds-stop { margin-top: 8px; } .ds-stop::before { content: \"\"; position: absolute; left: 3px; top: 20px; width: 19px; height: 19px; background: var(--plate, #FFFFFF); border: 3px solid var(--set-line, #0A5BD3); border-radius: 50%; transition: border-color 160ms ease; } .ds-next::before { border-color: var(--idle, #9AA0A8); border-style: dashed; } .ds-stop-title { display: block; font: 700 clamp(19px, 2.6vw, 23px)/1.2 var(--voice, Archivo, system-ui, sans-serif); letter-spacing: -.02em; color: var(--ink, #16181D); text-decoration: none; margin: 0; transition: color 160ms ease; } .ds-next .ds-stop-title { color: var(--ink-3, #62676F); font-weight: 600; } .ds-stop-body { border-bottom: 1px solid var(--hair, #C5C8CE); padding: 16px 0; display: flex; flex-direction: column; gap: 8px; } .ds-stop p { margin: 0; color: var(--ink-2, #41464E); max-width: 64ch; font: 400 16px/1.55 var(--voice, Archivo, system-ui, sans-serif); } .ds-stop-meta { font: 400 12.5px/1.4 var(--data, \"Spline Sans Mono\", ui-monospace, monospace); color: var(--ink-3, #62676F); display: flex; flex-wrap: wrap; gap: 4px 12px; } .ds-stop-meta b { color: var(--set, #0A50B8); font-weight: 700; } .ds-stop:hover::before { border-color: var(--now-line, #D6202F); } .ds-stop a.ds-stop-title:hover { color: var(--now, #C81326); }"
+    },
+    {
+      "name": "Readout Strip",
       "kind": "custom",
-      "refersTo": "panel",
-      "description": "Fibonacci page readouts. Value color encodes role: orange for cost, teal for the useful figure.",
-      "html": "<div class=\"ds-stat\"><div class=\"ds-stat-k\">Calls made</div><div class=\"ds-stat-v\">2,692,537</div><div class=\"ds-stat-s\">for fib(30)</div></div>",
-      "css": ".ds-stat { background: #FDFEFE; border: 1px solid #C4D2DB; border-radius: 6px; padding: 12px 14px; box-shadow: 0 1px 2px rgba(15,27,36,.06), 0 8px 24px -12px rgba(15,27,36,.18); } .ds-stat-k { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: #8598A5; } .ds-stat-v { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 26px; line-height: 1.2; color: #B2451A; } .ds-stat-s { font-family: 'Source Sans 3', sans-serif; font-size: 12px; color: #576875; }"
+      "description": "Where numbers must be compared: one bordered strip of flexed cells divided by hairlines, never a row of metric cards. Cost reads red, saving reads blue.",
+      "html": "<dl class=\"ds-readout\"><div class=\"ds-cost\"><dt>calls made</dt><dd>2,692,537<small>naive recursion, n = 30</small></dd></div><div class=\"ds-good\"><dt>distinct values</dt><dd>31<small>what memoization computes</small></dd></div></dl>",
+      "css": ".ds-readout { display: flex; flex-wrap: wrap; border: 2px solid var(--rule, #16181D); background: var(--plate, #FFFFFF); margin: 0; } .ds-readout div { flex: 1 1 160px; padding: 12px 16px; border-right: 1px solid var(--hair, #C5C8CE); } .ds-readout div:last-child { border-right: 0; } .ds-readout dt { font: 700 11px/1 var(--data, \"Spline Sans Mono\", ui-monospace, monospace); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3, #62676F); margin: 0 0 6px; } .ds-readout dd { margin: 0; font: 700 26px/1 var(--voice, Archivo, system-ui, sans-serif); letter-spacing: -.02em; font-variant-numeric: tabular-nums; color: var(--ink, #16181D); } .ds-readout dd small { display: block; font: 400 13px/1.3 var(--voice, Archivo, system-ui, sans-serif); color: var(--ink-3, #62676F); margin-top: 4px; letter-spacing: 0; } .ds-readout .ds-cost dd { color: var(--now, #C81326); } .ds-readout .ds-good dd { color: var(--set, #0A50B8); }"
+    },
+    {
+      "name": "Route Segment and Station",
+      "kind": "custom",
+      "description": "The signature drawing material: thick straight segments (dashed idle when unwritten, solid blue when settled, heavy red when acting now) and circular plate-filled station rings.",
+      "html": "<svg class=\"ds-route\" viewBox=\"0 0 260 60\" width=\"260\" height=\"60\" aria-hidden=\"true\"><path class=\"ds-seg ds-seg-set\" d=\"M40 30 H110\"/><path class=\"ds-seg ds-seg-now\" d=\"M110 30 H180\"/><path class=\"ds-seg ds-seg-pending\" d=\"M180 30 H240\"/><circle class=\"ds-node\" cx=\"40\" cy=\"30\" r=\"13\"/><circle class=\"ds-node ds-node-now\" cx=\"110\" cy=\"30\" r=\"13\"/><circle class=\"ds-node\" cx=\"180\" cy=\"30\" r=\"13\"/></svg>",
+      "css": ".ds-route { display: block; } .ds-seg { fill: none; stroke: var(--idle, #9AA0A8); stroke-width: 5; stroke-linecap: butt; transition: stroke 160ms cubic-bezier(0.23,1,0.32,1), stroke-width 160ms cubic-bezier(0.23,1,0.32,1); } .ds-seg-set { stroke: var(--set-line, #0A5BD3); } .ds-seg-now { stroke: var(--now-line, #D6202F); stroke-width: 7; } .ds-seg-pending { stroke: var(--idle, #9AA0A8); stroke-width: 3; stroke-dasharray: 7 7; } .ds-node { fill: var(--plate, #FFFFFF); stroke: var(--rule, #16181D); stroke-width: 3; transform-box: fill-box; transform-origin: center; transition: stroke 160ms cubic-bezier(0.23,1,0.32,1), stroke-width 160ms cubic-bezier(0.23,1,0.32,1), transform 160ms cubic-bezier(0.23,1,0.32,1); } .ds-node-now { stroke: var(--now-line, #D6202F); stroke-width: 5; transform: scale(1.06); }"
     }
   ],
   "narrative": {
-    "northStar": "The Quiet Instrument Panel",
-    "overview": "The incumbent world reads as a well-kept technical readout: cool slate grounds, a single teal accent for settled state, a burnt-orange accent for what is happening right now, and everything else in greys. It behaves like a tidied-up debugger rather than a teaching artifact or an editorial page. Density is moderate-to-high and uniform. Every page is a vertical stack of bordered panels of equal visual weight, repeated so literally across all five steppers that the pages are hard to tell apart at a glance. The type pairing does most of the personality work; the palette carries almost none, and motion is effectively absent.",
+    "northStar": "The Schematic",
+    "overview": "Every recursion on this site is drawn as a route map. The page is a piece of enamel wayfinding signage: a pale concrete ground, near-black ink, heavy rules, square corners, and three route colours that each mean exactly one thing. The visitor does not browse; they read one claim, step a route, and leave able to re-derive it. Nothing on the surface is decoration — every mark was either authored as signage or made by the program being visualized.\n\nThe system refuses both defaults of its category: the dark editor cosplay and the white documentation page with a blue accent. Colour commits at page scale rather than as chips — an inverted ink bar carries the page's single claim, a panel header is a solid ink band, the primary control is a full red fill. There is no decorative grey: grey means not yet written, and it says so in the legend. Density is high and flat; information arrives in bordered plates and panels butted against rules, not in floating cards.\n\nThe world is built to scale to roughly thirty pages across twelve weeks from one starter shell (docs/_template/index.html) and one stylesheet, with no build step. Chrome, type, colour and motion all come from the shared system; a page owns only its own drawing. Both themes ship: the light enamel ground is the default and a dark ground follows the operating system, with every route colour re-tuned rather than dimmed.",
     "keyCharacteristics": [
-      "Cool blue-grey neutrals throughout; no warm tone anywhere",
-      "One structural idiom (the bordered panel) reused for every role",
-      "Semantic color carries state: teal = resolved, orange = active, blue = origin",
-      "Monospace for all data, numbers and code; never for prose",
-      "Flat by default, with one shared ambient shadow on containers",
-      "Full light/dark parity through a three-block token pattern"
+      "Square corners everywhere; no radius token exists in the system",
+      "Heavy rules (2px standard, 3px structural) instead of shadows or fills",
+      "Three semantic route colours, each with exactly one meaning, declared in a legend",
+      "Archivo for the voice, Spline Sans Mono for everything the program computed",
+      "One claim per page, set in an inverted ink bar",
+      "Motion measured in 100–160ms, asymmetric on press and release"
     ],
     "rules": [
-      { "name": "The Two-Accent Rule", "body": "Teal and orange are the only accents allowed to carry meaning site-wide. Teal means settled, orange means active. Any further hue must be justified by a third identity on that specific page, and is local to it.", "section": "colors" },
-      { "name": "The Cool-Only Rule", "body": "Every neutral is blue-biased. No warm grey, cream or paper tone exists anywhere in the incumbent system.", "section": "colors" },
-      { "name": "The Mono-Means-Data Rule", "body": "Monospace marks something the program actually computed: a value, a line of code, an index, a count. It is never used for prose, and prose is never set in the display face.", "section": "typography" },
-      { "name": "The Single Headline Rule", "body": "One display-size element per page, at the top. Everything below it steps down to 22px or smaller.", "section": "typography" },
-      { "name": "The One-Shadow Rule", "body": "The system has exactly one shadow token and it never changes on interaction. Hover moves a border color, never elevation.", "section": "elevation" }
+      { "name": "The One Meaning Rule", "body": "Each route colour means exactly one thing across every page: red is the frame acting now, blue is settled, green is the base case, grey is not yet written. A page may not borrow a route colour for emphasis, branding or category, and a page that introduces a fourth meaning must extend the legend.", "section": "colors" },
+      { "name": "The Legend Never Lies Rule", "body": "Any drawing that uses a route colour ships a legend naming every colour it actually uses, and nothing it does not.", "section": "colors" },
+      { "name": "The Single Red Fill Rule", "body": "At most one element in a viewport carries a solid red fill, and it is the primary action (Next). Everything else red is a stroke, a numeral, or a wash.", "section": "colors" },
+      { "name": "The No Decorative Grey Rule", "body": "Grey is never atmosphere. If a mark is grey it is either quiet ink (ink-3, hair) or it means the program has not written it yet (idle).", "section": "colors" },
+      { "name": "The Two Registers Rule", "body": "Archivo speaks; Spline Sans Mono computes. A value the program produced is never set in Archivo, and a sentence addressed to the reader is never set in mono.", "section": "typography" },
+      { "name": "The One Imperative Rule", "body": "Each page carries exactly one claim, set large enough to be the spine of the first viewport, and it is the only sentence given an inverted bar.", "section": "typography" },
+      { "name": "The No Kicker Rule", "body": "No label, eyebrow or category tag sits above a heading. Wayfinding lives in the top rail, and the heading starts the page.", "section": "typography" },
+      { "name": "The Rule Separates Rule", "body": "Regions are divided by a rule, not by a gap or a card edge: 3px under the rail and above the transport, 2px above the footer and under a control strip, 1px hair between rows inside a panel.", "section": "layout" },
+      { "name": "The Flat Enamel Rule", "body": "Nothing casts a shadow and nothing lifts. If an element needs to read as foreground, invert it to ink or give it a heavier rule; never float it.", "section": "elevation" },
+      { "name": "The Square Corner Rule", "body": "No border radius on any rectangular element, ever. The only round thing in the system is a station node, and a station node is always a circle.", "section": "shapes" },
+      { "name": "The Redraw, Don't Rebuild Rule", "body": "Keep drawing elements persistent across steps so the system's transitions fire. A segment that becomes settled travels from dashed to solid along its own length, and the active station moves rather than blinking on and off.", "section": "components" }
     ],
     "dos": [
-      "Do define the complete light palette on bare :root, then redefine only the tokens under @media (prefers-color-scheme: dark) guarded by :root:not([data-theme=\"light\"]), and again under :root[data-theme=\"dark\"].",
-      "Do give body an explicit token background.",
-      "Do put every wide element (code, tree, diagram) in its own overflow-x: auto container.",
-      "Do use monospace for every computed value, and tabular numerals wherever digits change in place.",
-      "Do express state with both color and a second channel (border weight, dash pattern, position) so it survives color-blindness."
+      "Do copy docs/_template/index.html to start a page, and take chrome, type, colour and motion from docs/assets/system.css unchanged.",
+      "Do keep every corner square. There is no radius token; do not add one.",
+      "Do use a route colour only in its one meaning: red = acting now, blue = settled, green = base case, grey = not yet written.",
+      "Do ship a legend for every drawing that uses route colour, naming every colour used and nothing else.",
+      "Do separate regions with a rule (3px structural, 2px standard, 1px hair inside a panel).",
+      "Do give each page exactly one claim in the inverted ink bar, and one red-filled control.",
+      "Do set anything the program computed in Spline Sans Mono, with tabular-nums when it changes between steps.",
+      "Do cap measure in ch (19ch headline, 62ch claim and narration, 66ch prose).",
+      "Do keep drawing nodes persistent across steps and animate with transitions in the 100–160ms band.",
+      "Do keep colour transitions under prefers-reduced-motion and drop only movement.",
+      "Do draw icons as inline SVG with square caps and mitred joins at 13px."
     ],
     "donts": [
-      "Don't duplicate the token block per page. Six copies already drifted: --down and --blue are the same color under two names.",
-      "Don't add a third semantic accent without a page-specific identity to justify it.",
-      "Don't convey state by fill color alone.",
-      "Don't reach for shadow on hover; the system moves borders instead."
+      "Don't add a border radius to any rectangle. The only round element is a station node, and it is a full circle.",
+      "Don't add a shadow, blur, glow or gradient. There is no shadow vocabulary and depth comes from rules, tone and ink inversion.",
+      "Don't use grey as atmosphere; grey is quiet ink or it means \"not yet written\".",
+      "Don't put a second red fill in a viewport, or colour a non-primary control red.",
+      "Don't put a kicker, eyebrow or category label above a heading; wayfinding belongs in the rail.",
+      "Don't restyle a button, panel, plate or transport inside a page's <style> block — fix the system instead.",
+      "Don't introduce a fourth accent hue, or reuse a route colour for branding or emphasis.",
+      "Don't use a card grid for an index; use the line-and-stops route index.",
+      "Don't use metric cards for numbers; use the bordered readout strip.",
+      "Don't use an icon font, glyph characters or raster icons.",
+      "Don't rebuild the drawing's DOM between steps; that throws the motion away."
     ]
   }
 }

@@ -4,133 +4,157 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="author" content="sumnoon">
-<meta name="description" content="Interactive visualizations built alongside a 12-week journey from recursion to dynamic programming.">
-<title>90 Days of DP — Visualizations</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;700&display=swap">
+<meta name="description" content="Interactive pages for the parts of recursion and dynamic programming a static diagram cannot carry: when the work happens, and how often.">
+<title>90 Days of DP</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Spline+Sans+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="assets/system.css">
 <style>
-  html { -webkit-text-size-adjust: 100%; }
-  body { margin: 0; }
-  img { max-width: 100%; }
+  .hero { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: var(--s6); align-items: end; }
+  @media (max-width: 860px) { .hero { grid-template-columns: minmax(0, 1fr); } }
 
-  :root {
-    color-scheme: light;
-    --bg: #E9EEF2; --surface: #FDFEFE; --surface-2: #DFE7EC;
-    --ink: #0F1B24; --muted: #576875; --faint: #8598A5; --line: #C4D2DB;
-    --accent: #0A6E6C; --accent-soft: #CDE6E4; --hot: #B2451A;
-    --shadow: 0 1px 2px rgba(15,27,36,.06), 0 8px 24px -12px rgba(15,27,36,.18);
-    --f-display: "Bricolage Grotesque", "Trebuchet MS", sans-serif;
-    --f-body: "Source Sans 3", -apple-system, "Segoe UI", sans-serif;
-    --f-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  .ticket { border: var(--w-rule) solid var(--rule); background: var(--plate); }
+  .ticket dl { margin: 0; display: grid; grid-template-columns: auto 1fr; }
+  .ticket dt, .ticket dd {
+    margin: 0; padding: var(--s2) var(--s3);
+    font: 400 12.5px/1.4 var(--data); border-bottom: 1px solid var(--hair);
   }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      color-scheme: dark;
-      --bg: #0B1318; --surface: #131F27; --surface-2: #1B2A34;
-      --ink: #E5EEF3; --muted: #94A7B3; --faint: #6B808D; --line: #273A46;
-      --accent: #3FC6BE; --accent-soft: #123833; --hot: #FF9058;
-      --shadow: 0 1px 2px rgba(0,0,0,.5), 0 10px 28px -14px rgba(0,0,0,.7);
-    }
+  .ticket dt { color: var(--ink-3); letter-spacing: .1em; text-transform: uppercase; font-size: 11px; font-weight: 700; padding-top: 10px; }
+  .ticket dd { color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; }
+  .ticket dl > :nth-last-child(-n+2) { border-bottom: 0; }
+
+  /* the index is a line, not a grid of cards */
+  .line { list-style: none; margin: 0; padding: 0; position: relative; }
+  .line::before {
+    content: ""; position: absolute; left: 11px; top: 14px; bottom: 14px;
+    width: var(--w-heavy); background: var(--set-line);
   }
-  :root[data-theme="dark"] {
-    color-scheme: dark;
-    --bg: #0B1318; --surface: #131F27; --surface-2: #1B2A34;
-    --ink: #E5EEF3; --muted: #94A7B3; --faint: #6B808D; --line: #273A46;
-    --accent: #3FC6BE; --accent-soft: #123833; --hot: #FF9058;
-    --shadow: 0 1px 2px rgba(0,0,0,.5), 0 10px 28px -14px rgba(0,0,0,.7);
+  .stop { position: relative; padding: 0 0 0 44px; }
+  .stop + .stop { margin-top: var(--s2); }
+  .stop::before {
+    content: ""; position: absolute; left: 3px; top: 20px;
+    width: 19px; height: 19px; background: var(--plate);
+    border: var(--w-heavy) solid var(--set-line); border-radius: 50%;
   }
-
-  body {
-    background: var(--bg); color: var(--ink);
-    font-family: var(--f-body); font-size: 16px; line-height: 1.55;
-    padding-inline: 20px; padding-block: 44px 60px;
+  .stop--next::before { border-color: var(--idle); border-style: dashed; }
+  .stop a.stop__title {
+    display: block; font: 700 clamp(19px, 2.6vw, 23px)/1.2 var(--voice);
+    letter-spacing: -.02em; color: var(--ink); text-decoration: none; margin: 0;
   }
-  .wrap { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
-
-  .eyebrow { font-family: var(--f-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
-  h1 { font-family: var(--f-display); font-weight: 700; font-size: clamp(32px, 7vw, 52px); line-height: 1.03; letter-spacing: -.025em; margin: 8px 0 12px; text-wrap: balance; }
-  header p { margin: 0; color: var(--muted); max-width: 60ch; }
-  header a { color: var(--accent); }
-
-  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
-  @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
-
-  a.card {
-    display: flex; flex-direction: column; gap: 9px;
-    background: var(--surface); border: 1px solid var(--line); border-radius: 7px;
-    padding: 20px; box-shadow: var(--shadow); text-decoration: none; color: inherit;
+  .stop__body { border-bottom: 1px solid var(--hair); padding: var(--s4) 0; display: flex; flex-direction: column; gap: var(--s2); }
+  .stop:last-child .stop__body { border-bottom: 0; }
+  .stop p { margin: 0; color: var(--ink-2); max-width: 64ch; }
+  .stop__meta { font: 400 12.5px/1.4 var(--data); color: var(--ink-3); display: flex; flex-wrap: wrap; gap: var(--s1) var(--s3); }
+  .stop__meta b { color: var(--set); font-weight: 700; }
+  @media (hover: hover) and (pointer: fine) {
+    .stop a.stop__title:hover { color: var(--now); }
+    .stop:hover::before { border-color: var(--now-line); }
   }
-  a.card:hover { border-color: var(--accent); }
-  a.card .tag { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); }
-  a.card h2 { font-family: var(--f-display); font-weight: 700; font-size: 21px; letter-spacing: -.01em; margin: 0; line-height: 1.2; }
-  a.card p { margin: 0; color: var(--muted); font-size: 14.5px; }
-  a.card .go { font-family: var(--f-mono); font-size: 12px; color: var(--accent); font-weight: 700; margin-top: 2px; }
+  .stop--next .stop__title { color: var(--ink-3); font-weight: 600; }
 
-  .about { background: var(--surface); border: 1px solid var(--line); border-radius: 7px; padding: 20px 22px; box-shadow: var(--shadow); }
-  .about h3 { font-family: var(--f-display); font-size: 18px; margin: 0 0 8px; }
-  .about p { margin: 0 0 10px; color: var(--muted); }
-  .about p:last-child { margin-bottom: 0; }
-  .about code { font-family: var(--f-mono); font-size: .88em; background: var(--surface-2); padding: 1px 5px; border-radius: 3px; color: var(--ink); }
-  .about a { color: var(--accent); }
-
-  footer { color: var(--faint); font-size: 13px; border-top: 1px solid var(--line); padding-top: 16px; }
-  footer a { color: var(--muted); }
-  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .ahead { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s2); }
+  .ahead span {
+    font: 400 12.5px/1 var(--data); color: var(--ink-3);
+    border: 1px solid var(--hair); padding: 5px 7px;
+  }
+  .ahead span.is-here { color: var(--on-ink); background: var(--ink); border-color: var(--ink); font-weight: 700; }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="eyebrow">#90DaysOfDP</div>
-    <h1>Seeing recursion before it becomes DP</h1>
-    <p>Interactive pages built alongside a 12-week climb from plain recursion to dynamic programming. Each one exists because a static diagram couldn&rsquo;t show the thing that actually matters — usually <em>when</em> the work happens. Source and notes live in <a href="https://github.com/sumnoon/90-days-of-dp">the repo</a>.</p>
+<div class="page">
+
+  <nav class="rail">
+    <a class="rail__home" href="./">90 Days of DP</a>
+    <span class="rail__where">Week <b>1</b> of 12 &middot; recursion fundamentals</span>
+  </nav>
+
+  <header class="hero">
+    <div class="masthead">
+      <h1>Recursion you can step through</h1>
+      <p class="claim">A page exists only when the idea does not survive as prose.</p>
+      <p class="lede">Five interactive explanations built alongside a 12-week climb from plain recursion to dynamic programming. Each one exists because its idea is about <em>when</em> work happens or <em>how often</em> &mdash; and a code listing shows neither.</p>
+    </div>
+
+    <div class="ticket">
+      <dl>
+        <dt>Started</dt><dd>Sun 20 Sep 2026</dd>
+        <dt>Ends</dt><dd>Sun 13 Dec 2026</dd>
+        <dt>Solved</dt><dd>9 problems</dd>
+        <dt>Written up</dt><dd>8 notes</dd>
+        <dt>Language</dt><dd>C++20</dd>
+      </dl>
+    </div>
   </header>
 
-  <div class="grid">
-    <a class="card" href="lc206/">
-      <span class="tag">Week 1 &middot; Day 3 &middot; LC 206</span>
-      <h2>Reverse a linked list, one frame at a time</h2>
-      <p>Twenty-eight steps through <code>reverseList([1,2,3,4,5])</code>, with a live pointer diagram, the call stack and the executing line. Nothing is rewired on the way down.</p>
-      <span class="go">Step through &rarr;</span>
-    </a>
+  <ul class="line">
+    <li class="stop">
+      <div class="stop__body">
+        <a class="stop__title" href="order/">Where the work happens</a>
+        <p>Four recursions with one skeleton. Move the work before or after the call and the answer arrives top-down or bottom-up. Print 1..N, print N..1, factorial, sum of digits &mdash; on one call stack.</p>
+        <span class="stop__meta"><b>Week 1</b> Days 0&ndash;1 &middot; the shape everything reuses</span>
+      </div>
+    </li>
 
-    <a class="card" href="order/">
-      <span class="tag">Week 1 &middot; Days 0&ndash;1 &middot; the core shape</span>
-      <h2>Where the work happens</h2>
-      <p>Four recursions, one skeleton. Move the work before or after the call and the answer arrives top-down or bottom-up. Print 1..N, print N..1, factorial, sum of digits.</p>
-      <span class="go">Compare them &rarr;</span>
-    </a>
+    <li class="stop">
+      <div class="stop__body">
+        <a class="stop__title" href="twopointer/">Meeting in the middle</a>
+        <p>Two pointers walking inward. Switch between comparing the ends and swapping them, and watch a single base case cover odd, even and empty strings.</p>
+        <span class="stop__meta"><b>Week 1</b> Day 1 &middot; palindrome check &amp; LC 344</span>
+      </div>
+    </li>
 
-    <a class="card" href="twopointer/">
-      <span class="tag">Week 1 &middot; Day 1 &middot; palindrome &amp; LC 344</span>
-      <h2>Meeting in the middle</h2>
-      <p>Two pointers walking inward. Switch between comparing the ends and swapping them, and watch one base case cover odd, even and empty strings.</p>
-      <span class="go">Walk it in &rarr;</span>
-    </a>
+    <li class="stop">
+      <div class="stop__body">
+        <a class="stop__title" href="fib/">The same answer, computed again and again</a>
+        <p>The naive Fibonacci recursion tree. Click any node to light up every place that value is recomputed, then switch on memoization and watch 109 calls collapse to 17.</p>
+        <span class="stop__meta"><b>Week 1</b> Day 2 &middot; LC 509</span>
+      </div>
+    </li>
 
-    <a class="card" href="lc21/">
-      <span class="tag">Week 1 &middot; Day 4 &middot; LC 21</span>
-      <h2>Which head goes first</h2>
-      <p>A recursive merge picks each head on the way down and writes each link on the way back up. Flip <code>&lt;=</code> to <code>&lt;</code> and watch which list wins a tie.</p>
-      <span class="go">Merge them &rarr;</span>
-    </a>
+    <li class="stop">
+      <div class="stop__body">
+        <a class="stop__title" href="lc206/">Reverse a linked list, one frame at a time</a>
+        <p>Twenty-eight steps through <code class="inline">reverseList([1,2,3,4,5])</code>. Five frames pile up changing nothing, then one link flips per return on the way back up.</p>
+        <span class="stop__meta"><b>Week 1</b> Day 3 &middot; LC 206</span>
+      </div>
+    </li>
 
-    <a class="card" href="fib/">
-      <span class="tag">Week 1 &middot; Day 2 &middot; LC 509</span>
-      <h2>The same answer, computed again and again</h2>
-      <p>The naive Fibonacci recursion tree. Click a node to light up every recomputation of that value, then toggle memoization and watch 109 calls collapse to 17.</p>
-      <span class="go">Explore the tree &rarr;</span>
-    </a>
-  </div>
+    <li class="stop">
+      <div class="stop__body">
+        <a class="stop__title" href="lc21/">Which head goes first</a>
+        <p>A recursive merge picks each head on the way down and writes each link on the way back up. Flip <code class="inline">&lt;=</code> to <code class="inline">&lt;</code> and watch which list wins a tie.</p>
+        <span class="stop__meta"><b>Week 1</b> Day 4 &middot; LC 21</span>
+      </div>
+    </li>
 
-  <div class="about">
-    <h3>Why these two first</h3>
-    <p><strong>LC 206</strong> is where tracing stops working and trusting starts. You cannot hold five stack frames in your head, and the page makes that unnecessary: watch five frames pile up changing nothing, then one link flip per return on the way back up.</p>
-    <p><strong>LC 509</strong> is where dynamic programming is first visible. At n = 30 the recursion makes 2,692,537 calls to compute 31 distinct values. That gap — between <em>distinct subproblems</em> and <em>calls made</em> — is the whole idea, arriving nine weeks before the word is needed.</p>
-  </div>
+    <li class="stop stop--next">
+      <div class="stop__body">
+        <span class="stop__title">Week 2 &mdash; recursion on trees</span>
+        <p>Next stop. Pre-order and post-order stop being two ways to print a number and become two ways to walk a tree.</p>
+        <span class="stop__meta">Sep 28 &ndash; Oct 4</span>
+      </div>
+    </li>
+  </ul>
 
-  <footer>
-    Part of <a href="https://github.com/sumnoon/90-days-of-dp">90 Days of DP</a> — solutions in C++, notes per problem, one week at a time. More pages as the harder weeks arrive.
+  <section class="read">
+    <h2>The line ahead</h2>
+    <p>Twelve weeks, from recursion to bitmask and digit DP. Pages appear where an idea needs one.</p>
+    <div class="ahead">
+      <span class="is-here">1 Recursion</span><span>2 Trees</span><span>3 Backtracking I</span><span>4 Backtracking II</span>
+      <span>5 Memoization</span><span>6 1D DP</span><span>7 Grid DP</span><span>8 String DP</span>
+      <span>9 Knapsack</span><span>10 Interval</span><span>11 Tree &amp; state machine</span><span>12 Bitmask &amp; digit</span>
+    </div>
+
+    <h2>Why these five first</h2>
+    <p><b>LC 206</b> is where tracing stops working and trusting starts. You cannot hold five stack frames in your head, and the page makes that unnecessary: watch five frames pile up changing nothing, then one link flip per return.</p>
+    <p><b>LC 509</b> is where dynamic programming first becomes visible. At n = 30 the recursion makes 2,692,537 calls to compute 31 distinct values. That gap &mdash; between <em>distinct subproblems</em> and <em>calls made</em> &mdash; is the whole idea, arriving nine weeks before the word is needed.</p>
+  </section>
+
+  <footer class="foot">
+    Solutions in C++, one written note per problem, source for every page &mdash;
+    <a href="https://github.com/sumnoon/90-days-of-dp">github.com/sumnoon/90-days-of-dp</a>
   </footer>
+
 </div>
 </body>
 </html>

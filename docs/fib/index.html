@@ -4,324 +4,221 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="author" content="sumnoon">
-<meta name="description" content="Explore the naive Fibonacci recursion tree and watch memoization collapse it.">
+<meta name="description" content="Explore the naive Fibonacci recursion tree, click a value to see every place it is recomputed, and switch on memoization to watch the tree collapse.">
+<title>The same answer, computed again and again — 90 Days of DP</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Spline+Sans+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="../assets/system.css">
 <style>
-  /* standalone reset (the artifact host normally supplies this) */
-  html { -webkit-text-size-adjust: 100%; }
-  body { margin: 0; }
-  img { max-width: 100%; }
-  [hidden] { display: none !important; }
-</style>
-<title>Fibonacci's Repeated Work</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:ital,wght@0,400;0,600&family=JetBrains+Mono:wght@400;700&display=swap">
-<style>
-  :root {
-    color-scheme: light;
-    --bg: #E9EEF2;
-    --surface: #FDFEFE;
-    --surface-2: #DFE7EC;
-    --ink: #0F1B24;
-    --muted: #576875;
-    --faint: #8598A5;
-    --line: #C4D2DB;
-    --accent: #0A6E6C;
-    --accent-soft: #CDE6E4;
-    --hot: #B2451A;
-    --hot-soft: #F6DED3;
-    --dead: #A9BAC5;
-    --shadow: 0 1px 2px rgba(15,27,36,.06), 0 8px 24px -12px rgba(15,27,36,.18);
-    --f-display: "Bricolage Grotesque", "Trebuchet MS", sans-serif;
-    --f-body: "Source Sans 3", -apple-system, "Segoe UI", sans-serif;
-    --f-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      color-scheme: dark;
-      --bg: #0B1318; --surface: #131F27; --surface-2: #1B2A34;
-      --ink: #E5EEF3; --muted: #94A7B3; --faint: #6B808D; --line: #273A46;
-      --accent: #3FC6BE; --accent-soft: #123833; --hot: #FF9058; --hot-soft: #3A1F14;
-      --dead: #3C4E5A;
-      --shadow: 0 1px 2px rgba(0,0,0,.5), 0 10px 28px -14px rgba(0,0,0,.7);
-    }
-  }
-  :root[data-theme="dark"] {
-    color-scheme: dark;
-    --bg: #0B1318; --surface: #131F27; --surface-2: #1B2A34;
-    --ink: #E5EEF3; --muted: #94A7B3; --faint: #6B808D; --line: #273A46;
-    --accent: #3FC6BE; --accent-soft: #123833; --hot: #FF9058; --hot-soft: #3A1F14;
-    --dead: #3C4E5A;
-    --shadow: 0 1px 2px rgba(0,0,0,.5), 0 10px 28px -14px rgba(0,0,0,.7);
-  }
+  .controls { display: flex; flex-wrap: wrap; gap: var(--s3) var(--s5); align-items: center;
+    border-bottom: var(--w-rule) solid var(--rule); padding-bottom: var(--s3); }
+  .controls label { font: 400 12.5px/1 var(--data); color: var(--ink-2); display: inline-flex; align-items: center; gap: var(--s2); }
+  .controls input[type="range"] { width: 150px; accent-color: var(--now-line); }
+  .controls input[type="checkbox"] { width: 17px; height: 17px; accent-color: var(--now-line); }
+  .controls b { color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums; }
 
-  body {
-    background: var(--bg); color: var(--ink);
-    font-family: var(--f-body); font-size: 16px; line-height: 1.55;
-    padding-inline: 20px; padding-block: 32px 56px;
-  }
-  .wrap { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+  /* a readout strip, not a row of metric cards */
+  .readout { display: flex; flex-wrap: wrap; border: var(--w-rule) solid var(--rule); background: var(--plate); }
+  .readout div { flex: 1 1 160px; padding: var(--s3) var(--s4); border-right: 1px solid var(--hair); }
+  .readout div:last-child { border-right: 0; }
+  .readout dt { font: 700 11px/1 var(--data); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 6px; }
+  .readout dd { margin: 0; font: 700 26px/1 var(--voice); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .readout dd small { display: block; font: 400 13px/1.3 var(--voice); color: var(--ink-3); margin-top: 4px; letter-spacing: 0; }
+  .readout .cost dd { color: var(--now); }
+  .readout .good dd { color: var(--set); }
 
-  .eyebrow { font-family: var(--f-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
-  h1 { font-family: var(--f-display); font-weight: 700; font-size: clamp(28px, 6vw, 46px); line-height: 1.04; letter-spacing: -.02em; margin: 6px 0 10px; text-wrap: balance; }
-  header p { margin: 0; color: var(--muted); max-width: 64ch; }
-  code { font-family: var(--f-mono); font-size: .88em; }
-
-  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-  @media (max-width: 620px) { .stats { grid-template-columns: repeat(2, 1fr); } }
-  .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; box-shadow: var(--shadow); }
-  .stat .k { font-family: var(--f-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); }
-  .stat .v { font-family: var(--f-display); font-weight: 700; font-size: 26px; line-height: 1.2; font-variant-numeric: tabular-nums; }
-  .stat .v.hot { color: var(--hot); }
-  .stat .v.acc { color: var(--accent); }
-  .stat .sub { font-size: 12px; color: var(--muted); }
-
-  .stage { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; box-shadow: var(--shadow); overflow: hidden; }
-  .bar { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; padding: 12px 18px; background: var(--surface-2); border-bottom: 1px solid var(--line); }
-  .bar label { font-family: var(--f-mono); font-size: 12px; color: var(--muted); display: inline-flex; align-items: center; gap: 8px; }
-  input[type="range"] { accent-color: var(--accent); width: 150px; }
-  input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; }
-  .nval { font-family: var(--f-mono); font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
-  .scroller { overflow-x: auto; padding: 8px 0 4px; }
-  svg { display: block; height: auto; }
-  .edge { stroke: var(--line); stroke-width: 1.5; fill: none; }
-  .edge.dim { stroke: var(--dead); stroke-dasharray: 3 3; }
-  .nd { stroke-width: 1.5; cursor: pointer; }
-  .nd-base { fill: var(--accent-soft); stroke: var(--accent); }
-  .nd-norm { fill: var(--surface); stroke: var(--line); }
-  .nd-rep  { fill: var(--hot-soft); stroke: var(--hot); }
-  .nd-cut  { fill: none; stroke: var(--dead); stroke-dasharray: 3 3; }
-  .nd-sel  { stroke-width: 3; }
-  .lbl { font-family: var(--f-mono); font-size: 11px; font-weight: 700; fill: var(--ink); pointer-events: none; }
-  .lbl.cut { fill: var(--dead); font-weight: 400; }
-  .legend { display: flex; flex-wrap: wrap; gap: 8px 18px; padding: 11px 18px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
-  .legend span { display: inline-flex; align-items: center; gap: 7px; }
-  .chip { width: 13px; height: 13px; border-radius: 3px; flex: none; border: 1.5px solid var(--line); background: var(--surface); }
-  .readout { padding: 12px 18px; border-top: 1px solid var(--line); min-height: 62px; }
-  .readout p { margin: 0; }
-  .readout b { color: var(--ink); }
-
-  table { border-collapse: collapse; width: 100%; font-size: 14px; }
-  .tablewrap { overflow-x: auto; }
-  th, td { text-align: right; padding: 7px 12px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
-  th:first-child, td:first-child { text-align: left; }
-  th { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .09em; text-transform: uppercase; color: var(--faint); font-weight: 700; }
-  td { color: var(--muted); }
-  td.big { color: var(--hot); font-weight: 600; }
-  td.small { color: var(--accent); font-weight: 600; }
-  tr.now td { background: var(--surface-2); color: var(--ink); }
-
-  h2 { font-family: var(--f-display); font-weight: 700; font-size: 22px; letter-spacing: -.01em; margin: 8px 0 0; }
-  .notes { display: flex; flex-direction: column; gap: 13px; }
-  .notes p { margin: 0; color: var(--muted); max-width: 68ch; }
-  .notes b { color: var(--ink); }
-  .notes code { background: var(--surface-2); padding: 1px 4px; border-radius: 3px; color: var(--ink); }
-  .pull { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 12px 16px; border-radius: 0 4px 4px 0; font-size: 17px; color: var(--ink); max-width: 64ch; }
-  footer { color: var(--faint); font-size: 13px; border-top: 1px solid var(--line); padding-top: 14px; }
-  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  .tree { display: block; height: auto; }
+  .nd { cursor: pointer; stroke-width: 3; }
+  .nd-norm { fill: var(--plate); stroke: var(--rule); }
+  .nd-base { fill: var(--base-wash); stroke: var(--base-line); }
+  .nd-rep  { fill: var(--now-wash); stroke: var(--now-line); stroke-width: 5; }
+  .nd-cut  { fill: none; stroke: var(--idle); stroke-dasharray: 4 4; }
+  .edge { stroke: var(--hair); stroke-width: 2.5; fill: none; }
+  .edge.dim { stroke: var(--idle); stroke-dasharray: 4 4; stroke-width: 2; }
+  .lbl { font: 700 12px/1 var(--data); fill: var(--ink); text-anchor: middle; pointer-events: none; }
+  .lbl.cut { fill: var(--idle); font-weight: 400; }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="eyebrow">Week 1 &middot; Day 2 &middot; LC 509</div>
+<div class="page">
+
+  <nav class="rail">
+    <a class="rail__home" href="../">90 Days of DP</a>
+    <span class="rail__where">Week <b>1</b> &middot; Day <b>2</b> &middot; LC 509</span>
+  </nav>
+
+  <header class="masthead">
     <h1>The same answer, computed again and again</h1>
-    <p>Naive <code>fib(n) = fib(n-1) + fib(n-2)</code> doesn&rsquo;t recurse down a chain &mdash; it recurses into a <em>tree</em>. Click any node to light up every place that value is recomputed.</p>
+    <p class="claim">2,692,537 calls to compute 31 distinct values.</p>
+    <p class="lede">Naive <code class="inline">fib(n) = fib(n-1) + fib(n-2)</code> does not recurse down a chain &mdash; it recurses into a <em>tree</em>. Click any node to light up every place that value is recomputed.</p>
   </header>
 
-  <div class="stats">
-    <div class="stat"><div class="k">Calls made</div><div class="v hot" id="sCalls">15</div><div class="sub" id="sCallsSub">for fib(5)</div></div>
-    <div class="stat"><div class="k">Distinct values</div><div class="v acc" id="sDist">6</div><div class="sub">0 through n</div></div>
-    <div class="stat"><div class="k">Wasted calls</div><div class="v" id="sWaste">9</div><div class="sub" id="sWasteSub">60% of the work</div></div>
-    <div class="stat"><div class="k">Answer</div><div class="v" id="sAns">5</div><div class="sub" id="sAnsSub">fib(5)</div></div>
-  </div>
+  <dl class="readout">
+    <div class="cost"><dt>Calls made</dt><dd id="sCalls">15<small id="sCallsSub">for fib(5)</small></dd></div>
+    <div class="good"><dt>Distinct values</dt><dd id="sDist">6<small>0 through n</small></dd></div>
+    <div><dt>Wasted</dt><dd id="sWaste">9<small id="sWasteSub">60% of the work</small></dd></div>
+    <div><dt>Answer</dt><dd id="sAns">5<small id="sAnsSub">fib(5)</small></dd></div>
+  </dl>
 
-  <div class="stage">
-    <div class="bar">
-      <label for="n">n = <span class="nval" id="nOut">5</span>
-        <input id="n" type="range" min="2" max="9" value="5" step="1">
-      </label>
+  <div class="plate plate--flush">
+    <div class="controls" style="padding: var(--s3) var(--s4)">
+      <label for="n">n = <b id="nOut">5</b><input id="n" type="range" min="2" max="9" value="5" step="1"></label>
       <label for="memo"><input id="memo" type="checkbox"> memoize &mdash; grey out repeats</label>
     </div>
-    <div class="scroller"><svg id="tree" role="img" aria-labelledby="treeTitle"><title id="treeTitle">Recursion tree of the naive Fibonacci function</title><g id="edges"></g><g id="nodes"></g></svg></div>
-    <div class="readout"><p id="read">Every node is one call. Click one to highlight all calls with the same argument.</p></div>
-    <div class="legend">
-      <span><i class="chip" style="background: var(--accent-soft); border-color: var(--accent)"></i> base case (0 or 1)</span>
-      <span><i class="chip" style="background: var(--hot-soft); border-color: var(--hot)"></i> selected value, recomputed</span>
-      <span><i class="chip" style="background: transparent; border-style: dashed; border-color: var(--dead)"></i> skipped once memoized</span>
+    <div class="scroll-x" style="padding: var(--s4)">
+      <svg id="tree" class="tree" role="img" aria-labelledby="treeTitle">
+        <title id="treeTitle">Recursion tree of the naive Fibonacci function</title>
+        <g id="edges"></g><g id="nodes"></g>
+      </svg>
+    </div>
+    <p class="say" id="read" style="padding: var(--s3) var(--s4); border-top: 1px solid var(--hair); min-height:auto">Every node is one call. Click one to highlight all calls with the same argument.</p>
+    <div class="legend" style="padding: 0 var(--s4) var(--s4); margin-top: 0">
+      <span><i style="background:var(--base-line)"></i>base case (0 or 1)</span>
+      <span><i style="background:var(--now-line)"></i>selected, recomputed</span>
+      <span><i class="dash"></i>skipped once memoized</span>
     </div>
   </div>
 
-  <div class="tablewrap">
-    <table>
-      <caption style="text-align:left; padding: 0 0 8px; color: var(--muted); font-size: 14px;">Measured by instrumenting the real C++ function.</caption>
+  <div class="scroll-x">
+    <table class="data-table">
+      <caption style="text-align:left;padding:0 0 var(--s2);color:var(--ink-3);font-size:14px">Measured by instrumenting the real C++ function.</caption>
       <thead><tr><th>n</th><th>Calls</th><th>Distinct</th><th>With memo</th><th>Speed-up</th></tr></thead>
       <tbody id="tbody"></tbody>
     </table>
   </div>
 
-  <div class="notes">
+  <section class="read">
     <h2>What the tree is telling you</h2>
     <p>Set n to 9 and look at the width. The tree has <b>109 nodes but only 10 distinct arguments</b>. Every subtree hanging off a repeated node is an exact copy of one drawn elsewhere &mdash; same input, same output, computed from scratch.</p>
-    <p>Now tick <b>memoize</b>. Nothing about the recurrence changes; the second time a value is asked for, the stored answer comes back and the whole subtree underneath disappears. What&rsquo;s left is a thin spine of <code>2n - 1</code> calls.</p>
-    <div class="pull">The gap between <em>distinct subproblems</em> and <em>calls made</em> is the whole of dynamic programming.</div>
-    <p>That property has a name: <b>overlapping subproblems</b>. It&rsquo;s one of the two things that make a problem a DP problem, and it&rsquo;s the reason Week 5 spends its time turning recursions into memoized recursions before touching a table.</p>
+    <p>Now switch on <b>memoize</b>. Nothing about the recurrence changes; the second time a value is asked for, the stored answer comes back and the whole subtree underneath disappears. What is left is a thin spine of <code>2n - 1</code> calls.</p>
+    <p class="pull">The gap between distinct subproblems and calls made is the whole of dynamic programming.</p>
+    <p>That property has a name: <b>overlapping subproblems</b>. It is one of the two things that make a problem a DP problem, and it is why Week 5 turns recursions into memoized recursions before touching a table.</p>
+
     <h2>Why the stack is only O(n)</h2>
     <p>The tree is exponentially wide, but only one root-to-leaf path is ever open at a time &mdash; <code>fib(n-1)</code> finishes completely before <code>fib(n-2)</code> starts. So time is O(1.618<sup>n</sup>) while space stays O(n). Wide tree, shallow stack.</p>
-    <footer>Run the real file with n = 45, then 50. Watching it stall is more convincing than any table.</footer>
-  </div>
+  </section>
+
+  <footer class="foot">
+    Run the real file with n = 45, then 50. Watching it stall is more convincing than any table. Source and notes at <a href="https://github.com/sumnoon/90-days-of-dp">the repo</a>.
+  </footer>
+
 </div>
 
+<script src="../assets/stepper.js"></script>
 <script>
-  var elTree = document.getElementById("tree");
-  var elEdges = document.getElementById("edges");
-  var elNodes = document.getElementById("nodes");
-  var elRead = document.getElementById("read");
-  var inN = document.getElementById("n");
-  var inMemo = document.getElementById("memo");
-
-  var R = 15, GAP_X = 38, GAP_Y = 62, PAD = 24;
+(function () {
+  "use strict";
+  var NS = window.Schematic.svgNS;
+  var E = function (id) { return document.getElementById(id); };
+  var R = 15, GAP_X = 40, GAP_Y = 64, PAD = 26;
   var selected = null;
 
   function fib(n) { var a = 0, b = 1; for (var i = 0; i < n; i++) { var t = a + b; a = b; b = t; } return a; }
   function naiveCalls(n) { return n <= 1 ? 1 : 1 + naiveCalls(n - 1) + naiveCalls(n - 2); }
 
   function build(n, memoOn) {
-    var seen = {};
-    var leafX = 0;
-    var nodes = [];
-    var edges = [];
-
+    var seen = {}, leafX = 0, nodes = [], edges = [];
     function rec(v, depth, parent) {
       var cut = memoOn && seen[v] === true && v > 1;
       var node = { v: v, depth: depth, cut: cut, x: 0, y: PAD + R + depth * GAP_Y };
       nodes.push(node);
       if (parent) edges.push({ a: parent, b: node, dim: cut });
       seen[v] = true;
-
-      if (cut || v <= 1) {
-        node.x = PAD + R + leafX * GAP_X;
-        leafX++;
-        return node;
-      }
-      var l = rec(v - 1, depth + 1, node);
-      var r = rec(v - 2, depth + 1, node);
+      if (cut || v <= 1) { node.x = PAD + R + leafX * GAP_X; leafX++; return node; }
+      var l = rec(v - 1, depth + 1, node), r = rec(v - 2, depth + 1, node);
       node.x = (l.x + r.x) / 2;
       return node;
     }
-
     rec(n, 0, null);
-    return { nodes: nodes, edges: edges, width: PAD * 2 + Math.max(1, leafX) * GAP_X, depth: n };
+    return { nodes: nodes, edges: edges, width: PAD * 2 + Math.max(1, leafX) * GAP_X };
   }
 
-  function counts(nodes) {
-    var m = {};
-    nodes.forEach(function (nd) { if (!nd.cut) m[nd.v] = (m[nd.v] || 0) + 1; });
-    return m;
-  }
-
-  function svgEl(name, attrs) {
-    var e = document.createElementNS("http://www.w3.org/2000/svg", name);
+  function mk(tag, attrs) {
+    var e = document.createElementNS(NS, tag);
     for (var k in attrs) e.setAttribute(k, attrs[k]);
     return e;
   }
 
   function render() {
-    var n = Number(inN.value);
-    var memoOn = inMemo.checked;
-    document.getElementById("nOut").textContent = String(n);
+    var n = Number(E("n").value), memoOn = E("memo").checked;
+    E("nOut").textContent = String(n);
 
-    var t = build(n, memoOn);
-    var height = PAD * 2 + (n + 1) * GAP_Y;
-    elTree.setAttribute("viewBox", "0 0 " + t.width + " " + height);
-    elTree.setAttribute("width", String(Math.max(t.width, 320)));
-    elTree.style.maxWidth = "none";
+    var t = build(n, memoOn), height = PAD * 2 + (n + 1) * GAP_Y;
+    var svg = E("tree");
+    svg.setAttribute("viewBox", "0 0 " + t.width + " " + height);
+    svg.setAttribute("width", String(Math.max(t.width, 320)));
 
-    elEdges.textContent = "";
-    elNodes.textContent = "";
+    var gE = E("edges"), gN = E("nodes");
+    gE.textContent = ""; gN.textContent = "";
 
     t.edges.forEach(function (e) {
-      elEdges.appendChild(svgEl("path", {
+      gE.appendChild(mk("path", {
         d: "M " + e.a.x + " " + (e.a.y + R) + " L " + e.b.x + " " + (e.b.y - R),
-        class: "edge" + (e.dim ? " dim" : "")
+        "class": "edge" + (e.dim ? " dim" : "")
       }));
     });
 
-    var cnt = counts(t.nodes);
+    var cnt = {};
+    t.nodes.forEach(function (nd) { if (!nd.cut) cnt[nd.v] = (cnt[nd.v] || 0) + 1; });
+
     t.nodes.forEach(function (nd) {
       var cls = "nd ";
       if (nd.cut) cls += "nd-cut";
       else if (nd.v <= 1) cls += "nd-base";
       else if (selected !== null && nd.v === selected) cls += "nd-rep";
       else cls += "nd-norm";
-      if (selected !== null && nd.v === selected) cls += " nd-sel";
-
-      var c = svgEl("circle", { cx: nd.x, cy: nd.y, r: R, class: cls });
-      c.addEventListener("click", function () {
-        selected = (selected === nd.v) ? null : nd.v;
-        render();
-      });
-      elNodes.appendChild(c);
-
-      var tx = svgEl("text", { x: nd.x, y: nd.y + 4, "text-anchor": "middle", class: "lbl" + (nd.cut ? " cut" : "") });
+      var c = mk("circle", { cx: nd.x, cy: nd.y, r: R, "class": cls, tabindex: "0", role: "button" });
+      c.setAttribute("aria-label", "fib(" + nd.v + ")");
+      function pick() { selected = (selected === nd.v) ? null : nd.v; render(); }
+      c.addEventListener("click", pick);
+      c.addEventListener("keydown", function (ev) { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); pick(); } });
+      gN.appendChild(c);
+      var tx = mk("text", { x: nd.x, y: nd.y + 4, "class": "lbl" + (nd.cut ? " cut" : "") });
       tx.textContent = String(nd.v);
-      elNodes.appendChild(tx);
+      gN.appendChild(tx);
     });
 
-    var live = t.nodes.filter(function (x) { return !x.cut; }).length;
-    var shown = t.nodes.length;
-    var distinct = n + 1;
-    var full = naiveCalls(n);
-    var waste = full - distinct;
-
-    document.getElementById("sCalls").textContent = memoOn ? String(shown) : String(full);
-    document.getElementById("sCallsSub").textContent = memoOn ? "with memoization" : "for fib(" + n + ")";
-    document.getElementById("sDist").textContent = String(distinct);
-    document.getElementById("sWaste").textContent = memoOn ? "0" : String(waste);
-    document.getElementById("sWasteSub").textContent = memoOn
-      ? "nothing recomputed"
-      : Math.round(waste / full * 100) + "% of the work";
-    document.getElementById("sAns").textContent = String(fib(n));
-    document.getElementById("sAnsSub").textContent = "fib(" + n + ")";
+    var shown = t.nodes.length, distinct = n + 1, full = naiveCalls(n), waste = full - distinct;
+    E("sCalls").firstChild.nodeValue = memoOn ? String(shown) : full.toLocaleString();
+    E("sCallsSub").textContent = memoOn ? "with memoization" : "for fib(" + n + ")";
+    E("sDist").firstChild.nodeValue = String(distinct);
+    E("sWaste").firstChild.nodeValue = memoOn ? "0" : waste.toLocaleString();
+    E("sWasteSub").textContent = memoOn ? "nothing recomputed" : Math.round(waste / full * 100) + "% of the work";
+    E("sAns").firstChild.nodeValue = fib(n).toLocaleString();
+    E("sAnsSub").textContent = "fib(" + n + ")";
 
     if (selected !== null) {
       var c2 = cnt[selected] || 0;
-      elRead.innerHTML = memoOn
-        ? "<b>fib(" + selected + ")</b> is computed <b>once</b> now. The dashed nodes are the calls that hit the cache instead of recursing."
-        : "<b>fib(" + selected + ")</b> is computed <b>" + c2 + (c2 === 1 ? " time" : " times") +
-          "</b> in this tree" + (c2 > 1 ? " &mdash; and every one of them rebuilds the identical subtree below it." : ".");
+      E("read").innerHTML = memoOn
+        ? "<b>fib(" + selected + ")</b> is computed <b>once</b> now. The dashed nodes hit the cache instead of recursing."
+        : "<b>fib(" + selected + ")</b> is computed <b>" + c2 + (c2 === 1 ? " time" : " times") + "</b> in this tree" +
+          (c2 > 1 ? " &mdash; and every one of them rebuilds the identical subtree below it." : ".");
     } else {
-      elRead.innerHTML = memoOn
-        ? "Each value is computed once; dashed nodes return a stored answer. <b>" + shown + " calls</b> instead of " + full + "."
+      E("read").innerHTML = memoOn
+        ? "Each value is computed once; dashed nodes return a stored answer. <b>" + shown + " calls</b> instead of " + full.toLocaleString() + "."
         : "Every node is one call. Click one to highlight all calls with the same argument.";
     }
 
-    var tb = document.getElementById("tbody");
+    var tb = E("tbody");
     tb.textContent = "";
     [5, 10, 15, 20, 25, 30].forEach(function (k) {
       var tr = document.createElement("tr");
-      if (k === n) tr.className = "now";
+      if (k === n) tr.className = "is-now";
       var callsK = naiveCalls(k);
-      var cells = [
-        String(k),
-        callsK.toLocaleString(),
-        String(k + 1),
-        String(2 * k - 1),
-        Math.round(callsK / (2 * k - 1)).toLocaleString() + "x"
-      ];
-      cells.forEach(function (txt, i) {
+      [String(k), callsK.toLocaleString(), String(k + 1), String(2 * k - 1),
+       Math.round(callsK / (2 * k - 1)).toLocaleString() + "x"].forEach(function (txt) {
         var td = document.createElement("td");
         td.textContent = txt;
-        if (i === 1) td.className = "big";
-        if (i === 3) td.className = "small";
         tr.appendChild(td);
       });
       tb.appendChild(tr);
     });
   }
 
-  inN.addEventListener("input", function () { selected = null; render(); });
-  inMemo.addEventListener("change", render);
+  E("n").addEventListener("input", function () { selected = null; render(); });
+  E("memo").addEventListener("change", render);
   render();
+})();
 </script>
 </body>
 </html>

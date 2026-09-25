@@ -1,0 +1,53 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>The Fixed-Scale Folio</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Spline+Sans+Mono:wght@400;700&display=swap">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#EFE9DC;color:#211C15;font:400 15px/1.55 Archivo,system-ui,sans-serif}
+.pg{min-height:100vh;padding:32px 44px;display:flex;flex-direction:column;gap:16px}
+.rail{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid #6B5E48;padding-bottom:8px}
+.eyebrow{font:700 11px/1 "Spline Sans Mono",monospace;letter-spacing:.18em;color:#6B5E48;text-transform:uppercase}
+.count{font:700 12px/1 "Spline Sans Mono",monospace;color:#6B5E48}
+h1{font:700 37px/1.06 Archivo,sans-serif;letter-spacing:-.02em;margin:0;max-width:19ch}
+.claim{font:600 16px/1.35 Archivo,sans-serif;color:#3F3629;margin:0;max-width:52ch}
+.plates{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border-top:1px solid #6B5E48;border-bottom:1px solid #6B5E48;margin-top:4px}
+.plate{border-right:1px solid #CBBFA6;padding:18px 12px 12px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.plate:last-child{border-right:none}
+.plate.now{background:#FBF8F1}
+.stage{height:74px;display:flex;align-items:center;justify-content:center}
+.n{width:40px;height:40px;border:1.5px solid #211C15;background:#EFE9DC;display:grid;place-items:center;
+ font:700 15px/1 "Spline Sans Mono",monospace}
+.n.hot{border-color:#8E2420;color:#8E2420;border-width:2.5px}
+.n.done{border-color:#3F6B3A;color:#2E4F2B}
+.seg{width:14px;height:1.5px;background:#3F6B3A}
+.seg.pending{background:none;border-top:1.5px dashed #9E937D}
+.cap{font:400 11px/1.4 "Spline Sans Mono",monospace;color:#5A4F3C;text-align:center}
+.cap b{display:block;color:#211C15;font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:10px;margin-bottom:3px}
+.lower{display:grid;grid-template-columns:1fr 222px;gap:30px;flex:1;align-items:start;margin-top:4px}
+.say{font:400 16px/1.55 Archivo,sans-serif;color:#3F3629;max-width:56ch;margin:0}
+.say b{color:#211C15}
+.stack h3{font:700 10px/1 "Spline Sans Mono",monospace;letter-spacing:.16em;text-transform:uppercase;color:#6B5E48;margin:0 0 9px}
+.f{font:400 12.5px/1.65 "Spline Sans Mono",monospace;padding:5px 9px;color:#4A4133;border-left:2px solid #CBBFA6}
+.f.top{border-left-color:#8E2420;color:#211C15;background:#F5E6E2}
+.ctl{display:flex;gap:9px;align-items:center;border-top:1px solid #6B5E48;padding-top:12px}
+.btn{font:600 13px/1 Archivo,sans-serif;color:#211C15;background:#FBF8F1;border:1px solid #6B5E48;padding:8px 14px}
+.btn.p{background:#8E2420;border-color:#8E2420;color:#FBF8F1}
+.scrub{flex:1;height:1px;background:#CBBFA6;position:relative}
+.scrub:after{content:"";position:absolute;left:44%;top:-4px;width:9px;height:9px;background:#8E2420;border-radius:50%}
+</style></head><body><div class="pg">
+<div class="rail"><span class="eyebrow">Week 1 &middot; Day 3 &middot; LC 206</span><span class="count">Plate iv &middot; step 12 / 27</span></div>
+<h1>Reverse a linked list, one frame at a time</h1>
+<p class="claim">Nothing is rewired on the way down.</p>
+<div class="plates">
+ <div class="plate"><div class="stage"><span class="n">1</span><span class="seg pending"></span><span class="n">2</span></div><span class="cap"><b>i · descend</b>five frames open</span></div>
+ <div class="plate"><div class="stage"><span class="n">4</span><span class="seg pending"></span><span class="n">5</span></div><span class="cap"><b>ii · base</b>node 5 returned</span></div>
+ <div class="plate"><div class="stage"><span class="n done">4</span><span class="seg"></span><span class="n done">5</span></div><span class="cap"><b>iii · first link</b>5 points back</span></div>
+ <div class="plate now"><div class="stage"><span class="n hot">3</span><span class="seg"></span><span class="n done">4</span></div><span class="cap"><b>iv · now</b>4 points back</span></div>
+ <div class="plate"><div class="stage"><span class="n">1</span><span class="seg pending"></span><span class="n">2</span></div><span class="cap"><b>v · to come</b>two frames left</span></div>
+</div>
+<div class="lower">
+ <p class="say">Line 7: <b>head-&gt;next-&gt;next = head</b>. Node 4 now points back at node 3. One link changed. Every plate is drawn at the same scale on the same ground, so only the change moves.</p>
+ <div class="stack"><h3>Call stack</h3><div class="f top">reverseList(3)</div><div class="f">reverseList(2)</div><div class="f">reverseList(1)</div></div>
+</div>
+<div class="ctl"><button class="btn">&larr; Prev</button><button class="btn p">Next &rarr;</button><div class="scrub"></div><button class="btn">Play</button></div>
+</div></body></html>
