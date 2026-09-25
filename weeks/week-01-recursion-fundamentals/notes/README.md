@@ -14,6 +14,7 @@ re-read before a redo, not while solving.
 | [LC 231 Power of Two](lc0231_power_of_two.md) | 3 | clean | Short-circuit `&&` is doing the work of a base case. |
 | [⭐ LC 206 Reverse Linked List](lc0206_reverse_linked_list.md) | 3 | clean | Grant that the rest is reversed; then exactly one link needs changing. |
 | [LC 21 Merge Two Sorted Lists](lc0021_merge_two_sorted_lists.md) | 4 | clean | The smaller head *is* the answer's head; hand the rest to the recursion. |
+| [⭐ LC 50 Pow(x, n)](lc0050_pow.md) | 5 | clean | Halving walks n's binary digits one per call: 32 calls for `INT_MAX`, where naive recursion needs 2.1 billion. |
 
 "clean" = solved without a hint. Anything else is on the
 [redo list](../../../redo-list.md).
@@ -30,6 +31,7 @@ Interactive step-throughs built alongside the notes, published at
 | [LC 206 Frame by Frame](https://sumnoon.github.io/90-days-of-dp/lc206/) | 28 steps of `reverseList([1,2,3,4,5])` with live pointer diagram, call stack and code line. Nothing rewires on the way down. |
 | [Fibonacci's Repeated Work](https://sumnoon.github.io/90-days-of-dp/fib/) | The recursion tree for n up to 9. Click a node to see every recomputation; toggle memoization to collapse it. |
 | [Which Head Goes First](https://sumnoon.github.io/90-days-of-dp/lc21/) | LC 21 step by step. Heads chosen on the way down, links written on the way back up; the `<=` toggle makes stability visible. |
+| [Reading n One Bit at a Time](https://sumnoon.github.io/90-days-of-dp/lc50/) | LC 50 as a walk through n's binary digits: bits read right to left going down, 1-bits multiplied in left to right coming up. |
 
 ## The thread through Week 1
 
@@ -44,7 +46,7 @@ What changes is the shape of "smaller":
 |---|---|
 | One step down (`n - 1`) | factorial, sum of digits, print 1..N |
 | Two pointers moving inward | palindrome, LC 344 |
-| Halving (`n / 2`) | LC 231, and LC 50 next |
+| Halving (`n / 2`) | LC 231, LC 50 |
 | Following a pointer (`head->next`) | LC 206 |
 | Two inputs, advance one | LC 21 — the shape Week 8 string DP reuses |
 | **Two recursive calls** | **LC 509** — and this is the one that becomes DP |

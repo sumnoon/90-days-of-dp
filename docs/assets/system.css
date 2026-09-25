@@ -214,7 +214,11 @@ body {
 }
 .legend span { display: inline-flex; align-items: center; gap: var(--s2); }
 .legend i { width: 18px; height: 5px; flex: none; }
-.legend .dash { height: 0; border-top: 3px dashed var(--idle); }
+/* Dashed-line samples are drawn with the same primitive the diagrams use
+   for pending segments -- an SVG line with a dasharray -- so the legend shows
+   exactly the mark it describes. Set `color` to recolour one. */
+.legend svg.dash { width: 18px; height: 4px; flex: none; color: var(--idle); }
+.legend svg.dash line { stroke: currentColor; stroke-width: 3; stroke-dasharray: 5 4; }
 
 /* ---------- panels ---------- */
 
@@ -245,12 +249,17 @@ body {
   display: flex;
   justify-content: space-between;
   gap: var(--s3);
-  border-left: var(--w-heavy) solid transparent;
 }
 .frames li:last-child { border-bottom: 0; }
-.frames li.is-top { border-left-color: var(--now-line); color: var(--ink); font-weight: 700; background: var(--now-wash); }
+/* The active frame is boxed on all four sides, not tabbed on one: the same
+   treatment the order page gives its top frame, and no side-tab accent. */
+.frames li.is-top {
+  outline: var(--w-rule) solid var(--now-line);
+  outline-offset: calc(var(--w-rule) * -1);
+  color: var(--ink); font-weight: 700; background: var(--now-wash);
+}
 .frames li .k { color: var(--ink-3); font-weight: 400; }
-.frames .is-empty { justify-content: center; color: var(--ink-3); font-style: italic; border-left-color: transparent; }
+.frames .is-empty { justify-content: center; color: var(--ink-3); font-style: italic; }
 
 /* ---------- code ---------- */
 
@@ -302,6 +311,20 @@ body {
 @media (hover: hover) and (pointer: fine) {
   .btn:hover:not(:disabled) { background: var(--ink); color: var(--on-ink); }
   .btn--go:hover:not(:disabled) { background: var(--now); border-color: var(--now); color: var(--on-now); }
+}
+
+/* setup bar: the inputs above a plate — presets, modes, toggles */
+.setup {
+  display: flex; flex-wrap: wrap; gap: var(--s3) var(--s5); align-items: center;
+  border-bottom: var(--w-rule) solid var(--rule); padding-bottom: var(--s3);
+}
+.setup label, .setup .grp {
+  font: 400 12.5px/1 var(--data); color: var(--ink-2);
+  display: inline-flex; align-items: center; gap: var(--s2); flex-wrap: wrap;
+}
+select {
+  font: 400 13.5px/1 var(--voice); color: var(--ink); background: var(--plate);
+  border: var(--w-rule) solid var(--rule); padding: 7px 9px;
 }
 
 /* toggle: a pressed-state control. One declaration, three pages. */
@@ -395,7 +418,7 @@ body {
 .code__row .code__s, .code__row .code__n { transition: color var(--t-state) ease; }
 
 /* spatial consistency: the frame that owns the stack right now */
-.frames li { transition: background-color var(--t-state) ease, border-left-color var(--t-state) ease, color var(--t-state) ease; }
+.frames li { transition: background-color var(--t-state) ease, outline-color var(--t-state) ease, color var(--t-state) ease; }
 
 /* the authored moment: a route segment settling into place */
 .seg {

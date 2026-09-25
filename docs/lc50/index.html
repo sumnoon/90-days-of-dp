@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="sumnoon">
+<meta name="description" content="Fast exponentiation reads n in binary, one digit per call: watch it read the bits on the way down and build x to the n from the 1-bits on the way back up.">
+<title>Reading n one bit at a time — 90 Days of DP</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Spline+Sans+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="../assets/system.css">
+<style>
+  .bits { display: flex; gap: 5px; overflow-x: auto; padding: var(--s2) 0 var(--s3); }
+  .bit { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: none; }
+  .bit b {
+    font: 700 18px/1 var(--data); width: 34px; height: 40px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: var(--w-rule) solid var(--rule); background: var(--plate);
+    transition: background-color var(--t-state) ease, border-color var(--t-state) ease,
+                color var(--t-state) ease, opacity var(--t-state) ease;
+  }
+  .bit small { font: 400 11px/1 var(--data); color: var(--ink-3); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .bit.is-now b  { border-color: var(--now-line); border-width: 4px; }
+  .bit.is-owed b { border-style: dashed; border-color: var(--now-line); color: var(--now); }
+  .bit.is-skip b { opacity: .3; }
+  .bit.is-used b { background: var(--set-wash); border-color: var(--set-line); color: var(--set); }
+  .bit.is-used small { color: var(--set); font-weight: 700; }
+
+  .reading { font: 700 11px/1 var(--data); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3);
+    display: flex; justify-content: space-between; gap: var(--s3); }
+  .reading b { color: var(--ink); }
+
+  .tally { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s5); margin-top: var(--s4);
+    border-top: 1px solid var(--hair); padding-top: var(--s3);
+    font: 400 13px/1.5 var(--data); color: var(--ink-3); }
+  .tally b { color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums; }
+  .tally .cost { color: var(--now); }
+  .tally .good { color: var(--set); }
+  .result { font: 700 clamp(17px, 2.6vw, 21px)/1.2 var(--data); margin: 0 0 var(--s2); min-height: 1.2em; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <nav class="rail">
+    <a class="rail__home" href="../">90 Days of DP</a>
+    <span class="rail__where">Week <b>1</b> &middot; Day <b>5</b> &middot; LC 50</span>
+  </nav>
+
+  <header class="masthead">
+    <h1>Reading n one bit at a time</h1>
+    <p class="claim">32 calls for INT_MAX. Naive recursion needs 2.1 billion.</p>
+    <p class="lede">Halving <code class="inline">n</code> drops its lowest binary digit, and <code class="inline">n &amp; 1</code> is that digit. So fast exponentiation reads n in binary: right to left on the way down, then builds x<sup>n</sup> from the 1-bits on the way back up.</p>
+  </header>
+
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:var(--s4)">
+      <div class="setup">
+        <label for="preset">n
+          <select id="preset">
+            <option value="10">10 — binary 1010</option>
+            <option value="13">13 — binary 1101</option>
+            <option value="100">100</option>
+            <option value="1000000">1,000,000</option>
+            <option value="2147483647">2,147,483,647 — INT_MAX</option>
+            <option value="-2">−2 — negative</option>
+            <option value="-2147483648">−2,147,483,648 — INT_MIN</option>
+          </select>
+        </label>
+        <label for="xval">x
+          <select id="xval">
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="1.5">1.5</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="plate">
+        <div class="reading"><span>n in binary</span><span id="width"></span></div>
+        <div class="bits" id="bits"></div>
+        <div class="legend" style="margin-top:var(--s2)">
+          <span><i style="background:var(--now-line)"></i>reading now</span>
+          <span><svg class="dash" viewBox="0 0 18 4" aria-hidden="true" style="color:var(--now-line)"><line x1="0" y1="2" x2="18" y2="2"/></svg>1 · owed</span>
+          <span><i style="background:var(--idle)"></i>0 · owes nothing</span>
+          <span><i style="background:var(--set-line)"></i>multiplied in</span>
+        </div>
+        <div class="tally">
+          <span>calls <b class="good" id="calls">0</b></span>
+          <span>naive would make <b class="cost" id="naive">0</b></span>
+          <span>result <b id="expo">&mdash;</b></span>
+        </div>
+      </div>
+
+      <div>
+        <p class="result" id="value">&nbsp;</p>
+        <p class="say" id="say">Press <b>Next</b> to make the first call.</p>
+      </div>
+      <div class="transport" id="transport"></div>
+    </div>
+
+    <div class="aside">
+      <div class="panel"><h2 class="panel__head">Call stack</h2><ul class="frames" id="frames"></ul></div>
+      <div class="panel"><h2 class="panel__head">helper</h2><div class="panel__body"><div class="code" id="code"></div></div></div>
+    </div>
+  </div>
+
+  <section class="read">
+    <h2>Down right to left, up left to right</h2>
+    <p>On the way down, each call looks at the lowest bit of n and drops it. An even n owes nothing; an odd n owes one factor of its current base, and that debt is only paid when the frame returns. The base squares at every level, so the frame reading bit <em>i</em> is holding x<sup>2<sup>i</sup></sup>.</p>
+    <p>On the way back up, the frames return highest bit first, and every 1-bit multiplies its base in. Step through <b>10</b> and watch bits 1 and 3 light up: x<sup>2</sup> &times; x<sup>8</sup> = x<sup>10</sup>. The answer is assembled from the binary representation of n, in the opposite order to how it was read.</p>
+    <p class="pull">The recursion is reading n in binary. That is the whole reason it is O(log n).</p>
+
+    <h2>Why log n, measured</h2>
+    <div class="scroll-x"><table class="data-table">
+      <thead><tr><th>n</th><th>naive calls</th><th>fast calls</th><th>binary digits</th></tr></thead>
+      <tbody>
+        <tr><td>10</td><td>11</td><td>5</td><td>4</td></tr>
+        <tr><td>1,000,000</td><td>1,000,001</td><td>21</td><td>20</td></tr>
+        <tr><td>10<sup>9</sup></td><td>1,000,000,001</td><td>31</td><td>30</td></tr>
+        <tr class="is-now"><td>INT_MAX</td><td>2,147,483,648</td><td>32</td><td>31</td></tr>
+      </tbody>
+    </table></div>
+    <p>Fast calls are always <b>binary digits plus one</b>, for the base case. A number n has about log<sub>2</sub> n digits, so that is the cost. At <code>INT_MAX</code> the naive version does not merely run slowly: 2.1 billion frames is far more than any default stack holds, so it overflows long before it finishes.</p>
+
+    <h2>The INT_MIN trap</h2>
+    <p>Load <b>INT_MIN</b>. Its binary is a 1 followed by thirty-one 0s, so every frame on the way down is even and owes nothing, until the last. It also takes one extra frame, the negative wrapper, for 34 calls in all.</p>
+    <p>That wrapper negates n. <code>-(-2<sup>31</sup>)</code> = 2<sup>31</sup> does not fit in an <code>int</code>, so negating it as one is signed overflow. The solution takes <code>long long n</code>, which widens the value at the call boundary so <code>-1 * n</code> runs in 64 bits. Order matters: <code>(long long)(-n)</code> would still overflow, because the negation runs before the cast.</p>
+  </section>
+
+  <footer class="foot">
+    Same halving shape as <a href="https://github.com/sumnoon/90-days-of-dp/blob/main/weeks/week-01-recursion-fundamentals/notes/lc0231_power_of_two.md">LC 231</a>, one line of work different. <a href="../">All visualizations</a> &middot; <a href="https://github.com/sumnoon/90-days-of-dp/blob/main/weeks/week-01-recursion-fundamentals/notes/lc0050_pow.md">the note</a> &middot; <a href="https://leetcode.com/problems/powx-n/">LC 50</a>
+  </footer>
+
+</div>
+
+<script src="../assets/stepper.js"></script>
+<script>
+(function () {
+  "use strict";
+  var S = window.Schematic;
+  var E = function (id) { return document.getElementById(id); };
+
+  var CODE = [
+    "double helper(double x, long long n) {",
+    "    if (n == 0) {",
+    "        return 1;",
+    "    }",
+    "    if (n < 0) {",
+    "        return 1.0 / helper(x, -1 * n);",
+    "    }",
+    "    if (n & 1) {",
+    "        return x * helper(x * x, (n - 1) / 2);",
+    "    }",
+    "    else {",
+    "        return helper(x * x, n / 2);",
+    "    }",
+    "}"
+  ];
+
+  var ctl = null, bitEls = [];
+
+  function fmt(v) { return v.toLocaleString("en-US"); }
+  /* All arithmetic below uses / and % rather than & and >>: JavaScript's
+     bitwise operators are 32-bit signed, and |INT_MIN| = 2^31 would wrap. */
+  function pw(k) { return k < 16 ? fmt(Math.pow(2, k)) : "2^" + k; }
+  function baseHtml(k) { return k === 0 ? "x" : "x<sup>" + pw(k) + "</sup>"; }
+  function baseText(k) { return k === 0 ? "x" : (k < 16 ? "x^" + Math.pow(2, k) : "x^(2^" + k + ")"); }
+  function bitsOf(m) { var b = []; while (m > 0) { b.push(m % 2); m = Math.floor(m / 2); } return b; }
+
+  function buildSteps(n) {
+    var steps = [], frames = [], calls = 0, e = null;
+    var m = Math.abs(n), bits = bitsOf(m);
+    var state = bits.map(function () { return "idle"; });
+    var bin = bits.slice().reverse().join("");
+
+    function snap(o) {
+      steps.push({
+        line: o.line, note: o.note,
+        frames: frames.map(function (f) { return { n: f.n, k: f.k, neg: !!f.neg }; }),
+        bits: state.slice(), calls: calls, e: e
+      });
+    }
+
+    snap({ line: null, note: "n = " + fmt(n) + " is <b>" + bits.length + " binary digits</b>: <code>" + bin + "</code>. Press <b>Next</b> to make the first call." });
+
+    if (n < 0) {
+      frames.push({ n: n, k: 0, neg: true }); calls++;
+      snap({ line: 5, note: "<b>helper(x, " + fmt(n) + ")</b>: n is negative, so compute x<sup>" + fmt(m) + "</sup> and invert it." +
+        (n === -2147483648 ? " This is <code>INT_MIN</code>. Negating it as an <code>int</code> would overflow, but <code>n</code> is already a <code>long long</code>, so <code>-1 * n</code> is safe." : "") });
+      snap({ line: 6, note: "Recurse on <code>-1 * n</code> = " + fmt(m) + ". One extra frame, only because n was negative." });
+    }
+
+    var k = 0, cur = m;
+    while (true) {
+      frames.push({ n: cur, k: k }); calls++;
+      if (cur === 0) {
+        snap({ line: 2, note: "<b>helper(" + baseHtml(k) + ", 0)</b>: every bit has been read. n == 0 is the base case." });
+        break;
+      }
+      state[k] = "now";
+      var odd = cur % 2 === 1;
+      snap({ line: 8, note: "<b>helper(" + baseHtml(k) + ", " + fmt(cur) + ")</b>: the lowest bit is <b>" + (odd ? 1 : 0) + "</b>. " +
+        (odd ? "Odd, so this frame owes one factor of " + baseHtml(k) + ", paid on the way back up."
+             : "Even, so this frame owes nothing. It only squares and halves.") });
+      state[k] = odd ? "owed" : "skip";
+      var next = Math.floor(cur / 2);
+      snap({ line: odd ? 9 : 12, note: "Square the base to " + baseHtml(k + 1) + " and halve n to " + fmt(next) + ". " +
+        (odd ? "<code>(n - 1) / 2</code>" : "<code>n / 2</code>") + " drops the bit just read." });
+      cur = next; k++;
+    }
+
+    frames.pop(); e = 0;
+    snap({ line: 3, note: "The base case returns 1, which is x<sup>0</sup>. Now the frames return, <b>highest bit first</b>." });
+
+    while (frames.length) {
+      var f = frames[frames.length - 1];
+      if (f.neg) {
+        frames.pop(); e = -e;
+        snap({ line: 6, note: "The wrapper returns 1.0 / x<sup>" + fmt(-e) + "</sup> = <b>x<sup>" + fmt(e) + "</sup></b>." });
+        continue;
+      }
+      frames.pop();
+      if (f.n % 2 === 1) {
+        e += Math.pow(2, f.k);
+        state[f.k] = "used";
+        snap({ line: 9, note: "<b>helper(" + baseHtml(f.k) + ", " + fmt(f.n) + ")</b> was odd, so it multiplies in " + baseHtml(f.k) + ". Result so far: <b>x<sup>" + fmt(e) + "</sup></b>." });
+      } else {
+        snap({ line: 12, note: "<b>helper(" + baseHtml(f.k) + ", " + fmt(f.n) + ")</b> was even, so it passes x<sup>" + fmt(e) + "</sup> up unchanged." });
+      }
+    }
+
+    snap({ line: null, note: "Done: <b>x<sup>" + fmt(n) + "</sup> in " + calls + " calls</b>, one per binary digit plus the base case" +
+      (n < 0 ? " and the negative wrapper" : "") + ". Naive recursion would make " + fmt(m + 1) + "." });
+    return { steps: steps, bits: bits, m: m };
+  }
+
+  function buildBits(bits) {
+    var host = E("bits");
+    host.textContent = "";
+    bitEls = [];
+    for (var i = bits.length - 1; i >= 0; i--) {
+      var cell = S.el("div", "bit");
+      cell.appendChild(S.el("b", null, String(bits[i])));
+      var w = S.el("small");
+      w.innerHTML = i < 11 ? fmt(Math.pow(2, i)) : "2<sup>" + i + "</sup>";
+      cell.appendChild(w);
+      cell.title = "bit " + i + ", worth " + (i < 11 ? Math.pow(2, i) : "2^" + i);
+      host.appendChild(cell);
+      bitEls[i] = cell;
+    }
+    E("width").innerHTML = "<b>" + bits.length + "</b> digits";
+  }
+
+  function value(e) {
+    if (e === null) return "&nbsp;";
+    var x = Number(E("xval").value), v = Math.pow(x, e), s;
+    if (!isFinite(v)) s = "too large for a double (inf)";
+    else if (v === 0) s = "underflows to 0";
+    else if (Math.abs(v) >= 1e-6 && Math.abs(v) < 1e15) s = v.toLocaleString("en-US", { maximumFractionDigits: 10 });
+    else s = v.toExponential(4);
+    return x + "<sup>" + fmt(e) + "</sup> = " + s;
+  }
+
+  var current = null;
+
+  function render(st) {
+    for (var i = 0; i < bitEls.length; i++) {
+      var c = st.bits[i];
+      bitEls[i].className = "bit" + (c === "idle" ? "" : " is-" + c);
+    }
+    E("calls").textContent = String(st.calls);
+    E("naive").textContent = fmt(current.m + 1);
+    E("expo").innerHTML = st.e === null ? "&mdash;" : "x<sup>" + fmt(st.e) + "</sup>";
+    E("value").innerHTML = value(st.e);
+  }
+
+  function load(n) {
+    current = buildSteps(n);
+    buildBits(current.bits);
+    if (!ctl) {
+      ctl = S.stepper({
+        id: "lc50", steps: current.steps, codeLines: CODE,
+        transport: E("transport"), say: E("say"), code: E("code"), frames: E("frames"),
+        frameLabel: function (f) { return { main: "helper(" + (f.neg ? "x" : baseText(f.k)) + ", " + fmt(f.n) + ")" }; },
+        render: render
+      });
+    } else {
+      ctl.rebuild(current.steps, false);
+    }
+  }
+
+  E("preset").addEventListener("change", function () { load(Number(this.value)); });
+  E("xval").addEventListener("change", function () { ctl.go(ctl.at()); });
+  load(10);
+})();
+</script>
+</body>
+</html>

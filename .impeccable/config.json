@@ -4,6 +4,16 @@
     "ignoreFiles": [
       ".impeccable/mocks/**"
     ],
-    "ignoreValues": []
+    "ignoreValues": [
+      {
+        "rule": "flat-type-hierarchy",
+        "value": "*",
+        "files": [
+          "docs/**/index.html"
+        ],
+        "createdAt": "2026-09-25T18:53:39.174Z",
+        "reason": "Claude (agent), measured in a browser on the served pages: the detector reads h1/h2/body as 16/16/16 because it cannot resolve the external docs/assets/system.css. Real computed sizes are h1 46px (clamp floor 30px), h2 24px (floor 20px), body 16px -- a 1.5x or greater step to the heading at every width."
+      }
+    ]
   }
 }
