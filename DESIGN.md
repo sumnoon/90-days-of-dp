@@ -375,10 +375,11 @@ page that is not a text field. The narration line above it is an
 
 ### Call-Stack Panel (signature)
 A bordered panel titled `CALL STACK`, listing frames top-of-stack first in
-12.5px mono, each row divided by a 1px hair and padded 8px × 16px. Every row
-carries a 3px transparent left border; the top frame turns that border
-`now-line`, tints its row `now-wash`, and sets its label to bold ink, with the
-frame's secondary value in `ink-3`. An empty stack renders one centred italic
+12.5px mono, each row divided by a 1px hair and padded 8px × 16px. The top
+frame is boxed on all four sides by a 2px `now-line` outline (inset, so it
+never shifts layout), tints its row `now-wash`, and sets its label to bold ink,
+with the frame's secondary value in `ink-3`. It is never a one-sided accent
+tab: the order page's stack uses the same four-sided box. An empty stack renders one centred italic
 `empty` row rather than collapsing.
 
 ### Code Panel (signature)

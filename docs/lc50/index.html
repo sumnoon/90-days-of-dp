@@ -77,12 +77,12 @@
       </div>
 
       <div class="plate">
-        <div class="reading"><span>n in binary, most significant bit first</span><span id="width"></span></div>
+        <div class="reading"><span>n in binary</span><span id="width"></span></div>
         <div class="bits" id="bits"></div>
         <div class="legend" style="margin-top:var(--s2)">
           <span><i style="background:var(--now-line)"></i>reading now</span>
-          <span><i class="dash" style="border-top-color:var(--now-line)"></i>1 — owed on the way up</span>
-          <span><i style="background:var(--idle)"></i>0 — nothing owed</span>
+          <span><svg class="dash" viewBox="0 0 18 4" aria-hidden="true" style="color:var(--now-line)"><line x1="0" y1="2" x2="18" y2="2"/></svg>1 · owed</span>
+          <span><i style="background:var(--idle)"></i>0 · owes nothing</span>
           <span><i style="background:var(--set-line)"></i>multiplied in</span>
         </div>
         <div class="tally">
