@@ -420,6 +420,5 @@ a, .stop::before, .stop a.stop__title { transition: color var(--t-state) ease, b
   .btn:active:not(:disabled),
   .toggle:active { transform: none; }
   .node-ring.is-now { transform: none; }
-  .node-ring { transition-property: stroke, stroke-width; }
   .btn, .toggle, .code__row, .frames li, a, .seg, .node-ring { transition-duration: 80ms; }
 }
