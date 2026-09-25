@@ -1,0 +1,172 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-25T00:00:00Z",
+  "title": "Design System: 90 Days of DP",
+  "extensions": {
+    "colorMeta": {
+      "accent": {
+        "role": "primary",
+        "displayName": "Deep Teal",
+        "canonical": "#0A6E6C",
+        "darkValue": "#3FC6BE",
+        "tonalRamp": ["#04211F", "#063533", "#084F4D", "#0A6E6C", "#178C88", "#3FC6BE", "#8EDFDA", "#CDE6E4"]
+      },
+      "hot": {
+        "role": "secondary",
+        "displayName": "Burnt Orange",
+        "canonical": "#B2451A",
+        "darkValue": "#FF9058",
+        "tonalRamp": ["#2E1109", "#4A1D0E", "#7A2F13", "#B2451A", "#D8662F", "#FF9058", "#FFBB93", "#F6DED3"]
+      },
+      "blue": {
+        "role": "tertiary",
+        "displayName": "Plot Blue",
+        "canonical": "#1F5FA8",
+        "darkValue": "#6BA8F0",
+        "tonalRamp": ["#08162B", "#0C2340", "#153F70", "#1F5FA8", "#3B80C9", "#6BA8F0", "#A6CBF6", "#D4E3F5"]
+      },
+      "bad": {
+        "role": "tertiary",
+        "displayName": "Alarm Red",
+        "canonical": "#97261F",
+        "darkValue": "#FF7B72",
+        "tonalRamp": ["#2A0B09", "#451210", "#6C1C17", "#97261F", "#C4453C", "#FF7B72", "#FFB0AA", "#F6D6D3"]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Deep Slate Ink",
+        "canonical": "#0F1B24",
+        "darkValue": "#E5EEF3",
+        "tonalRamp": ["#0B1318", "#0F1B24", "#1B2A34", "#273A46", "#576875", "#8598A5", "#C4D2DB", "#E9EEF2"]
+      },
+      "bg": {
+        "role": "neutral",
+        "displayName": "Slate Mist",
+        "canonical": "#E9EEF2",
+        "darkValue": "#0B1318",
+        "tonalRamp": ["#0B1318", "#131F27", "#1B2A34", "#273A46", "#8598A5", "#C4D2DB", "#DFE7EC", "#FDFEFE"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "The single page headline, one per page." },
+      "title": { "displayName": "Title", "purpose": "Section headings in the prose below the stage." },
+      "body": { "displayName": "Body", "purpose": "All prose, held to 64-68ch." },
+      "label": { "displayName": "Label", "purpose": "Uppercase mono panel headers, eyebrows and legend keys." },
+      "mono": { "displayName": "Mono", "purpose": "Every computed value: code lines, stack frames, counters, cells." }
+    },
+    "shadows": [
+      {
+        "name": "ambient-container",
+        "value": "0 1px 2px rgba(15,27,36,.06), 0 8px 24px -12px rgba(15,27,36,.18)",
+        "purpose": "The only shadow in the system. Applied to panels and cards, never changed on interaction."
+      },
+      {
+        "name": "ambient-container-dark",
+        "value": "0 1px 2px rgba(0,0,0,.5), 0 10px 28px -14px rgba(0,0,0,.7)",
+        "purpose": "Dark-mode counterpart of ambient-container."
+      }
+    ],
+    "motion": [
+      {
+        "name": "state-transition",
+        "value": "stroke .18s ease, stroke-width .18s ease",
+        "purpose": "The system's only motion, on the LC 206 diagram. Every other page cuts between states with no transition. This is a gap, not a philosophy."
+      }
+    ],
+    "breakpoints": [
+      { "name": "stack-panels", "value": "720px" },
+      { "name": "stack-cards", "value": "640px" },
+      { "name": "stats-wrap", "value": "620px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The Next control on every stepper; the only filled button in the system.",
+      "html": "<button class=\"ds-btn-primary\">Next &rarr;</button>",
+      "css": ".ds-btn-primary { font-family: 'Source Sans 3', -apple-system, sans-serif; font-size: 14px; font-weight: 600; color: #FDFEFE; background: #0A6E6C; border: 1px solid #0A6E6C; border-radius: 4px; padding: 7px 14px; cursor: pointer; } .ds-btn-primary:hover { filter: brightness(1.08); } .ds-btn-primary:focus-visible { outline: 2px solid #0A6E6C; outline-offset: 2px; } .ds-btn-primary:disabled { opacity: .4; cursor: default; }"
+    },
+    {
+      "name": "Default Button",
+      "kind": "button",
+      "refersTo": "button-default",
+      "description": "Prev, Play and Reset. Hover recolors the border and text; nothing moves.",
+      "html": "<button class=\"ds-btn\">&larr; Prev</button>",
+      "css": ".ds-btn { font-family: 'Source Sans 3', -apple-system, sans-serif; font-size: 14px; font-weight: 600; color: #0F1B24; background: #FDFEFE; border: 1px solid #C4D2DB; border-radius: 4px; padding: 7px 14px; cursor: pointer; } .ds-btn:hover:not(:disabled) { border-color: #0A6E6C; color: #0A6E6C; } .ds-btn:focus-visible { outline: 2px solid #0A6E6C; outline-offset: 2px; } .ds-btn:disabled { opacity: .4; cursor: default; }"
+    },
+    {
+      "name": "Toggle Button (selected)",
+      "kind": "chip",
+      "refersTo": "button-toggle-selected",
+      "description": "Mode switches such as the <= / < comparison toggle and the four order modes.",
+      "html": "<button class=\"ds-toggle ds-toggle-sel\">list1-&gt;val &lt;= list2-&gt;val</button>",
+      "css": ".ds-toggle { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13.5px; font-weight: 700; color: #0F1B24; background: #FDFEFE; border: 1px solid #C4D2DB; border-radius: 4px; padding: 6px 11px; cursor: pointer; } .ds-toggle-sel { background: #F6DED3; border-color: #B2451A; color: #B2451A; } .ds-toggle:focus-visible { outline: 2px solid #0A6E6C; outline-offset: 2px; }"
+    },
+    {
+      "name": "Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "The one container idiom, reused for the code view, the call stack and every stage.",
+      "html": "<div class=\"ds-panel\"><h3 class=\"ds-panel-h\">Call stack</h3><div class=\"ds-panel-body\">innermost on top</div></div>",
+      "css": ".ds-panel { background: #FDFEFE; border: 1px solid #C4D2DB; border-radius: 6px; box-shadow: 0 1px 2px rgba(15,27,36,.06), 0 8px 24px -12px rgba(15,27,36,.18); overflow: hidden; } .ds-panel-h { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #576875; margin: 0; padding: 11px 16px; border-bottom: 1px solid #C4D2DB; background: #DFE7EC; } .ds-panel-body { padding: 12px 16px; font-family: 'Source Sans 3', sans-serif; font-size: 14px; color: #576875; }"
+    },
+    {
+      "name": "Stack Frame (top)",
+      "kind": "custom",
+      "refersTo": "stack-frame-top",
+      "description": "One call-stack row. The innermost frame carries the orange 'active' treatment.",
+      "html": "<ul class=\"ds-frames\"><li class=\"ds-frame ds-frame-top\">reverseList(<b>5</b>)<span class=\"ds-frame-k\">prev = ?</span></li><li class=\"ds-frame\">reverseList(<b>4</b>)<span class=\"ds-frame-k\">prev = ?</span></li></ul>",
+      "css": ".ds-frames { list-style: none; margin: 0; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; background: #FDFEFE; } .ds-frame { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12.5px; padding: 7px 10px; border-radius: 4px; border: 1px solid #C4D2DB; background: #DFE7EC; color: #576875; } .ds-frame-top { border-color: #B2451A; background: #F6DED3; color: #0F1B24; } .ds-frame-k { color: #8598A5; font-size: 11px; }"
+    },
+    {
+      "name": "Code Line (executing)",
+      "kind": "custom",
+      "refersTo": "panel",
+      "description": "The code panel's active-line treatment, synchronized with the stepper.",
+      "html": "<div class=\"ds-code\"><div class=\"ds-row\"><span class=\"ds-ln\">4</span><span class=\"ds-src\">    if (list1-&gt;val &lt;= list2-&gt;val) {</span></div><div class=\"ds-row ds-on\"><span class=\"ds-ln\">5</span><span class=\"ds-src\">        list1-&gt;next = func(list1-&gt;next, list2);</span></div></div>",
+      "css": ".ds-code { background: #FDFEFE; padding: 12px 0; overflow-x: auto; } .ds-row { display: flex; gap: 12px; padding: 1px 16px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12.5px; white-space: pre; } .ds-ln { color: #8598A5; min-width: 1.4em; text-align: right; user-select: none; } .ds-src { color: #576875; } .ds-on { background: #F6DED3; } .ds-on .ds-src { color: #0F1B24; font-weight: 700; } .ds-on .ds-ln { color: #B2451A; font-weight: 700; }"
+    },
+    {
+      "name": "Stat Tile",
+      "kind": "custom",
+      "refersTo": "panel",
+      "description": "Fibonacci page readouts. Value color encodes role: orange for cost, teal for the useful figure.",
+      "html": "<div class=\"ds-stat\"><div class=\"ds-stat-k\">Calls made</div><div class=\"ds-stat-v\">2,692,537</div><div class=\"ds-stat-s\">for fib(30)</div></div>",
+      "css": ".ds-stat { background: #FDFEFE; border: 1px solid #C4D2DB; border-radius: 6px; padding: 12px 14px; box-shadow: 0 1px 2px rgba(15,27,36,.06), 0 8px 24px -12px rgba(15,27,36,.18); } .ds-stat-k { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: #8598A5; } .ds-stat-v { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 26px; line-height: 1.2; color: #B2451A; } .ds-stat-s { font-family: 'Source Sans 3', sans-serif; font-size: 12px; color: #576875; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Quiet Instrument Panel",
+    "overview": "The incumbent world reads as a well-kept technical readout: cool slate grounds, a single teal accent for settled state, a burnt-orange accent for what is happening right now, and everything else in greys. It behaves like a tidied-up debugger rather than a teaching artifact or an editorial page. Density is moderate-to-high and uniform. Every page is a vertical stack of bordered panels of equal visual weight, repeated so literally across all five steppers that the pages are hard to tell apart at a glance. The type pairing does most of the personality work; the palette carries almost none, and motion is effectively absent.",
+    "keyCharacteristics": [
+      "Cool blue-grey neutrals throughout; no warm tone anywhere",
+      "One structural idiom (the bordered panel) reused for every role",
+      "Semantic color carries state: teal = resolved, orange = active, blue = origin",
+      "Monospace for all data, numbers and code; never for prose",
+      "Flat by default, with one shared ambient shadow on containers",
+      "Full light/dark parity through a three-block token pattern"
+    ],
+    "rules": [
+      { "name": "The Two-Accent Rule", "body": "Teal and orange are the only accents allowed to carry meaning site-wide. Teal means settled, orange means active. Any further hue must be justified by a third identity on that specific page, and is local to it.", "section": "colors" },
+      { "name": "The Cool-Only Rule", "body": "Every neutral is blue-biased. No warm grey, cream or paper tone exists anywhere in the incumbent system.", "section": "colors" },
+      { "name": "The Mono-Means-Data Rule", "body": "Monospace marks something the program actually computed: a value, a line of code, an index, a count. It is never used for prose, and prose is never set in the display face.", "section": "typography" },
+      { "name": "The Single Headline Rule", "body": "One display-size element per page, at the top. Everything below it steps down to 22px or smaller.", "section": "typography" },
+      { "name": "The One-Shadow Rule", "body": "The system has exactly one shadow token and it never changes on interaction. Hover moves a border color, never elevation.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do define the complete light palette on bare :root, then redefine only the tokens under @media (prefers-color-scheme: dark) guarded by :root:not([data-theme=\"light\"]), and again under :root[data-theme=\"dark\"].",
+      "Do give body an explicit token background.",
+      "Do put every wide element (code, tree, diagram) in its own overflow-x: auto container.",
+      "Do use monospace for every computed value, and tabular numerals wherever digits change in place.",
+      "Do express state with both color and a second channel (border weight, dash pattern, position) so it survives color-blindness."
+    ],
+    "donts": [
+      "Don't duplicate the token block per page. Six copies already drifted: --down and --blue are the same color under two names.",
+      "Don't add a third semantic accent without a page-specific identity to justify it.",
+      "Don't convey state by fill color alone.",
+      "Don't reach for shadow on hover; the system moves borders instead."
+    ]
+  }
+}
