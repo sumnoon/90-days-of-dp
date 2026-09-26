@@ -169,13 +169,17 @@
       if (at === steps.length - 1) go(0);
       bPlay.lastChild.textContent = "Pause";
       bPlay.replaceChild(ICONS.pause(), bPlay.firstChild);
+      /* playMs may be a number or a function, so a page can pace long runs */
+      var ms = typeof opts.playMs === "function" ? opts.playMs() : opts.playMs;
       timer = setInterval(function () {
         if (at >= steps.length - 1) { stop(); return; }
         go(at + 1);
-      }, reduced ? 1800 : (opts.playMs || 1100));
+      }, reduced ? Math.max(1800, ms || 0) : (ms || 1100));
     });
 
     document.addEventListener("keydown", function (e) {
+      /* a page with more than one mode can switch the stepper off */
+      if (opts.isActive && !opts.isActive()) return;
       if (e.target && /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName) && e.target !== scrub) return;
       if (e.key === "ArrowRight") { stop(); go(at + 1); }
       else if (e.key === "ArrowLeft") { stop(); go(at - 1); }

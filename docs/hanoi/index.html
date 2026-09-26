@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="sumnoon">
+<meta name="description" content="Play the Tower of Hanoi for any number of disks, then watch the recursion solve it and see why it takes 2 to the n, minus one, moves.">
+<title>Moving n disks means moving n − 1, twice — 90 Days of DP</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Spline+Sans+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="../assets/system.css">
+<style>
+  .nfield { display: inline-flex; align-items: center; gap: var(--s2); }
+  .nfield input {
+    font: 700 15px/1 var(--data); width: 64px; padding: 7px 9px; color: var(--ink);
+    background: var(--plate); border: var(--w-rule) solid var(--rule); font-variant-numeric: tabular-nums;
+  }
+  .nfield input[aria-invalid="true"] { border-color: var(--now-line); }
+  .nerror { font: 400 13px/1.4 var(--voice); color: var(--now); margin: 0; min-height: 1.4em; flex-basis: 100%; }
+
+  .board { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s3); }
+  .col { display: flex; flex-direction: column; gap: var(--s2); min-width: 0; }
+  .peg {
+    position: relative; height: var(--peg-h, 180px); width: 100%;
+    background: none; border: 0; padding: 0; margin: 0; cursor: pointer; font: inherit; color: inherit;
+  }
+  .peg::before {
+    content: ""; position: absolute; left: 50%; width: 4px; margin-left: -2px;
+    top: 6px; bottom: 3px; background: var(--ink-3);
+    transition: background-color var(--t-state) ease;
+  }
+  .peg::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--rule); }
+  .peg[aria-pressed="true"]::before { background: var(--now-line); }
+  .peg:disabled { cursor: default; }
+  @media (hover: hover) and (pointer: fine) {
+    .peg:not(:disabled):hover::before { background: var(--ink); }
+    .peg[aria-pressed="true"]:hover::before { background: var(--now-line); }
+  }
+
+  .disk {
+    position: absolute; z-index: 1;
+    height: calc(var(--disk-h, 22px) - 4px);
+    border: var(--w-rule) solid var(--rule); background: var(--plate);
+    display: flex; align-items: center; justify-content: center;
+    font: 700 12px/1 var(--data); color: var(--ink); font-variant-numeric: tabular-nums;
+    transition: background-color var(--t-state) ease, border-color var(--t-state) ease, color var(--t-state) ease;
+  }
+  .disk.is-last { border-color: var(--now-line); background: var(--now-wash); }
+  .disk.is-held { border-color: var(--now-line); background: var(--now-line); color: var(--on-now); }
+  .board.is-solved .disk { border-color: var(--set-line); background: var(--set-wash); color: var(--set); }
+
+  .plabel { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .plabel b { font: 700 15px/1 var(--data); color: var(--ink); }
+  .plabel span { font: 400 12px/1 var(--data); color: var(--ink-3); min-height: 12px; }
+  .plabel span.is-role-to { color: var(--set); font-weight: 700; }
+  .plabel span.is-role-from { color: var(--now); font-weight: 700; }
+
+  .tally { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s5); margin-top: var(--s4);
+    border-top: 1px solid var(--hair); padding-top: var(--s3);
+    font: 400 13px/1.5 var(--data); color: var(--ink-3); }
+  .tally b { color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums; }
+  .tally .good { color: var(--set); }
+
+  .status { font: 600 clamp(15px, 2.2vw, 17px)/1.45 var(--voice); color: var(--ink-2); margin: 0; min-height: 2.9em; max-width: 62ch; }
+  .status b { color: var(--ink); }
+  .status.is-error { color: var(--now); }
+  .status.is-win { color: var(--set); }
+  .playbar { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center;
+    border-top: var(--w-heavy) solid var(--rule); padding-top: var(--s3); }
+  .keys { font: 400 12.5px/1.4 var(--data); color: var(--ink-3); margin-left: auto; }
+  .keys kbd { font: 700 12px/1 var(--data); color: var(--ink); border: 1px solid var(--hair); padding: 2px 5px; background: var(--plate); }
+
+  details.proof { border-top: var(--w-heavy) solid var(--rule); padding-top: var(--s3); }
+  details.proof summary { cursor: pointer; font: 700 clamp(18px, 2.6vw, 22px)/1.2 var(--voice); letter-spacing: -.02em; }
+  details.proof summary span { display: block; font: 400 14px/1.4 var(--voice); color: var(--ink-3); letter-spacing: 0; margin-top: 4px; }
+  details.proof[open] summary { margin-bottom: var(--s4); }
+  details.proof .read { gap: var(--s4); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <nav class="rail">
+    <a class="rail__home" href="../">90 Days of DP</a>
+    <span class="rail__where">Week <b>1</b> &middot; Day <b>6</b> &middot; Tower of Hanoi</span>
+  </nav>
+
+  <header class="masthead">
+    <h1>Moving n disks means moving n − 1, twice</h1>
+    <p class="claim">2<sup>n</sup> − 1 moves, and not one fewer.</p>
+    <p class="lede">Move every disk from A to C. One disk at a time, always from the top of a peg, and never onto a smaller disk. Play it yourself first, then watch the recursion do it.</p>
+  </header>
+
+  <div class="setup">
+    <span class="nfield">
+      <label for="nIn" style="font:400 12.5px/1 var(--data);color:var(--ink-2)">disks</label>
+      <input id="nIn" type="number" inputmode="numeric" min="1" max="10" step="1" value="3" aria-describedby="nErr">
+    </span>
+    <span class="grp">mode
+      <button type="button" class="toggle" id="modePlay" aria-pressed="true">Play it yourself</button>
+      <button type="button" class="toggle" id="modeWatch" aria-pressed="false">Watch the recursion</button>
+    </span>
+    <p class="nerror" id="nErr" role="alert"></p>
+  </div>
+
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:var(--s4)">
+      <div class="plate">
+        <div class="board" id="board">
+          <div class="col"><button type="button" class="peg" data-p="0"></button><div class="plabel"><b>A</b><span data-role="0"></span></div></div>
+          <div class="col"><button type="button" class="peg" data-p="1"></button><div class="plabel"><b>B</b><span data-role="1"></span></div></div>
+          <div class="col"><button type="button" class="peg" data-p="2"></button><div class="plabel"><b>C</b><span data-role="2"></span></div></div>
+        </div>
+        <div class="tally">
+          <span>moves <b id="moves">0</b></span>
+          <span>minimum <b class="good" id="minimum">7</b></span>
+          <span id="callsWrap" hidden>calls <b id="calls">0</b></span>
+        </div>
+      </div>
+
+      <div id="playUi">
+        <p class="status" id="status" aria-live="polite">Pick the peg to take a disk from.</p>
+        <div class="playbar">
+          <button type="button" class="btn" id="undo">Undo</button>
+          <button type="button" class="btn" id="restart">Start over</button>
+          <span class="keys">keys <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> pick a peg &middot; <kbd>U</kbd> undo</span>
+        </div>
+      </div>
+
+      <div id="watchUi" hidden>
+        <p class="say" id="say">Press <b>Next</b> to make the first call.</p>
+        <div class="transport" id="transport" style="margin-top:var(--s4)"></div>
+      </div>
+    </div>
+
+    <div class="aside" id="watchAside" hidden>
+      <div class="panel"><h2 class="panel__head">Call stack</h2><ul class="frames" id="frames"></ul></div>
+      <div class="panel"><h2 class="panel__head">towerOfHanoi</h2><div class="panel__body"><div class="code" id="code"></div></div></div>
+    </div>
+  </div>
+
+  <section class="read">
+    <h2>What the recursion is really doing</h2>
+    <p>The largest disk is the only one that matters at each level. It can move exactly when every smaller disk is out of its way &mdash; stacked on the spare peg &mdash; and its target peg is empty. So the solution to <em>n</em> disks is three instructions: move the top <em>n − 1</em> to the spare, move the largest across, move the <em>n − 1</em> back on top of it.</p>
+    <p>Moving <em>n − 1</em> disks is the same problem again, with the pegs playing different parts. In <b>Watch the recursion</b>, the labels under the pegs show which peg is <span style="color:var(--now);font-weight:700">from</span>, which is <span style="color:var(--set);font-weight:700">to</span>, and which is <b>via</b> for the frame on top of the stack. Watch them rotate as the recursion descends: that rotation is the only thing the code changes between calls.</p>
+    <p class="pull">Trust the call to move n − 1 disks. You only ever move one disk yourself.</p>
+
+    <h2>How fast it grows</h2>
+    <div class="scroll-x"><table class="data-table">
+      <thead><tr><th>disks</th><th>moves</th><th>at one move a second</th></tr></thead>
+      <tbody>
+        <tr><td>3</td><td>7</td><td>7 seconds</td></tr>
+        <tr><td>10</td><td>1,023</td><td>17 minutes</td></tr>
+        <tr><td>20</td><td>1,048,575</td><td>12 days</td></tr>
+        <tr><td>30</td><td>1,073,741,823</td><td>34 years</td></tr>
+        <tr class="is-now"><td>64</td><td>18,446,744,073,709,551,615</td><td>585 billion years</td></tr>
+      </tbody>
+    </table></div>
+    <p>Adding one disk doubles the work and adds one move. The board above stops at 10 disks for that reason: 1,023 moves is already a long game.</p>
+
+    <details class="proof">
+      <summary>Why exactly 2<sup>n</sup> − 1?<span>This is Week 1's checkpoint. Try to explain it yourself before opening.</span></summary>
+      <div class="read">
+        <p><b>The recurrence.</b> Let <em>T(n)</em> be the moves the recursion makes for <em>n</em> disks. It moves <em>n − 1</em> disks, then one disk, then <em>n − 1</em> disks again, so <em>T(n) = 2 T(n − 1) + 1</em>, with <em>T(1) = 1</em>. That gives 1, 3, 7, 15, 31&hellip; Each value is one less than a power of two, and if <em>T(n − 1) = 2<sup>n−1</sup> − 1</em> then <em>T(n) = 2(2<sup>n−1</sup> − 1) + 1 = 2<sup>n</sup> − 1</em>.</p>
+        <p><b>Why nothing does better.</b> The recurrence only says what this method costs. The minimum comes from the largest disk. It has to move at least once, and at the moment it moves, every other disk must be on the one remaining peg, because none can sit under it and none can be on its source or target. Getting them there takes at least <em>T(n − 1)</em> moves. After it lands they all still have to come back on top of it, another <em>T(n − 1)</em>. So any solution needs at least <em>2 T(n − 1) + 1</em>, which is exactly what the recursion spends.</p>
+        <p>Play it yourself with a few extra moves and you will see the difference: every legal path works, but only one is this short.</p>
+      </div>
+    </details>
+  </section>
+
+  <footer class="foot">
+    <a href="../">All visualizations</a> &middot; <a href="https://github.com/sumnoon/90-days-of-dp/blob/main/weeks/week-01-recursion-fundamentals/notes/tower_of_hanoi.md">the note</a> &middot; <a href="https://github.com/sumnoon/90-days-of-dp/blob/main/weeks/week-01-recursion-fundamentals/solutions/tower_of_hanoi.cpp">the solution</a>
+  </footer>
+
+</div>
+
+<script src="../assets/stepper.js"></script>
+<script>
+(function () {
+  "use strict";
+  var S = window.Schematic;
+  var E = function (id) { return document.getElementById(id); };
+  var NAMES = ["A", "B", "C"];
+  var DISK_H = 22;
+  var MAX_N = 10;
+
+  var CODE = [
+    "void towerOfHanoi(int n, string source, string destination, string temporary) {",
+    "    if (n == 1) {",
+    "        cout << \"Move from \" << source << \" to \" << destination << endl;",
+    "        return;",
+    "    }",
+    "    towerOfHanoi(n - 1, source, temporary, destination);",
+    "    cout << \"Move from \" << source << \" to \" << destination << endl;",
+    "    towerOfHanoi(n - 1, temporary, destination, source);",
+    "}"
+  ];
+
+  var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var rootStyle = getComputedStyle(document.documentElement);
+  var EASE_OUT = rootStyle.getPropertyValue("--ease-out").trim() || "cubic-bezier(0.23, 1, 0.32, 1)";
+  var EASE_IN_OUT = rootStyle.getPropertyValue("--ease-in-out").trim() || "cubic-bezier(0.77, 0, 0.175, 1)";
+
+  var n = 3, mode = "play";
+  var pegEls = [].slice.call(document.querySelectorAll(".peg"));
+  var roleEls = [].slice.call(document.querySelectorAll("[data-role]"));
+  var disks = {};           /* size -> element, one per disk, kept across moves */
+
+  /* ---------- the board ---------- */
+
+  function fmt(v) { return v.toLocaleString("en-US"); }
+  function minimum(k) { return Math.pow(2, k) - 1; }
+
+  function buildDisks() {
+    Object.keys(disks).forEach(function (k) { disks[k].remove(); });
+    disks = {};
+    var board = E("board");
+    board.style.setProperty("--peg-h", ((n + 1) * DISK_H + 12) + "px");
+    board.style.setProperty("--disk-h", DISK_H + "px");
+    for (var s = 1; s <= n; s++) {
+      var d = S.el("div", "disk", String(s));
+      var pct = n === 1 ? 70 : 32 + (s - 1) * (64 / (n - 1));
+      d.style.width = pct + "%";
+      d.style.left = ((100 - pct) / 2) + "%";
+      d.setAttribute("aria-hidden", "true");
+      disks[s] = d;
+    }
+  }
+
+  /* Place every disk where `pegs` says. If `movedSize` is given, that one
+     disk travels there instead of appearing: up off its peg, across, down. */
+  function place(pegs, movedSize, animate) {
+    var el = movedSize ? disks[movedSize] : null;
+    var first = null;
+    if (el && animate && el.isConnected) {
+      el.getAnimations().forEach(function (a) { a.finish(); });
+      first = el.getBoundingClientRect();
+    }
+    for (var p = 0; p < 3; p++) {
+      for (var i = 0; i < pegs[p].length; i++) {
+        var d = disks[pegs[p][i]];
+        if (d.parentNode !== pegEls[p]) pegEls[p].appendChild(d);
+        d.style.bottom = (3 + i * DISK_H) + "px";
+      }
+    }
+    if (first) {
+      var last = el.getBoundingClientRect();
+      var dx = first.left - last.left, dy = first.top - last.top;
+      if (dx !== 0 || dy !== 0) {
+        /* lift to just above the board, clear of every post and disk */
+        var liftY = (E("board").getBoundingClientRect().top - 4) - last.top;
+        el.style.zIndex = "5";
+        var anim = el.animate([
+          { transform: "translate(" + dx + "px," + dy + "px)", easing: EASE_OUT },
+          { transform: "translate(" + dx + "px," + liftY + "px)", offset: 0.34, easing: EASE_IN_OUT },
+          { transform: "translate(0px," + liftY + "px)", offset: 0.68, easing: EASE_OUT },
+          { transform: "translate(0px,0px)" }
+        ], { duration: 260 });
+        anim.onfinish = anim.oncancel = function () { el.style.zIndex = ""; };
+      }
+    }
+    pegEls.forEach(function (pe, p) {
+      var list = pegs[p];
+      pe.setAttribute("aria-label", "Peg " + NAMES[p] + ": " +
+        (list.length ? list.length + " disk" + (list.length === 1 ? "" : "s") + ", top is disk " + list[list.length - 1] : "empty"));
+    });
+  }
+
+  function markLast(size) {
+    Object.keys(disks).forEach(function (k) { disks[k].classList.toggle("is-last", Number(k) === size); });
+  }
+
+  function setRoles(labels, emphasis) {
+    roleEls.forEach(function (r, i) {
+      r.textContent = labels[i] || "";
+      r.className = emphasis && emphasis[i] ? "is-role-" + emphasis[i] : "";
+    });
+  }
+
+  /* ---------- play it yourself ---------- */
+
+  var play = { pegs: null, held: -1, history: [] };
+
+  function startPlay() {
+    play.pegs = [[], [], []];
+    for (var s = n; s >= 1; s--) play.pegs[0].push(s);
+    play.held = -1;
+    play.history = [];
+    E("board").classList.remove("is-solved");
+    place(play.pegs, null, false);
+    markLast(null);
+    Object.keys(disks).forEach(function (k) { disks[k].classList.remove("is-held"); });
+    pegEls.forEach(function (pe) { pe.setAttribute("aria-pressed", "false"); pe.disabled = false; });
+    setRoles(["start", "spare", "goal"]);
+    E("moves").textContent = "0";
+    E("minimum").textContent = fmt(minimum(n));
+    say("Pick the peg to take a disk from.", "");
+    E("undo").disabled = true;
+  }
+
+  function say(html, tone) {
+    var st = E("status");
+    st.innerHTML = html;
+    st.className = "status" + (tone ? " is-" + tone : "");
+  }
+
+  function top(p) { var l = play.pegs[p]; return l.length ? l[l.length - 1] : 0; }
+
+  function release() {
+    if (play.held >= 0) {
+      var t = top(play.held);
+      if (t) disks[t].classList.remove("is-held");
+      pegEls[play.held].setAttribute("aria-pressed", "false");
+    }
+    play.held = -1;
+  }
+
+  function solved() { return play.pegs[2].length === n; }
+
+  function pick(p) {
+    if (mode !== "play" || solved()) return;
+
+    if (play.held < 0) {
+      if (!play.pegs[p].length) {
+        say("Peg <b>" + NAMES[p] + "</b> is empty. Pick a peg with a disk on it.", "error");
+        return;
+      }
+      play.held = p;
+      disks[top(p)].classList.add("is-held");
+      pegEls[p].setAttribute("aria-pressed", "true");
+      say("Holding disk <b>" + top(p) + "</b> from " + NAMES[p] + ". Pick the peg to put it on, or " + NAMES[p] + " again to put it back.", "");
+      return;
+    }
+
+    var from = play.held;
+    if (p === from) {
+      release();
+      say("Put it back. Pick the peg to take a disk from.", "");
+      return;
+    }
+    var d = top(from), under = top(p);
+    if (under && under < d) {
+      say("Disk <b>" + d + "</b> can&rsquo;t go on disk <b>" + under + "</b>: a larger disk never sits on a smaller one. Pick another peg.", "error");
+      return;
+    }
+
+    release();
+    play.pegs[p].push(play.pegs[from].pop());
+    play.history.push([from, p]);
+    place(play.pegs, d, !reduced);
+    markLast(d);
+    E("moves").textContent = fmt(play.history.length);
+    E("undo").disabled = false;
+
+    if (solved()) {
+      E("board").classList.add("is-solved");
+      markLast(null);
+      pegEls.forEach(function (pe) { pe.disabled = true; });
+      var m = play.history.length, best = minimum(n);
+      say(m === best
+        ? "Solved in <b>" + fmt(m) + "</b> moves: the minimum, with not one move to spare."
+        : "Solved in <b>" + fmt(m) + "</b> moves, <b>" + fmt(m - best) + "</b> over the minimum of " + fmt(best) + ". Try again, or watch the recursion find the shortest path.", "win");
+    } else {
+      say("Moved disk <b>" + d + "</b> from " + NAMES[from] + " to " + NAMES[p] + ". Pick the next peg to take from.", "");
+    }
+  }
+
+  function undo() {
+    if (mode !== "play" || !play.history.length) return;
+    release();
+    var mv = play.history.pop();
+    var d = play.pegs[mv[1]].pop();
+    play.pegs[mv[0]].push(d);
+    E("board").classList.remove("is-solved");
+    pegEls.forEach(function (pe) { pe.disabled = false; });
+    place(play.pegs, d, !reduced);
+    markLast(null);
+    E("moves").textContent = fmt(play.history.length);
+    E("undo").disabled = play.history.length === 0;
+    say("Took back disk <b>" + d + "</b>. Pick the peg to take a disk from.", "");
+  }
+
+  /* ---------- watch the recursion ---------- */
+
+  var watch = { ctl: null, steps: null, lastAt: -1 };
+
+  function buildSteps(k0) {
+    var steps = [], frames = [], pegs = [[], [], []], moves = 0, calls = 0;
+    for (var s = k0; s >= 1; s--) pegs[0].push(s);
+
+    function snap(o) {
+      var f = frames.length ? frames[frames.length - 1] : null;
+      steps.push({
+        line: o.line, note: o.note, moved: o.moved || null,
+        pegs: pegs.map(function (l) { return l.slice(); }),
+        frames: frames.map(function (x) { return { k: x.k, s: x.s, d: x.d, t: x.t }; }),
+        roles: f ? { s: f.s, d: f.d, t: f.t } : null,
+        moves: moves, calls: calls
+      });
+    }
+    function mv(a, b) { var d = pegs[a].pop(); pegs[b].push(d); moves++; return d; }
+    function nm(i) { return NAMES[i]; }
+
+    function rec(k, s, d, t) {
+      frames.push({ k: k, s: s, d: d, t: t }); calls++;
+      if (k === 1) {
+        var disk = mv(s, d);
+        snap({ line: 3, moved: disk, note: "<b>hanoi(1, " + nm(s) + "&rarr;" + nm(d) + ")</b>: the base case. One disk with nothing on top of it, so it just moves. Disk " + disk + " goes from " + nm(s) + " to " + nm(d) + "." });
+        frames.pop();
+        return;
+      }
+      snap({ line: 6, note: "<b>hanoi(" + k + ", " + nm(s) + "&rarr;" + nm(d) + " via " + nm(t) + ")</b>: disk " + k + " can only move once the " + (k - 1) + " disk" + (k - 1 === 1 ? "" : "s") + " above it are out of the way. Trust the call to park them on " + nm(t) + ", the spare." });
+      rec(k - 1, s, t, d);
+      var big = mv(s, d);
+      snap({ line: 7, moved: big, note: "Back in <b>hanoi(" + k + ")</b>. Everything above disk " + k + " is parked on " + nm(t) + ", and " + nm(d) + " is clear, so disk <b>" + big + "</b> moves from " + nm(s) + " to " + nm(d) + ". This is the only disk this frame moves itself." });
+      snap({ line: 8, note: "Now trust the same call to bring the " + (k - 1) + " disk" + (k - 1 === 1 ? "" : "s") + " from " + nm(t) + " back on top of it on " + nm(d) + ", using " + nm(s) + " as the spare." });
+      rec(k - 1, t, d, s);
+      frames.pop();
+    }
+
+    snap({ line: null, note: "All " + k0 + " disks start on A. Press <b>Next</b> to call <code>towerOfHanoi(" + k0 + ", \"A\", \"C\", \"B\")</code>." });
+    rec(k0, 0, 2, 1);
+    snap({ line: null, note: "Done: <b>" + fmt(moves) + " moves</b>, which is 2<sup>" + k0 + "</sup> − 1. Every frame moved exactly one disk itself and trusted the calls either side of it with the rest." });
+    return steps;
+  }
+
+  function renderWatch(st, at) {
+    if (mode !== "watch") return;
+    var forwardByOne = at === watch.lastAt + 1;
+    var fast = watch.ctl && typeof watch.ctl.opts.playMs === "function" && watch.ctl.opts.playMs() < 300;
+    place(st.pegs, st.moved, forwardByOne && !reduced && !fast && st.moved);
+    markLast(st.moved);
+    E("moves").textContent = fmt(st.moves);
+    E("calls").textContent = fmt(st.calls);
+    if (st.roles) {
+      var labels = ["", "", ""], tone = [null, null, null];
+      labels[st.roles.s] = "from"; tone[st.roles.s] = "from";
+      labels[st.roles.d] = "to";   tone[st.roles.d] = "to";
+      labels[st.roles.t] = "via";
+      setRoles(labels, tone);
+    } else {
+      setRoles(["start", "spare", "goal"]);
+    }
+    E("board").classList.toggle("is-solved", st.pegs[2].length === n && at === watch.steps.length - 1);
+    watch.lastAt = at;
+  }
+
+  function startWatch() {
+    watch.steps = buildSteps(n);
+    watch.lastAt = -1;
+    E("board").classList.remove("is-solved");
+    Object.keys(disks).forEach(function (k) { disks[k].classList.remove("is-held"); });
+    pegEls.forEach(function (pe) { pe.setAttribute("aria-pressed", "false"); pe.disabled = true; });
+    E("minimum").textContent = fmt(minimum(n));
+    if (!watch.ctl) {
+      watch.ctl = S.stepper({
+        id: "hanoi", steps: watch.steps, codeLines: CODE,
+        transport: E("transport"), say: E("say"), code: E("code"), frames: E("frames"),
+        frameLabel: function (f) { return { main: "hanoi(" + f.k + ", " + NAMES[f.s] + "→" + NAMES[f.d] + " via " + NAMES[f.t] + ")" }; },
+        render: renderWatch,
+        isActive: function () { return mode === "watch"; },
+        /* long runs play faster, so 10 disks do not take half an hour */
+        playMs: function () { return n <= 3 ? 1000 : n <= 5 ? 600 : n <= 7 ? 260 : 90; }
+      });
+    } else {
+      watch.ctl.stop();
+      watch.ctl.rebuild(watch.steps, false);
+    }
+  }
+
+  /* ---------- modes and n ---------- */
+
+  function setMode(m) {
+    mode = m;
+    E("modePlay").setAttribute("aria-pressed", String(m === "play"));
+    E("modeWatch").setAttribute("aria-pressed", String(m === "watch"));
+    E("playUi").hidden = m !== "play";
+    E("watchUi").hidden = m !== "watch";
+    E("watchAside").hidden = m !== "watch";
+    E("callsWrap").hidden = m !== "watch";
+    if (m === "play") { if (watch.ctl) watch.ctl.stop(); startPlay(); }
+    else { startWatch(); }
+  }
+
+  function readN() {
+    var input = E("nIn"), raw = input.value.trim(), v = Number(raw);
+    if (raw === "" || !Number.isInteger(v) || v < 1 || v > MAX_N) {
+      input.setAttribute("aria-invalid", "true");
+      E("nErr").textContent = raw === "" || !Number.isInteger(v)
+        ? "Enter a whole number of disks, from 1 to " + MAX_N + "."
+        : (v < 1 ? "Use at least 1 disk." : MAX_N + " disks is the most this board holds: " + fmt(minimum(v)) + " moves would take a very long game.");
+      return null;
+    }
+    input.setAttribute("aria-invalid", "false");
+    E("nErr").textContent = "";
+    return v;
+  }
+
+  E("nIn").addEventListener("change", function () {
+    var v = readN();
+    if (v === null) return;
+    n = v;
+    buildDisks();
+    setMode(mode);
+  });
+  E("nIn").addEventListener("input", function () { readN(); });
+
+  pegEls.forEach(function (pe) {
+    pe.addEventListener("click", function () { pick(Number(pe.dataset.p)); });
+  });
+  E("undo").addEventListener("click", undo);
+  E("restart").addEventListener("click", startPlay);
+  E("modePlay").addEventListener("click", function () { if (mode !== "play") setMode("play"); });
+  E("modeWatch").addEventListener("click", function () { if (mode !== "watch") setMode("watch"); });
+
+  document.addEventListener("keydown", function (e) {
+    if (mode !== "play" || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.target && /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
+    if (e.key === "1" || e.key === "2" || e.key === "3") { e.preventDefault(); pick(Number(e.key) - 1); }
+    else if (e.key === "u" || e.key === "U") { e.preventDefault(); undo(); }
+  });
+
+  buildDisks();
+  setMode("play");
+})();
+</script>
+</body>
+</html>
