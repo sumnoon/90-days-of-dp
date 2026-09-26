@@ -37,8 +37,13 @@ spare peg becomes the *destination*, and in the second it becomes the
 
 ## Base case
 
-`n == 1` moves the single disk directly. See the bug below — it's the one
-thing to fix.
+```cpp
+if (n == 0) return;
+```
+
+Zero disks: nothing to move. That is the identity base case from the Day 0
+warm-ups, and it makes `n == 1` stop being special — one disk is just the
+general case, with an empty call on either side of its move.
 
 ## Complexity
 
@@ -53,28 +58,34 @@ on a smaller one and that all disks finish on C:
 
 | n | moves | 2ⁿ − 1 | every move legal | all on C |
 |---|---|---|---|---|
+| 0 | 0 | 0 | yes | yes |
 | 1 | 1 | 1 | yes | yes |
 | 3 | 7 | 7 | yes | yes |
 | 5 | 31 | 31 | yes | yes |
 | 10 | 1,023 | 1,023 | yes | yes |
 
-(All of 1–10 were checked; the table shows a sample.)
+(All of 0–10 were checked; the table shows a sample.)
 
-The **number of calls equals the number of moves** — 1,023 of each for
-n = 10 — because every frame, base case or not, prints exactly one move.
+**Calls and moves are not the same count.** Moves are 2ⁿ − 1, but calls are
+2ⁿ⁺¹ − 1 — 2,047 calls for 1,023 moves at n = 10 — because the 2ⁿ frames at
+the bottom hold zero disks and only return. That is the price of the cleaner
+base case: twice the calls, the same O(2ⁿ), and no special case for one disk.
+(The first version, with `n == 1` as the base, made exactly one call per move.)
 
 For n = 3 the output is `AC AB CB AC BA BC AC`.
 
-## Bug: n = 0
+## Bug: n = 0 — fixed
 
-**Input 0 crashes** with exit code `0xC00000FD`, which is Windows' stack
-overflow. The base case only catches `n == 1`, so `n = 0` recurses into −1,
-−2, −3… and never stops.
+The first version's base case was `n == 1`, so **input 0 crashed** with
+`0xC00000FD`, Windows' stack overflow: 0 recursed into −1, −2, −3… and never
+stopped.
 
-Hint rather than fix: in the Day 0 warm-ups, the base case that made
-everything cleanest was the *identity* — the input for which the answer is
-"do nothing." What does moving **zero** disks take? If that becomes the base
-case, is `n == 1` still needed as a special case at all?
+Fixed by making **zero disks** the base case, which also removed `n == 1` as a
+special case entirely. n = 0 now makes no moves and exits cleanly.
+
+One edge remains: **n = −1 still overflows**, because counting down from a
+negative number never reaches 0. `n <= 0` would cover it. Negative disks
+aren't valid input, so this is optional — but it is the same crash.
 
 ## Small notes on the code
 

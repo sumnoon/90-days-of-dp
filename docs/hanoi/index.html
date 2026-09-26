@@ -186,8 +186,7 @@
 
   var CODE = [
     "void towerOfHanoi(int n, string source, string destination, string temporary) {",
-    "    if (n == 1) {",
-    "        cout << \"Move from \" << source << \" to \" << destination << endl;",
+    "    if (n == 0) {",
     "        return;",
     "    }",
     "    towerOfHanoi(n - 1, source, temporary, destination);",
@@ -382,7 +381,7 @@
 
   /* ---------- watch the recursion ---------- */
 
-  var watch = { ctl: null, steps: null, lastAt: -1 };
+  var watch = { ctl: null, steps: null, lastAt: -1, lastTime: 0 };
 
   function buildSteps(k0) {
     var steps = [], frames = [], pegs = [[], [], []], moves = 0, calls = 0;
@@ -403,32 +402,34 @@
 
     function rec(k, s, d, t) {
       frames.push({ k: k, s: s, d: d, t: t }); calls++;
-      if (k === 1) {
-        var disk = mv(s, d);
-        snap({ line: 3, moved: disk, note: "<b>hanoi(1, " + nm(s) + "&rarr;" + nm(d) + ")</b>: the base case. One disk with nothing on top of it, so it just moves. Disk " + disk + " goes from " + nm(s) + " to " + nm(d) + "." });
+      if (k === 0) {
+        snap({ line: 2, note: "<b>hanoi(0, " + nm(s) + "&rarr;" + nm(d) + ")</b>: the base case. Zero disks means nothing to move, so it just returns. Every recursion bottoms out here." });
         frames.pop();
         return;
       }
-      snap({ line: 6, note: "<b>hanoi(" + k + ", " + nm(s) + "&rarr;" + nm(d) + " via " + nm(t) + ")</b>: disk " + k + " can only move once the " + (k - 1) + " disk" + (k - 1 === 1 ? "" : "s") + " above it are out of the way. Trust the call to park them on " + nm(t) + ", the spare." });
+      snap({ line: 5, note: "<b>hanoi(" + k + ", " + nm(s) + "&rarr;" + nm(d) + " via " + nm(t) + ")</b>: disk " + k + " can only move once the " + (k - 1) + " disk" + (k - 1 === 1 ? "" : "s") + " above it are out of the way. Trust the call to park " + (k - 1 === 0 ? "them &mdash; none, here &mdash;" : "them") + " on " + nm(t) + ", the spare." });
       rec(k - 1, s, t, d);
       var big = mv(s, d);
-      snap({ line: 7, moved: big, note: "Back in <b>hanoi(" + k + ")</b>. Everything above disk " + k + " is parked on " + nm(t) + ", and " + nm(d) + " is clear, so disk <b>" + big + "</b> moves from " + nm(s) + " to " + nm(d) + ". This is the only disk this frame moves itself." });
-      snap({ line: 8, note: "Now trust the same call to bring the " + (k - 1) + " disk" + (k - 1 === 1 ? "" : "s") + " from " + nm(t) + " back on top of it on " + nm(d) + ", using " + nm(s) + " as the spare." });
+      snap({ line: 6, moved: big, note: "Back in <b>hanoi(" + k + ")</b>. Everything above disk " + k + " is parked on " + nm(t) + ", and " + nm(d) + " is clear, so disk <b>" + big + "</b> moves from " + nm(s) + " to " + nm(d) + ". This is the only disk this frame moves itself." });
+      snap({ line: 7, note: "Now trust the same call to bring the " + (k - 1) + " disk" + (k - 1 === 1 ? "" : "s") + " from " + nm(t) + " back on top of it on " + nm(d) + ", using " + nm(s) + " as the spare." });
       rec(k - 1, t, d, s);
       frames.pop();
     }
 
     snap({ line: null, note: "All " + k0 + " disks start on A. Press <b>Next</b> to call <code>towerOfHanoi(" + k0 + ", \"A\", \"C\", \"B\")</code>." });
     rec(k0, 0, 2, 1);
-    snap({ line: null, note: "Done: <b>" + fmt(moves) + " moves</b>, which is 2<sup>" + k0 + "</sup> − 1. Every frame moved exactly one disk itself and trusted the calls either side of it with the rest." });
+    snap({ line: null, note: "Done: <b>" + fmt(moves) + " moves</b>, which is 2<sup>" + k0 + "</sup> − 1, from " + fmt(calls) + " calls. Every frame holding a disk moved exactly one itself; the " + fmt(Math.pow(2, k0)) + " frames at the bottom held none, and just returned." });
     return steps;
   }
 
   function renderWatch(st, at) {
     if (mode !== "watch") return;
     var forwardByOne = at === watch.lastAt + 1;
-    var fast = watch.ctl && typeof watch.ctl.opts.playMs === "function" && watch.ctl.opts.playMs() < 300;
-    place(st.pegs, st.moved, forwardByOne && !reduced && !fast && st.moved);
+    /* Animate only when steps arrive slower than the flight itself: a manual
+       Next at any n animates, fast auto-play and rapid clicking do not. */
+    var now = performance.now(), gap = now - watch.lastTime;
+    watch.lastTime = now;
+    place(st.pegs, st.moved, forwardByOne && gap > 280 && !reduced && st.moved);
     markLast(st.moved);
     E("moves").textContent = fmt(st.moves);
     E("calls").textContent = fmt(st.calls);
@@ -460,7 +461,7 @@
         render: renderWatch,
         isActive: function () { return mode === "watch"; },
         /* long runs play faster, so 10 disks do not take half an hour */
-        playMs: function () { return n <= 3 ? 1000 : n <= 5 ? 600 : n <= 7 ? 260 : 90; }
+        playMs: function () { return n <= 3 ? 900 : n <= 5 ? 500 : n <= 7 ? 200 : 60; }
       });
     } else {
       watch.ctl.stop();

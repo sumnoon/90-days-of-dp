@@ -4,8 +4,7 @@ using namespace std;
 class Solution {
 public:
     void towerOfHanoi(int n, string source, string destination, string temporary) {
-        if (n == 1) {
-            cout << "Move from " << source << " to " << destination << endl;
+        if (n == 0) {
             return;
         }
         towerOfHanoi(n - 1, source, temporary, destination);
