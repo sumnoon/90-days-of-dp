@@ -15,6 +15,7 @@ re-read before a redo, not while solving.
 | [⭐ LC 206 Reverse Linked List](lc0206_reverse_linked_list.md) | 3 | clean | Grant that the rest is reversed; then exactly one link needs changing. |
 | [LC 21 Merge Two Sorted Lists](lc0021_merge_two_sorted_lists.md) | 4 | clean | The smaller head *is* the answer's head; hand the rest to the recursion. |
 | [⭐ LC 50 Pow(x, n)](lc0050_pow.md) | 5 | clean | Halving walks n's binary digits one per call: 32 calls for `INT_MAX`, where naive recursion needs 2.1 billion. |
+| [Tower of Hanoi](tower_of_hanoi.md) | 6 | clean | Trust the call to move n − 1 disks; each frame moves exactly one disk itself. |
 
 "clean" = solved without a hint. Anything else is on the
 [redo list](../../../redo-list.md).
@@ -32,6 +33,7 @@ Interactive step-throughs built alongside the notes, published at
 | [Fibonacci's Repeated Work](https://sumnoon.github.io/90-days-of-dp/fib/) | The recursion tree for n up to 9. Click a node to see every recomputation; toggle memoization to collapse it. |
 | [Which Head Goes First](https://sumnoon.github.io/90-days-of-dp/lc21/) | LC 21 step by step. Heads chosen on the way down, links written on the way back up; the `<=` toggle makes stability visible. |
 | [Reading n One Bit at a Time](https://sumnoon.github.io/90-days-of-dp/lc50/) | LC 50 as a walk through n's binary digits: bits read right to left going down, 1-bits multiplied in left to right coming up. |
+| [Moving n Disks](https://sumnoon.github.io/90-days-of-dp/hanoi/) | A playable Tower of Hanoi for 1–10 disks, plus a step-through of the recursion with each peg's from / to / via role. |
 
 ## The thread through Week 1
 
@@ -49,4 +51,4 @@ What changes is the shape of "smaller":
 | Halving (`n / 2`) | LC 231, LC 50 |
 | Following a pointer (`head->next`) | LC 206 |
 | Two inputs, advance one | LC 21 — the shape Week 8 string DP reuses |
-| **Two recursive calls** | **LC 509** — and this is the one that becomes DP |
+| **Two recursive calls** | **LC 509** — the one that becomes DP; Tower of Hanoi — two calls too, but its repeats can't be cached, because the answer is moves, not a value |

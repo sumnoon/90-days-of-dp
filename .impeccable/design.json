@@ -1,59 +1,437 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-25T00:00:00Z",
+  "generatedAt": "2026-09-26T12:36:07Z",
   "title": "Design System: 90 Days of DP",
   "extensions": {
     "colorMeta": {
-      "ground": { "role": "neutral", "displayName": "Concrete Ground", "canonical": "#EDEDEF", "darkTheme": "#101215", "tonalRamp": ["#26262A", "#3A3A40", "#4F4F56", "#6C6C74", "#8E8E96", "#B4B4BB", "#D5D5D9", "#F4F4F6"] },
-      "plate": { "role": "neutral", "displayName": "Plate White", "canonical": "#FFFFFF", "darkTheme": "#181A1F", "tonalRamp": ["#242424", "#3B3B3B", "#565656", "#757575", "#989898", "#BEBEBE", "#E0E0E0", "#FFFFFF"] },
-      "plate-2": { "role": "neutral", "displayName": "Plate Grey", "canonical": "#F5F5F7", "darkTheme": "#1F2227", "tonalRamp": ["#26262A", "#3A3A3E", "#515158", "#6E6E76", "#919199", "#B6B6BD", "#D8D8DC", "#F5F5F7"] },
-      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#16181D", "darkTheme": "#ECEDEF", "tonalRamp": ["#0B0C0F", "#16181D", "#25282F", "#3A3E47", "#565B66", "#7C818B", "#ABAFB6", "#DDDFE3"] },
-      "ink-2": { "role": "neutral", "displayName": "Ink 2 (running prose)", "canonical": "#41464E", "darkTheme": "#B7BCC4", "tonalRamp": ["#14161A", "#22262B", "#31353C", "#41464E", "#5C626C", "#828893", "#AEB3BB", "#DCDEE2"] },
-      "ink-3": { "role": "neutral", "displayName": "Ink 3 (quiet metadata)", "canonical": "#62676F", "darkTheme": "#8D939C", "tonalRamp": ["#171A1D", "#262A2F", "#373B41", "#4A4F56", "#62676F", "#888D95", "#B2B6BC", "#DEE0E3"] },
-      "on-ink": { "role": "neutral", "displayName": "On Ink", "canonical": "#EDEDEF", "darkTheme": "#101215", "tonalRamp": ["#26262A", "#3A3A40", "#4F4F56", "#6C6C74", "#8E8E96", "#B4B4BB", "#D5D5D9", "#F4F4F6"] },
-      "rule": { "role": "neutral", "displayName": "Rule", "canonical": "#16181D", "darkTheme": "#ECEDEF", "tonalRamp": ["#0B0C0F", "#16181D", "#25282F", "#3A3E47", "#565B66", "#7C818B", "#ABAFB6", "#DDDFE3"] },
-      "hair": { "role": "neutral", "displayName": "Hair Divider", "canonical": "#C5C8CE", "darkTheme": "#2F333B", "tonalRamp": ["#1A1C21", "#2A2D34", "#3C4048", "#52565F", "#6E727B", "#939AA3", "#B3B8C0", "#DCDEE2"] },
-      "now": { "role": "primary", "displayName": "Signal Red (acting now)", "canonical": "#C81326", "darkTheme": "#FF6A5C", "tonalRamp": ["#3B0208", "#5C0511", "#7F0919", "#A30E20", "#C81326", "#E23A4A", "#F0848D", "#FBD3D7"] },
-      "now-line": { "role": "primary", "displayName": "Signal Red Line", "canonical": "#D6202F", "darkTheme": "#FF5C4D", "tonalRamp": ["#400309", "#620713", "#850C1C", "#AB1524", "#D6202F", "#E9505B", "#F49099", "#FCD8DB"] },
-      "on-now": { "role": "primary", "displayName": "On Signal Red", "canonical": "#FFFFFF", "darkTheme": "#101215", "tonalRamp": ["#242424", "#3B3B3B", "#565656", "#757575", "#989898", "#BEBEBE", "#E0E0E0", "#FFFFFF"] },
-      "now-wash": { "role": "primary", "displayName": "Signal Red Wash", "canonical": "#FBE7E8", "darkTheme": "#331614", "tonalRamp": ["#33100F", "#4E1A18", "#6C2523", "#8C3431", "#AE4C48", "#CE7D79", "#E6AFAD", "#FBE7E8"] },
-      "set": { "role": "secondary", "displayName": "Settled Blue", "canonical": "#0A50B8", "darkTheme": "#6FAEFF", "tonalRamp": ["#04173B", "#06265E", "#083883", "#0A4AA0", "#0A50B8", "#2C7AE0", "#79ADF0", "#D3E3FA"] },
-      "set-line": { "role": "secondary", "displayName": "Settled Blue Line", "canonical": "#0A5BD3", "darkTheme": "#5AA0FF", "tonalRamp": ["#041A45", "#062B6C", "#083F96", "#0A4FB6", "#0A5BD3", "#3583EC", "#82B4F3", "#D7E6FB"] },
-      "set-wash": { "role": "secondary", "displayName": "Settled Blue Wash", "canonical": "#E3EDFB", "darkTheme": "#12243C", "tonalRamp": ["#101E33", "#18304F", "#22446D", "#2E5A8C", "#4578AE", "#78A2CE", "#AFC8E6", "#E3EDFB"] },
-      "base": { "role": "tertiary", "displayName": "Base-Case Green", "canonical": "#00684A", "darkTheme": "#45CE98", "tonalRamp": ["#001F16", "#003324", "#004A34", "#005B40", "#00684A", "#0C9068", "#4BBE95", "#D5F0E5"] },
-      "base-line": { "role": "tertiary", "displayName": "Base-Case Green Line", "canonical": "#00875A", "darkTheme": "#35C08A", "tonalRamp": ["#00281B", "#00412C", "#005D3F", "#00744D", "#00875A", "#13AC78", "#5AD0A2", "#DAF3E8"] },
-      "base-wash": { "role": "tertiary", "displayName": "Base-Case Green Wash", "canonical": "#DFF1E9", "darkTheme": "#0F2A22", "tonalRamp": ["#0C2A21", "#134134", "#1B5B49", "#26775F", "#3E9A7E", "#75BCA4", "#ADD8C8", "#DFF1E9"] },
-      "idle": { "role": "neutral", "displayName": "Idle Grey (not yet written)", "canonical": "#9AA0A8", "darkTheme": "#666C75", "tonalRamp": ["#1D2024", "#2E3237", "#42474D", "#585E65", "#71777F", "#9AA0A8", "#C0C5CB", "#E6E8EB"] }
+      "ground": {
+        "role": "neutral",
+        "displayName": "Concrete Ground",
+        "canonical": "#EDEDEF",
+        "darkTheme": "#101215",
+        "tonalRamp": [
+          "#26262A",
+          "#3A3A40",
+          "#4F4F56",
+          "#6C6C74",
+          "#8E8E96",
+          "#B4B4BB",
+          "#D5D5D9",
+          "#F4F4F6"
+        ]
+      },
+      "plate": {
+        "role": "neutral",
+        "displayName": "Plate White",
+        "canonical": "#FFFFFF",
+        "darkTheme": "#181A1F",
+        "tonalRamp": [
+          "#242424",
+          "#3B3B3B",
+          "#565656",
+          "#757575",
+          "#989898",
+          "#BEBEBE",
+          "#E0E0E0",
+          "#FFFFFF"
+        ]
+      },
+      "plate-2": {
+        "role": "neutral",
+        "displayName": "Plate Grey",
+        "canonical": "#F5F5F7",
+        "darkTheme": "#1F2227",
+        "tonalRamp": [
+          "#26262A",
+          "#3A3A3E",
+          "#515158",
+          "#6E6E76",
+          "#919199",
+          "#B6B6BD",
+          "#D8D8DC",
+          "#F5F5F7"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#16181D",
+        "darkTheme": "#ECEDEF",
+        "tonalRamp": [
+          "#0B0C0F",
+          "#16181D",
+          "#25282F",
+          "#3A3E47",
+          "#565B66",
+          "#7C818B",
+          "#ABAFB6",
+          "#DDDFE3"
+        ]
+      },
+      "ink-2": {
+        "role": "neutral",
+        "displayName": "Ink 2 (running prose)",
+        "canonical": "#41464E",
+        "darkTheme": "#B7BCC4",
+        "tonalRamp": [
+          "#14161A",
+          "#22262B",
+          "#31353C",
+          "#41464E",
+          "#5C626C",
+          "#828893",
+          "#AEB3BB",
+          "#DCDEE2"
+        ]
+      },
+      "ink-3": {
+        "role": "neutral",
+        "displayName": "Ink 3 (quiet metadata)",
+        "canonical": "#62676F",
+        "darkTheme": "#8D939C",
+        "tonalRamp": [
+          "#171A1D",
+          "#262A2F",
+          "#373B41",
+          "#4A4F56",
+          "#62676F",
+          "#888D95",
+          "#B2B6BC",
+          "#DEE0E3"
+        ]
+      },
+      "on-ink": {
+        "role": "neutral",
+        "displayName": "On Ink",
+        "canonical": "#EDEDEF",
+        "darkTheme": "#101215",
+        "tonalRamp": [
+          "#26262A",
+          "#3A3A40",
+          "#4F4F56",
+          "#6C6C74",
+          "#8E8E96",
+          "#B4B4BB",
+          "#D5D5D9",
+          "#F4F4F6"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Rule",
+        "canonical": "#16181D",
+        "darkTheme": "#ECEDEF",
+        "tonalRamp": [
+          "#0B0C0F",
+          "#16181D",
+          "#25282F",
+          "#3A3E47",
+          "#565B66",
+          "#7C818B",
+          "#ABAFB6",
+          "#DDDFE3"
+        ]
+      },
+      "hair": {
+        "role": "neutral",
+        "displayName": "Hair Divider",
+        "canonical": "#C5C8CE",
+        "darkTheme": "#2F333B",
+        "tonalRamp": [
+          "#1A1C21",
+          "#2A2D34",
+          "#3C4048",
+          "#52565F",
+          "#6E727B",
+          "#939AA3",
+          "#B3B8C0",
+          "#DCDEE2"
+        ]
+      },
+      "now": {
+        "role": "primary",
+        "displayName": "Signal Red (acting now)",
+        "canonical": "#C81326",
+        "darkTheme": "#FF6A5C",
+        "tonalRamp": [
+          "#3B0208",
+          "#5C0511",
+          "#7F0919",
+          "#A30E20",
+          "#C81326",
+          "#E23A4A",
+          "#F0848D",
+          "#FBD3D7"
+        ]
+      },
+      "now-line": {
+        "role": "primary",
+        "displayName": "Signal Red Line",
+        "canonical": "#D6202F",
+        "darkTheme": "#FF5C4D",
+        "tonalRamp": [
+          "#400309",
+          "#620713",
+          "#850C1C",
+          "#AB1524",
+          "#D6202F",
+          "#E9505B",
+          "#F49099",
+          "#FCD8DB"
+        ]
+      },
+      "on-now": {
+        "role": "primary",
+        "displayName": "On Signal Red",
+        "canonical": "#FFFFFF",
+        "darkTheme": "#101215",
+        "tonalRamp": [
+          "#242424",
+          "#3B3B3B",
+          "#565656",
+          "#757575",
+          "#989898",
+          "#BEBEBE",
+          "#E0E0E0",
+          "#FFFFFF"
+        ]
+      },
+      "now-wash": {
+        "role": "primary",
+        "displayName": "Signal Red Wash",
+        "canonical": "#FBE7E8",
+        "darkTheme": "#331614",
+        "tonalRamp": [
+          "#33100F",
+          "#4E1A18",
+          "#6C2523",
+          "#8C3431",
+          "#AE4C48",
+          "#CE7D79",
+          "#E6AFAD",
+          "#FBE7E8"
+        ]
+      },
+      "set": {
+        "role": "secondary",
+        "displayName": "Settled Blue",
+        "canonical": "#0A50B8",
+        "darkTheme": "#6FAEFF",
+        "tonalRamp": [
+          "#04173B",
+          "#06265E",
+          "#083883",
+          "#0A4AA0",
+          "#0A50B8",
+          "#2C7AE0",
+          "#79ADF0",
+          "#D3E3FA"
+        ]
+      },
+      "set-line": {
+        "role": "secondary",
+        "displayName": "Settled Blue Line",
+        "canonical": "#0A5BD3",
+        "darkTheme": "#5AA0FF",
+        "tonalRamp": [
+          "#041A45",
+          "#062B6C",
+          "#083F96",
+          "#0A4FB6",
+          "#0A5BD3",
+          "#3583EC",
+          "#82B4F3",
+          "#D7E6FB"
+        ]
+      },
+      "set-wash": {
+        "role": "secondary",
+        "displayName": "Settled Blue Wash",
+        "canonical": "#E3EDFB",
+        "darkTheme": "#12243C",
+        "tonalRamp": [
+          "#101E33",
+          "#18304F",
+          "#22446D",
+          "#2E5A8C",
+          "#4578AE",
+          "#78A2CE",
+          "#AFC8E6",
+          "#E3EDFB"
+        ]
+      },
+      "base": {
+        "role": "tertiary",
+        "displayName": "Base-Case Green",
+        "canonical": "#00684A",
+        "darkTheme": "#45CE98",
+        "tonalRamp": [
+          "#001F16",
+          "#003324",
+          "#004A34",
+          "#005B40",
+          "#00684A",
+          "#0C9068",
+          "#4BBE95",
+          "#D5F0E5"
+        ]
+      },
+      "base-line": {
+        "role": "tertiary",
+        "displayName": "Base-Case Green Line",
+        "canonical": "#00875A",
+        "darkTheme": "#35C08A",
+        "tonalRamp": [
+          "#00281B",
+          "#00412C",
+          "#005D3F",
+          "#00744D",
+          "#00875A",
+          "#13AC78",
+          "#5AD0A2",
+          "#DAF3E8"
+        ]
+      },
+      "base-wash": {
+        "role": "tertiary",
+        "displayName": "Base-Case Green Wash",
+        "canonical": "#DFF1E9",
+        "darkTheme": "#0F2A22",
+        "tonalRamp": [
+          "#0C2A21",
+          "#134134",
+          "#1B5B49",
+          "#26775F",
+          "#3E9A7E",
+          "#75BCA4",
+          "#ADD8C8",
+          "#DFF1E9"
+        ]
+      },
+      "idle": {
+        "role": "neutral",
+        "displayName": "Idle Grey (not yet written)",
+        "canonical": "#9AA0A8",
+        "darkTheme": "#666C75",
+        "tonalRamp": [
+          "#1D2024",
+          "#2E3237",
+          "#42474D",
+          "#585E65",
+          "#71777F",
+          "#9AA0A8",
+          "#C0C5CB",
+          "#E6E8EB"
+        ]
+      }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "The page headline, top-left above a 3px rule. Capped at 19ch, text-wrap: balance." },
-      "headline": { "displayName": "Headline", "purpose": "Section headings in the prose below the stage. Capped at 24ch." },
-      "claim": { "displayName": "Claim", "purpose": "The page's single imperative, reversed out of a solid ink bar. One per page. Capped at 62ch." },
-      "body": { "displayName": "Body", "purpose": "Lede and running prose in ink-2, capped at 66ch. Narration under the diagram runs clamp(15px,2vw,17px) with a reserved min-height of 3.2em so stepping never reflows the page." },
-      "control": { "displayName": "Control", "purpose": "Transport buttons and mode toggles (Prev / Next / Play / Reset, aria-pressed toggles)." },
-      "mono": { "displayName": "Data Mono", "purpose": "Everything the program computed: call-stack frames, code rows, rail metadata, node labels, step counter. tabular-nums wherever a number changes between steps." },
-      "label": { "displayName": "Label", "purpose": "Legend entries, panel heads, table heads, readout captions. Uppercase, 0.12em; panel heads and the rail home link track wider at 0.16em." }
+      "display": {
+        "displayName": "Display",
+        "purpose": "The page headline, top-left above a 3px rule. Capped at 19ch, text-wrap: balance."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headings in the prose below the stage. Capped at 24ch."
+      },
+      "claim": {
+        "displayName": "Claim",
+        "purpose": "The page's single imperative, reversed out of a solid ink bar. One per page. Capped at 62ch."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Lede and running prose in ink-2, capped at 66ch. Narration under the diagram runs clamp(15px,2vw,17px) with a reserved min-height of 3.2em so stepping never reflows the page."
+      },
+      "control": {
+        "displayName": "Control",
+        "purpose": "Transport buttons and mode toggles (Prev / Next / Play / Reset, aria-pressed toggles)."
+      },
+      "mono": {
+        "displayName": "Data Mono",
+        "purpose": "Everything the program computed: call-stack frames, code rows, rail metadata, node labels, step counter. tabular-nums wherever a number changes between steps."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Legend entries, panel heads, table heads, readout captions. Uppercase, 0.12em; panel heads and the rail home link track wider at 0.16em."
+      }
     },
     "shadows": [],
     "motion": [
-      { "name": "ease-out", "value": "cubic-bezier(0.23, 1, 0.32, 1)", "purpose": "Settling: a route segment arriving, a control releasing, a station node taking the active scale." },
-      { "name": "ease-in-out", "value": "cubic-bezier(0.77, 0, 0.175, 1)", "purpose": "Declared for symmetric movement between two authored positions." },
-      { "name": "t-press", "value": "100ms", "purpose": "The press-down half: snaps. Applied to :active transform scale(0.97) on buttons and toggles." },
-      { "name": "t-release", "value": "160ms", "purpose": "The release half: settles back. Deliberately asymmetric with t-press." },
-      { "name": "t-state", "value": "160ms", "purpose": "All state colour changes: executing code row, top stack frame, segment stroke, link colour." },
-      { "name": "t-reduced", "value": "80ms", "purpose": "Under prefers-reduced-motion every transition shortens to 80ms; colour still carries the state change, movement and scaling are dropped entirely." },
-      { "name": "play-interval", "value": "1100ms", "purpose": "Auto-advance cadence of the transport's Play mode; 1800ms under prefers-reduced-motion." }
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.23, 1, 0.32, 1)",
+        "purpose": "Settling: a route segment arriving, a control releasing, a station node taking the active scale."
+      },
+      {
+        "name": "ease-in-out",
+        "value": "cubic-bezier(0.77, 0, 0.175, 1)",
+        "purpose": "Declared for symmetric movement between two authored positions."
+      },
+      {
+        "name": "t-press",
+        "value": "100ms",
+        "purpose": "The press-down half: snaps. Applied to :active transform scale(0.97) on buttons and toggles."
+      },
+      {
+        "name": "t-release",
+        "value": "160ms",
+        "purpose": "The release half: settles back. Deliberately asymmetric with t-press."
+      },
+      {
+        "name": "t-state",
+        "value": "160ms",
+        "purpose": "All state colour changes: executing code row, top stack frame, segment stroke, link colour."
+      },
+      {
+        "name": "t-reduced",
+        "value": "80ms",
+        "purpose": "Under prefers-reduced-motion every transition shortens to 80ms; colour still carries the state change, movement and scaling are dropped entirely."
+      },
+      {
+        "name": "play-interval",
+        "value": "1100ms",
+        "purpose": "Default auto-play pace between steps. A page may pass playMs as a function to pace long runs faster (Hanoi drops to 90ms for 8+ disks); reduced motion never plays faster than 1800ms."
+      },
+      {
+        "name": "disk-flight",
+        "value": "260ms WAAPI, keyframes up (ease-out) / across (ease-in-out) / down (ease-out)",
+        "purpose": "Tower of Hanoi only: a disk travels off its peg, over the board and onto the next, as translation with no shadow. Skipped under prefers-reduced-motion, when stepping backwards or scrubbing, and when auto-play runs faster than 300ms a step."
+      }
     ],
     "breakpoints": [
-      { "name": "split", "value": "720px" },
-      { "name": "work", "value": "800px" },
-      { "name": "hero", "value": "860px" },
-      { "name": "container", "value": "1120px" }
+      {
+        "name": "split",
+        "value": "720px"
+      },
+      {
+        "name": "work",
+        "value": "800px"
+      },
+      {
+        "name": "hero",
+        "value": "860px"
+      },
+      {
+        "name": "container",
+        "value": "1120px"
+      }
     ],
     "strokes": [
-      { "name": "w-rule", "value": "2px", "purpose": "Standard structural border: plates, panels, buttons, tokens, control strips, footer rule." },
-      { "name": "w-heavy", "value": "3px", "purpose": "Heavy structural rule: under the nav rail, above the transport, the active stack frame's left border, station rings, the route line, focus outline." },
-      { "name": "hair", "value": "1px", "purpose": "Internal divider inside a panel, table or stop list." }
+      {
+        "name": "w-rule",
+        "value": "2px",
+        "purpose": "Standard structural border: plates, panels, buttons, tokens, control strips, footer rule."
+      },
+      {
+        "name": "w-heavy",
+        "value": "3px",
+        "purpose": "Heavy structural rule: under the nav rail, above the transport, the active stack frame's left border, station rings, the route line, focus outline."
+      },
+      {
+        "name": "hair",
+        "value": "1px",
+        "purpose": "Internal divider inside a panel, table or stop list."
+      }
     ]
   },
   "components": [
@@ -74,12 +452,12 @@
       "css": ".ds-btn-go { font: 600 13.5px/1 var(--voice, Archivo, system-ui, sans-serif); color: var(--on-now, #FFFFFF); background: var(--now-line, #D6202F); border: 2px solid var(--now-line, #D6202F); padding: 8px 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms cubic-bezier(0.23,1,0.32,1); } .ds-btn-go svg { width: 13px; height: 13px; display: block; } .ds-btn-go:hover { background: var(--now, #C81326); border-color: var(--now, #C81326); } .ds-btn-go:focus-visible { outline: 3px solid var(--now-line, #D6202F); outline-offset: 2px; } .ds-btn-go:active { transform: scale(0.97); transition-duration: 100ms; } .ds-btn-go:disabled { background: var(--plate, #FFFFFF); border-color: var(--hair, #C5C8CE); color: var(--ink-3, #62676F); cursor: default; transform: none; }"
     },
     {
-      "name": "Mode Toggle",
+      "name": "Toggle",
       "kind": "chip",
       "refersTo": "toggle-pressed",
-      "description": "aria-pressed toggle for switching the thing being compared. Pressed inverts to solid ink.",
-      "html": "<div class=\"ds-modes\"><button class=\"ds-mode\" type=\"button\" aria-pressed=\"true\">print 1..N</button><button class=\"ds-mode\" type=\"button\" aria-pressed=\"false\">print N..1</button></div>",
-      "css": ".ds-modes { display: flex; flex-wrap: wrap; gap: 8px; border-bottom: 2px solid var(--rule, #16181D); padding-bottom: 12px; } .ds-mode { font: 600 13.5px/1 var(--voice, Archivo, system-ui, sans-serif); color: var(--ink, #16181D); background: var(--plate, #FFFFFF); border: 2px solid var(--rule, #16181D); padding: 8px 12px; cursor: pointer; transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms cubic-bezier(0.23,1,0.32,1); } .ds-mode[aria-pressed=\"true\"] { background: var(--ink, #16181D); border-color: var(--ink, #16181D); color: var(--on-ink, #EDEDEF); } .ds-mode:hover[aria-pressed=\"false\"] { background: var(--ink, #16181D); color: var(--on-ink, #EDEDEF); } .ds-mode:focus-visible { outline: 3px solid var(--now-line, #D6202F); outline-offset: 2px; } .ds-mode:active { transform: scale(0.97); transition-duration: 100ms; }"
+      "description": "Pressed-state control in the setup bar. Pressed inverts to ink; the --hot variant presses to red when the pressed state is itself the comparison (LC 21's <=).",
+      "html": "<div class=\"ds-setup\"><button class=\"ds-toggle\" type=\"button\" aria-pressed=\"true\">print 1..N</button><button class=\"ds-toggle\" type=\"button\" aria-pressed=\"false\">print N..1</button><button class=\"ds-toggle ds-toggle--data ds-toggle--hot\" type=\"button\" aria-pressed=\"true\">list1-&gt;val &lt;= list2-&gt;val</button></div>",
+      "css": ".ds-setup { display: flex; flex-wrap: wrap; gap: 8px; border-bottom: 2px solid var(--rule, #16181D); padding-bottom: 12px; } .ds-toggle { font: 600 13.5px/1 var(--voice, Archivo, system-ui, sans-serif); color: var(--ink, #16181D); background: var(--plate, #FFFFFF); border: 2px solid var(--rule, #16181D); padding: 8px 12px; cursor: pointer; transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms cubic-bezier(0.23,1,0.32,1); } .ds-toggle--data { font-family: var(--data, \"Spline Sans Mono\", ui-monospace, monospace); font-weight: 700; font-size: 12.5px; } .ds-toggle[aria-pressed=\"true\"] { background: var(--ink, #16181D); border-color: var(--ink, #16181D); color: var(--on-ink, #EDEDEF); } .ds-toggle--hot[aria-pressed=\"true\"] { background: var(--now-line, #D6202F); border-color: var(--now-line, #D6202F); color: var(--on-now, #FFFFFF); } @media (hover: hover) and (pointer: fine) { .ds-toggle:hover[aria-pressed=\"false\"] { border-color: var(--now-line, #D6202F); color: var(--now, #C81326); } } .ds-toggle:focus-visible { outline: 3px solid var(--now-line, #D6202F); outline-offset: 2px; } .ds-toggle:active { transform: scale(0.97); transition-duration: 100ms; }"
     },
     {
       "name": "Claim Bar",
@@ -94,16 +472,16 @@
       "kind": "card",
       "refersTo": "plate",
       "description": "The drawing surface: plate white, 2px ink border, square, with the legend locked at its foot naming every route colour used.",
-      "html": "<div class=\"ds-plate\"><div class=\"ds-legend\"><span><i style=\"background:var(--idle,#9AA0A8)\"></i>not yet</span><span><i style=\"background:var(--set-line,#0A5BD3)\"></i>settled</span><span><i style=\"background:var(--now-line,#D6202F)\"></i>just changed</span><span><i class=\"ds-dash\"></i>unwritten</span></div></div>",
-      "css": ".ds-plate { background: var(--plate, #FFFFFF); border: 2px solid var(--rule, #16181D); padding: 24px 16px; overflow-x: auto; } .ds-legend { display: flex; flex-wrap: wrap; gap: 8px 24px; font: 700 11px/1 var(--data, \"Spline Sans Mono\", ui-monospace, monospace); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2, #41464E); } .ds-legend span { display: inline-flex; align-items: center; gap: 8px; } .ds-legend i { width: 18px; height: 5px; flex: none; } .ds-legend .ds-dash { height: 0; border-top: 3px dashed var(--idle, #9AA0A8); }"
+      "html": "<div class=\"ds-plate\"><div class=\"ds-legend\"><span><i style=\"background:var(--idle,#9AA0A8)\"></i>not yet</span><span><i style=\"background:var(--set-line,#0A5BD3)\"></i>settled</span><span><i style=\"background:var(--now-line,#D6202F)\"></i>just changed</span><span><svg class=\"ds-dash\" viewBox=\"0 0 18 4\" aria-hidden=\"true\"><line x1=\"0\" y1=\"2\" x2=\"18\" y2=\"2\"/></svg>unwritten</span></div></div>",
+      "css": ".ds-plate { background: var(--plate, #FFFFFF); border: 2px solid var(--rule, #16181D); padding: 24px 16px; overflow-x: auto; } .ds-legend { display: flex; flex-wrap: wrap; gap: 8px 24px; font: 700 11px/1 var(--data, \"Spline Sans Mono\", ui-monospace, monospace); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2, #41464E); } .ds-legend span { display: inline-flex; align-items: center; gap: 8px; } .ds-legend i { width: 18px; height: 5px; flex: none; } .ds-legend svg.ds-dash { width: 18px; height: 4px; flex: none; color: var(--idle, #9AA0A8); } .ds-legend svg.ds-dash line { stroke: currentColor; stroke-width: 3; stroke-dasharray: 5 4; }"
     },
     {
       "name": "Call Stack Panel",
       "kind": "custom",
       "refersTo": "frame-active",
-      "description": "Bordered panel with an inverted ink header, listing frames top-of-stack first. The top frame takes a 3px red left border and a red wash.",
+      "description": "Frames innermost first. The executing frame is boxed on all four sides by an inset 2px now-line outline and tinted now-wash; never a one-sided tab.",
       "html": "<div class=\"ds-panel\"><h2 class=\"ds-panel-head\">Call stack</h2><ul class=\"ds-frames\"><li class=\"ds-top\"><span>reverseList(5)</span><span class=\"ds-k\">head=5</span></li><li><span>reverseList(4)</span><span class=\"ds-k\">head=4</span></li><li><span>reverseList(3)</span><span class=\"ds-k\">head=3</span></li></ul></div>",
-      "css": ".ds-panel { border: 2px solid var(--rule, #16181D); background: var(--plate, #FFFFFF); } .ds-panel-head { font: 700 11px/1 var(--data, \"Spline Sans Mono\", ui-monospace, monospace); letter-spacing: .16em; text-transform: uppercase; margin: 0; padding: 12px 16px; background: var(--ink, #16181D); color: var(--on-ink, #EDEDEF); } .ds-frames { list-style: none; margin: 0; padding: 0; } .ds-frames li { font: 400 12.5px/1.6 var(--data, \"Spline Sans Mono\", ui-monospace, monospace); padding: 8px 16px; border-bottom: 1px solid var(--hair, #C5C8CE); color: var(--ink-2, #41464E); display: flex; justify-content: space-between; gap: 12px; border-left: 3px solid transparent; transition: background-color 160ms ease, border-left-color 160ms ease, color 160ms ease; } .ds-frames li:last-child { border-bottom: 0; } .ds-frames li.ds-top { border-left-color: var(--now-line, #D6202F); color: var(--ink, #16181D); font-weight: 700; background: var(--now-wash, #FBE7E8); } .ds-frames .ds-k { color: var(--ink-3, #62676F); font-weight: 400; }"
+      "css": ".ds-panel { border: 2px solid var(--rule, #16181D); background: var(--plate, #FFFFFF); } .ds-panel-head { font: 700 11px/1 var(--data, \"Spline Sans Mono\", ui-monospace, monospace); letter-spacing: .16em; text-transform: uppercase; margin: 0; padding: 12px 16px; background: var(--ink, #16181D); color: var(--on-ink, #EDEDEF); } .ds-frames { list-style: none; margin: 0; padding: 0; } .ds-frames li { font: 400 12.5px/1.6 var(--data, \"Spline Sans Mono\", ui-monospace, monospace); padding: 8px 16px; border-bottom: 1px solid var(--hair, #C5C8CE); color: var(--ink-2, #41464E); display: flex; justify-content: space-between; gap: 12px; transition: background-color 160ms ease, outline-color 160ms ease, color 160ms ease; } .ds-frames li:last-child { border-bottom: 0; } .ds-frames li.ds-top { outline: 2px solid var(--now-line, #D6202F); outline-offset: -2px; color: var(--ink, #16181D); font-weight: 700; background: var(--now-wash, #FBE7E8); } .ds-frames .ds-k { color: var(--ink-3, #62676F); font-weight: 400; }"
     },
     {
       "name": "Code Panel",
@@ -133,6 +511,14 @@
       "description": "The signature drawing material: thick straight segments (dashed idle when unwritten, solid blue when settled, heavy red when acting now) and circular plate-filled station rings.",
       "html": "<svg class=\"ds-route\" viewBox=\"0 0 260 60\" width=\"260\" height=\"60\" aria-hidden=\"true\"><path class=\"ds-seg ds-seg-set\" d=\"M40 30 H110\"/><path class=\"ds-seg ds-seg-now\" d=\"M110 30 H180\"/><path class=\"ds-seg ds-seg-pending\" d=\"M180 30 H240\"/><circle class=\"ds-node\" cx=\"40\" cy=\"30\" r=\"13\"/><circle class=\"ds-node ds-node-now\" cx=\"110\" cy=\"30\" r=\"13\"/><circle class=\"ds-node\" cx=\"180\" cy=\"30\" r=\"13\"/></svg>",
       "css": ".ds-route { display: block; } .ds-seg { fill: none; stroke: var(--idle, #9AA0A8); stroke-width: 5; stroke-linecap: butt; transition: stroke 160ms cubic-bezier(0.23,1,0.32,1), stroke-width 160ms cubic-bezier(0.23,1,0.32,1); } .ds-seg-set { stroke: var(--set-line, #0A5BD3); } .ds-seg-now { stroke: var(--now-line, #D6202F); stroke-width: 7; } .ds-seg-pending { stroke: var(--idle, #9AA0A8); stroke-width: 3; stroke-dasharray: 7 7; } .ds-node { fill: var(--plate, #FFFFFF); stroke: var(--rule, #16181D); stroke-width: 3; transform-box: fill-box; transform-origin: center; transition: stroke 160ms cubic-bezier(0.23,1,0.32,1), stroke-width 160ms cubic-bezier(0.23,1,0.32,1), transform 160ms cubic-bezier(0.23,1,0.32,1); } .ds-node-now { stroke: var(--now-line, #D6202F); stroke-width: 5; transform: scale(1.06); }"
+    },
+    {
+      "name": "Pull Quote",
+      "kind": "custom",
+      "refersTo": "pull",
+      "description": "The one line on a page worth remembering, set between a heavy ink rule and a hairline. No colour, and never an accent bar down its left edge.",
+      "html": "<p class=\"ds-pull\">You never verify the assumption. You grant it, then do one honest step of work with what it handed you.</p>",
+      "css": ".ds-pull { border-top: 3px solid var(--rule, #16181D); border-bottom: 1px solid var(--hair, #C5C8CE); padding: 16px 0; margin: 0; font: 600 20px/1.3 var(--voice, Archivo, system-ui, sans-serif); letter-spacing: -.02em; color: var(--ink, #16181D); max-width: 58ch; }"
     }
   ],
   "narrative": {
@@ -147,17 +533,61 @@
       "Motion measured in 100–160ms, asymmetric on press and release"
     ],
     "rules": [
-      { "name": "The One Meaning Rule", "body": "Each route colour means exactly one thing across every page: red is the frame acting now, blue is settled, green is the base case, grey is not yet written. A page may not borrow a route colour for emphasis, branding or category, and a page that introduces a fourth meaning must extend the legend.", "section": "colors" },
-      { "name": "The Legend Never Lies Rule", "body": "Any drawing that uses a route colour ships a legend naming every colour it actually uses, and nothing it does not.", "section": "colors" },
-      { "name": "The Single Red Fill Rule", "body": "At most one element in a viewport carries a solid red fill, and it is the primary action (Next). Everything else red is a stroke, a numeral, or a wash.", "section": "colors" },
-      { "name": "The No Decorative Grey Rule", "body": "Grey is never atmosphere. If a mark is grey it is either quiet ink (ink-3, hair) or it means the program has not written it yet (idle).", "section": "colors" },
-      { "name": "The Two Registers Rule", "body": "Archivo speaks; Spline Sans Mono computes. A value the program produced is never set in Archivo, and a sentence addressed to the reader is never set in mono.", "section": "typography" },
-      { "name": "The One Imperative Rule", "body": "Each page carries exactly one claim, set large enough to be the spine of the first viewport, and it is the only sentence given an inverted bar.", "section": "typography" },
-      { "name": "The No Kicker Rule", "body": "No label, eyebrow or category tag sits above a heading. Wayfinding lives in the top rail, and the heading starts the page.", "section": "typography" },
-      { "name": "The Rule Separates Rule", "body": "Regions are divided by a rule, not by a gap or a card edge: 3px under the rail and above the transport, 2px above the footer and under a control strip, 1px hair between rows inside a panel.", "section": "layout" },
-      { "name": "The Flat Enamel Rule", "body": "Nothing casts a shadow and nothing lifts. If an element needs to read as foreground, invert it to ink or give it a heavier rule; never float it.", "section": "elevation" },
-      { "name": "The Square Corner Rule", "body": "No border radius on any rectangular element, ever. The only round thing in the system is a station node, and a station node is always a circle.", "section": "shapes" },
-      { "name": "The Redraw, Don't Rebuild Rule", "body": "Keep drawing elements persistent across steps so the system's transitions fire. A segment that becomes settled travels from dashed to solid along its own length, and the active station moves rather than blinking on and off.", "section": "components" }
+      {
+        "name": "The One Meaning Rule",
+        "body": "Each route colour means exactly one thing across every page: red is the frame acting now, blue is settled, green is the base case, grey is not yet written. A page may not borrow a route colour for emphasis, branding or category, and a page that introduces a fourth meaning must extend the legend.",
+        "section": "colors"
+      },
+      {
+        "name": "The Legend Never Lies Rule",
+        "body": "Any drawing that uses a route colour ships a .legend naming every colour it actually uses, and nothing it does not.",
+        "section": "colors"
+      },
+      {
+        "name": "The Single Red Fill Rule",
+        "body": "At most one element in a viewport carries a solid red fill, and it is the primary action (Next). Everything else red is a stroke, a numeral, or a wash.",
+        "section": "colors"
+      },
+      {
+        "name": "The No Decorative Grey Rule",
+        "body": "Grey is never atmosphere. If a mark is grey it is either quiet ink (ink-3, hair) or it means the program has not written it yet (idle).",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Registers Rule",
+        "body": "Archivo speaks; Spline Sans Mono computes. A value the program produced is never set in Archivo, and a sentence addressed to the reader is never set in mono.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Imperative Rule",
+        "body": "Each page carries exactly one claim, set large enough to be the spine of the first viewport, and it is the only sentence given an inverted bar.",
+        "section": "typography"
+      },
+      {
+        "name": "The No Kicker Rule",
+        "body": "No label, eyebrow or category tag sits above a heading. Wayfinding lives in the top rail (Week 1 of 12 · recursion fundamentals), and the heading starts the page.",
+        "section": "typography"
+      },
+      {
+        "name": "The Rule Separates Rule",
+        "body": "Regions are divided by a rule, not by a gap or a card edge: 3px under the rail and above the transport, 2px above the footer and under a control strip, 1px hair between rows inside a panel.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat Enamel Rule",
+        "body": "Nothing casts a shadow and nothing lifts. If an element needs to read as foreground, invert it to ink or give it a heavier rule; never float it.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Square Corner Rule",
+        "body": "No border radius on any rectangular element, ever. The only round thing in the system is a station node, and a station node is always a circle.",
+        "section": "shapes"
+      },
+      {
+        "name": "The Redraw, Don't Rebuild Rule",
+        "body": "Keep drawing elements persistent across steps so the system's transitions fire. A segment that becomes settled changes colour and weight over 160ms rather than cutting, and the active station scales rather than blinking on and off. Stepping is fired tens of times a session, so this stays near the edge of perception on purpose: it was first specified as a line drawing itself along its length, and deliberately reduced.",
+        "section": "components"
+      }
     ],
     "dos": [
       "Do copy docs/_template/index.html to start a page, and take chrome, type, colour and motion from docs/assets/system.css unchanged.",
@@ -183,7 +613,8 @@
       "Don't use a card grid for an index; use the line-and-stops route index.",
       "Don't use metric cards for numbers; use the bordered readout strip.",
       "Don't use an icon font, glyph characters or raster icons.",
-      "Don't rebuild the drawing's DOM between steps; that throws the motion away."
+      "Don't rebuild the drawing's DOM between steps; that throws the motion away.",
+      "Don't put a coloured border on one side of a card, callout, list item or swatch. Box it on all four sides, set it between rules, or draw it."
     ]
   }
 }

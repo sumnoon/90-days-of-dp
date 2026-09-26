@@ -28,6 +28,7 @@ Interactive pages for the ideas a static diagram can't carry:
 - [The same answer, computed again and again](https://sumnoon.github.io/90-days-of-dp/fib/) — LC 509, the recursion tree
 - [Which head goes first](https://sumnoon.github.io/90-days-of-dp/lc21/) — LC 21, heads chosen going down
 - [Reading n one bit at a time](https://sumnoon.github.io/90-days-of-dp/lc50/) — LC 50, fast exponentiation in binary
+- [Moving n disks means moving n − 1, twice](https://sumnoon.github.io/90-days-of-dp/hanoi/) — Tower of Hanoi, playable
 
 Source in [`docs/`](docs/).
 

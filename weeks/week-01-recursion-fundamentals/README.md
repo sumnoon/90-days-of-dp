@@ -41,3 +41,4 @@ Not from the problem list, but solved this week:
 - [Day 0 warm-ups: factorial and sum of digits](notes/warmup_recursion.md)
 - [Print 1..N and N..1](notes/print_1_to_n.md)
 - [Recursive palindrome check](notes/palindrome_check.md)
+- [Tower of Hanoi](notes/tower_of_hanoi.md) — Saturday's problem and the checkpoint
