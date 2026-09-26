@@ -291,8 +291,11 @@ in the shipped stylesheet or any page, and no blur or filter. Depth is carried
 entirely by three devices: a 2px ink border that makes a plate a physical
 surface, tonal separation between the concrete ground and the white plate, and
 full-bleed ink inversion for the elements that must sit on top (the claim bar,
-panel heads, pressed toggles). The one movement in the system is a 6% scale on
-the active station node and a 3% press on a control — motion, not lift.
+panel heads, pressed toggles). Movement is limited to three things: a 6% scale
+on the active station node, a 3% press on a control, and on the Tower of Hanoi
+page a disk's flight between pegs. The flight is translation across the board,
+not elevation: no shadow appears and nothing floats, so it does not break the
+rule below.
 
 ### Named Rules
 **The Flat Enamel Rule.** Nothing casts a shadow and nothing lifts. If an
@@ -339,8 +342,13 @@ always a circle.
 ### Toggles
 - **Style:** same silhouette as a button, driven by `aria-pressed`. Unpressed is
   plate with an ink border; pressed inverts to solid ink with `on-ink` text.
+  `.toggle--hot` presses to `now-line` with `on-now` text instead, for a toggle
+  whose pressed state *is* the comparison being made (LC 21's `<=`).
+  `.toggle--data` sets the label in mono for code-valued toggles.
 - **Use:** switching the thing being compared (`1..N` vs `N..1`, `<=` vs `<`,
-  memoization on/off). Toggles sit in a strip above the stage closed by a 2px rule.
+  memoization on/off). Toggles, presets and inputs sit in the setup bar
+  (`.setup`), a strip above the stage closed by a 2px rule; a native `select`
+  in it takes the same 2px ink border as a button.
 
 ### Cards / Containers
 There are no cards. Two container types exist:
@@ -390,8 +398,15 @@ and toggled — never rebuilt — so the 160ms colour transition can fire.
 
 ### Legend (signature)
 A row of 11px uppercase mono entries at the foot of a plate, each pairing an
-18×5px colour bar with its meaning. Unwritten state is drawn as a 3px dashed
-`idle` top-border instead of a bar, so the swatch itself shows the dash.
+18×5px colour bar with its meaning. Unwritten state is an 18×4 inline SVG line
+with a `5 4` dasharray — the same primitive the diagrams use for unwritten
+segments — so the swatch is literally the mark it describes. It is never a
+one-sided border; recolour one through `color`.
+
+### Pull Quote
+The one line on a page worth remembering, set between a 3px ink rule above and a
+1px hair below, at 600 weight and 17–22px, with no colour spent. It is never an
+accent bar down its left edge: the emphasis comes from the rules and the type.
 
 ### Route Index (signature)
 The landing page replaces a card grid with a line and its stops: a 3px
@@ -420,9 +435,11 @@ keeps every colour transition (shortened to 80ms) and drops all movement and
 scaling.
 
 **The Redraw, Don't Rebuild Rule.** Keep drawing elements persistent across steps
-so the system's transitions fire. A segment that becomes settled travels from
-dashed to solid along its own length, and the active station moves rather than
-blinking on and off.
+so the system's transitions fire. A segment that becomes settled changes
+colour and weight over 160ms rather than cutting, and the active station scales
+rather than blinking on and off. Stepping is fired tens of times a session, so
+this stays near the edge of perception on purpose: it was first specified as a
+line drawing itself along its length, and deliberately reduced.
 
 ## Do's and Don'ts
 
@@ -451,3 +468,4 @@ blinking on and off.
 - **Don't** use metric cards for numbers; use the bordered readout strip.
 - **Don't** use an icon font, glyph characters or raster icons.
 - **Don't** rebuild the drawing's DOM between steps; that throws the motion away.
+- **Don't** put a coloured border on one side of a card, callout, list item or swatch. Box it on all four sides, set it between rules, or draw it.
