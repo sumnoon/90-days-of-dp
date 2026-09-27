@@ -120,3 +120,30 @@ complete answer covers:
 1. the recurrence this code follows, and why it solves to 2ⁿ − 1
 2. why **no** solution can do it in fewer — a claim about the largest disk,
    not about this code
+
+### Ans for 1
+- For n = 1, move count is 1
+- For n = 2, move count is 3
+- For n = 3, move count is 7
+
+So the pattern is 2ⁿ − 1. Why:
+
+The recurrence is **F(n) = 2 · F(n − 1) + 1**, where **F(0) = 0**.
+
+So, for n = 3:
+
+```
+F(3) = 2 * F(2) + 1
+     = 2 * {2 * F(1) + 1} + 1
+     = 2 * {2 * {2 * F(0) + 1} + 1} + 1
+     = 8 * F(0) + 4 + 2 + 1
+     = 7 = (8 - 1) = 2³ − 1
+```
+
+So every term contributes a power of two: 1 + 2 + 4 + … + 2ⁿ⁻¹. Added
+together in binary, that is `111…1` — n ones. When we add 1 to it, it becomes
+`1000…0` — a 1 followed by n zeros — which is 2ⁿ. That's why the number of
+moves is 2ⁿ − 1.
+
+### Ans for 2
+Because to move the largest disk we need to move top n - 1 disk two times. One from source to temporary and other from temporary to source. SO total move for F(n) = 2 * F(n - 1) + 1.
