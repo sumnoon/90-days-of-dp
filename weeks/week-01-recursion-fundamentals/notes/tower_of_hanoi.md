@@ -3,7 +3,9 @@
 - **Solution:** [`solutions/tower_of_hanoi.cpp`](../solutions/tower_of_hanoi.cpp)
 - **Day:** 6 (Sat)
 - **Solved without help?** yes
-- **Week 1 checkpoint:** Sunday — explain why it takes 2ⁿ − 1 moves.
+- **Week 1 checkpoint:** passed Sun Sep 27 — re-solved from scratch in
+  [`redos/tower_of_hanoi_checkpoint.cpp`](../redos/tower_of_hanoi_checkpoint.cpp),
+  explanation [below](#checkpoint-why-2ⁿ--1).
 
 The first recursion with **two recursive calls that both do real work**. Fibonacci
 also made two calls, but most of its work was repeated; here every call moves
@@ -114,8 +116,7 @@ when the result can be reused. Keep that distinction for Week 5.
 
 ## Checkpoint: why 2ⁿ − 1
 
-*To be written after Sunday's checkpoint, in your own words.* Two things a
-complete answer covers:
+Written for the Week 1 checkpoint (Sun Sep 27), in my own words. Two questions:
 
 1. the recurrence this code follows, and why it solves to 2ⁿ − 1
 2. why **no** solution can do it in fewer — a claim about the largest disk,
@@ -146,4 +147,8 @@ together in binary, that is `111…1` — n ones. When we add 1 to it, it become
 moves is 2ⁿ − 1.
 
 ### Ans for 2
-Because to move the largest disk we need to move top n - 1 disk two times. One from source to temporary and other from temporary to source. SO total move for F(n) = 2 * F(n - 1) + 1.
+1. To move largest disk to destination, we need to move top n - 1 disks to temporary peg because a larger disk cannot sit on top of a smaller disk. And recursively we need to place n - 1 disks to temporary which is now destination. So that takes at least F(n − 1) moves.
+2. After that we need to move largest disk to destination
+3. Then again we need to move n - 1 disks from temporary to destination. which again requires at least F(n − 1) moves.
+4. So to move n disk from source to destination we need to perform at least 2 · F(n − 1) + 1 moves, which means **F(n) ≥ 2 · F(n − 1) + 1**.
+5. So, to move all n disks we need at least 2 * F(n - 1) + 1 moves. Which from Answer 1 we can see is 2ⁿ − 1.

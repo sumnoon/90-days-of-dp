@@ -28,7 +28,9 @@
 
 ## Checkpoint
 
-- [ ] Solve Tower of Hanoi from scratch and explain why it takes 2ⁿ − 1 moves.
+- [x] Solve Tower of Hanoi from scratch and explain why it takes 2ⁿ − 1 moves.
+  Passed Sun Sep 27 — [code](redos/tower_of_hanoi_checkpoint.cpp),
+  [explanation](notes/tower_of_hanoi.md#checkpoint-why-2ⁿ--1). Sunday's redos are in [`redos/`](redos/).
 
 ## Notes
 
