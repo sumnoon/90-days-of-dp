@@ -12,7 +12,7 @@
 | Wed | 1–1.5 h | LC 64. |
 | Thu | 1–1.5 h | LC 120 (bottom-up from the last row). |
 | Fri | 1–1.5 h | LC 931. |
-| **Sat** (weekend) | 3–4 h | Watch Striver's grid DP lectures. Solve LC 221, LC 174 (work out why it must be filled backward), and LC 329 (memoized DFS). |
+| **Sat** (weekend) | 3–4 h | Watch Striver's grid DP lectures (DP 8–DP 13). Solve LC 221, LC 174 (work out why it must be filled backward), and LC 329 (memoized DFS). |
 | **Sun** (weekend) | 2–3 h | **Checkpoint:** reduce LC 64 to O(n) space. Solve CSES Grid Paths and AtCoder H. Preview Week 8 with the first Aditya Verma LCS video. |
 
 ## Problems

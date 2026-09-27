@@ -22,7 +22,7 @@ You don't need to finish all of these. Choose **one video series and one text re
 | [Competitive Programmer's Handbook](https://cses.fi/book/book.pdf) (free PDF): Ch 5 Complete Search, Ch 7 Dynamic Programming | Book | Short, clear, and aimed at contest-style problems |
 | [MIT 6.006 Spring 2020](https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/): the DP lectures (the "SRTBOT" framework) | Video lectures | A rigorous way to design DP solutions |
 | freeCodeCamp: *Dynamic Programming – Learn to Solve Algorithmic Problems* (Alvin Zablan, YouTube) | Video | Beginner-friendly, moves step by step from memoization to tabulation |
-| Striver / takeUforward: Recursion playlist and DP series ([takeuforward.org](https://takeuforward.org)) | Video + notes | A structured problem-by-problem walkthrough that matches this plan closely |
+| Striver / takeUforward: [Recursion playlist](https://www.youtube.com/playlist?list=PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9) (lectures *Re 1–Re 5*, then *L6–L19*), [Tree series](https://www.youtube.com/playlist?list=PLgUwDviBIf0q8Hkd7bK2Bpryj2xVJk8Vk) (*L1–L53*) and [DP series](https://www.youtube.com/playlist?list=PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY) (*DP 1–DP 56*); notes on [takeuforward.org](https://takeuforward.org) | Video + notes | A structured problem-by-problem walkthrough that matches this plan closely. Lecture numbers in this plan are the ones in the video titles. |
 | Aditya Verma: Recursion and DP playlists (YouTube) | Video | Excellent on knapsack, LCS, and matrix-chain families |
 | [USACO Guide](https://usaco.guide) (Gold/Platinum DP modules) | Text + problems | Knapsack, trees, bitmask, range, and digit DP |
 | [CP-Algorithms](https://cp-algorithms.com/dynamic_programming/intro-to-dp.html) | Text | Reference articles for advanced topics |
@@ -59,7 +59,7 @@ You don't need to finish all of these. Choose **one video series and one text re
 ### Day 0: Today, Sunday Sep 20 (2–3 h)
 
 1. **Setup (30 min):** Create or log in to your LeetCode, CSES, and AtCoder accounts. Start a notebook (paper or a doc) and, if you like, a GitHub repo for your solutions. Make a "redo list".
-2. **First reading (60 min):** Read Jeff Erickson's *Algorithms*, Ch 1, sections 1.1–1.3, or watch the first 3 videos of Striver's recursion playlist.
+2. **First reading (60 min):** Read Jeff Erickson's *Algorithms*, Ch 1, sections 1.1–1.3, or watch the first 3 videos of Striver's recursion playlist (Re 1–Re 3).
 3. **First code (45 min):** Write factorial and sum of digits recursively, then step through both in [Python Tutor](https://pythontutor.com) (set the language to C++) and watch the call stack.
 4. **Preview (15 min):** Skim the Week 1 section below.
 
@@ -117,7 +117,7 @@ Every DP solution is a recursion with its repeated work cached. This month build
 ### Resources
 
 - 📖 Jeff Erickson, *Algorithms*, Ch 1 (Recursion): read sections 1.1–1.3, on reductions, simplify-and-delegate, and Tower of Hanoi.
-- 🎥 Striver's Recursion playlist: the first 5–6 videos, on basics, parameterized vs. functional recursion, and multiple recursive calls.
+- 🎥 Striver's Recursion playlist, **Re 1–Re 5**: Re 1 introduction (recursion tree, stack space), Re 2 problems on recursion, Re 3 parameterised vs. functional recursion, Re 4 problems on functional recursion, Re 5 multiple recursion calls.
 - 🛠 [Python Tutor](https://pythontutor.com) (C++ mode): step through recursive factorial and Fibonacci and watch the stack grow and shrink.
 - 📝 LeetCode Explore card: *Recursion I*.
 
@@ -130,8 +130,8 @@ Every DP solution is a recursion with its repeated work cached. This month build
 | Wed | 1–1.5 h | LC 231, then LC 206 (solve it recursively). |
 | Thu | 1–1.5 h | LC 21 (recursive merge). |
 | Fri | 1–1.5 h | LC 50 Pow(x, n). Work out why halving the exponent gives O(log n). |
-| **Sat** (weekend) | 3–4 h | Watch the rest of Striver's recursion basics. Solve Tower of Hanoi from scratch and write its recurrence. Re-solve LC 206 without notes. Use any leftover time to catch up on missed weekdays. |
-| **Sun** (weekend) | 2–3 h | Redo 3 problems from memory, then do the **checkpoint**. Preview Week 2 with Striver's tree traversal videos (30 min). |
+| **Sat** (weekend) | 3–4 h | Watch the rest of Striver's recursion basics (Re 4–Re 5). Solve Tower of Hanoi from scratch and write its recurrence. Re-solve LC 206 without notes. Use any leftover time to catch up on missed weekdays. |
+| **Sun** (weekend) | 2–3 h | Redo 3 problems from memory, then do the **checkpoint**. Preview Week 2 with Striver's tree traversal videos (L1, L2, L4–L7; 40 min). |
 
 **Key ideas**
 
@@ -162,7 +162,10 @@ Every DP solution is a recursion with its repeated work cached. This month build
 
 ### Resources
 
-- 🎥 Striver's Tree series: the traversal videos and the "height / diameter / max path sum" videos.
+- 🎥 Striver's Tree series:
+  - Traversals: **L1** introduction, **L2** representation in C++ (skip L3, the Java version), **L4** traversal theory (BFS / DFS), **L5–L7** preorder, inorder, postorder. L8–L13 are level-order and iterative traversals — not needed this week.
+  - Height / diameter / max path sum: **L14** maximum depth, **L16** diameter, **L17** maximum path sum. Watch each after attempting the matching problem.
+  - After attempting them, also: **L18** identical trees (LC 100), **L27** lowest common ancestor (LC 236), **L46** validate a BST (LC 98).
 - 🎥 NeetCode video solutions for LC 543 and LC 236.
 - 📝 LeetCode Explore card: *Binary Tree*, the section on solving problems recursively ("top-down" vs. "bottom-up").
 
@@ -220,7 +223,7 @@ backtrack(state):
 ### Resources
 
 - 📖 Jeff Erickson, *Algorithms*, Ch 2 (Backtracking): sections 2.1–2.3.
-- 🎥 Striver's Recursion playlist: the subsequences, combination sum, subsets I/II, and permutations videos.
+- 🎥 Striver's Recursion playlist: **L6** subsequences, **L7** all patterns (print all / print one / count), **L8** combination sum, **L9** combination sum II, **L10** subset sum I, **L11** subset sum II, **L12–L13** permutations (two approaches).
 - 📝 LeetCode Discuss post by *issac3*: "A general approach to backtracking questions (Subsets, Permutations, Combination Sum, Palindrome Partitioning)". Search the title on LeetCode.
 
 ### Study Guide
@@ -271,7 +274,7 @@ backtrack(state):
 
 - 📖 Jeff Erickson, *Algorithms*, Ch 2 (N-Queens, Subset Sum) and Ch 1 (Mergesort section).
 - 📖 Competitive Programmer's Handbook, Ch 5 (Complete Search: backtracking and pruning).
-- 🎥 Striver: the N-Queens, Sudoku Solver, Palindrome Partitioning, and Word Search videos.
+- 🎥 Striver's Recursion playlist: **L14** N-Queens, **L15** Sudoku Solver, **L17** Palindrome Partitioning, and the unnumbered *Merge Sort* video (for LC 912). Word Search isn't in the playlist.
 - 🎥 NeetCode: LC 241 explanation.
 
 ### Study Guide
@@ -321,7 +324,7 @@ backtrack(state):
 - 🎥 freeCodeCamp: *Dynamic Programming – Learn to Solve Algorithmic Problems* (Alvin Zablan). Watch the memoization half this week.
 - 🎥 MIT 6.006 Spring 2020, the first DP lecture (SRTBOT: Subproblems, Relate, Topological order, Base, Original, Time).
 - 📖 Jeff Erickson, *Algorithms*, Ch 3.1–3.4.
-- 🎥 Striver DP series, lectures 1–6 (1D DP: climbing stairs, frog jump, house robber).
+- 🎥 Striver DP series, **DP 1–DP 6**: introduction, climbing stairs, frog jump, frog jump with k distance, max sum of non-adjacent elements, house robber II.
 - 📖 [CP-Algorithms: Introduction to DP](https://cp-algorithms.com/dynamic_programming/intro-to-dp.html).
 - 🏋 AtCoder DP Contest problems A (Frog 1), B (Frog 2), and C (Vacation).
 
@@ -370,7 +373,7 @@ backtrack(state):
 
 - 🎥 freeCodeCamp DP video: the tabulation half (canSum / howSum / bestSum are the same idea as Coin Change).
 - 📖 [USACO Guide](https://usaco.guide): Gold → *Longest Increasing Subsequence* module (covers the O(n log n) method).
-- 🎥 Striver DP series: the LIS lectures (near the end of the series).
+- 🎥 Striver DP series, **DP 41–DP 47**: the LIS lectures (LIS, printing it, LIS with binary search, largest divisible subset, longest string chain, bitonic subsequence, number of LIS).
 - 🎥 NeetCode: LC 322, LC 139, LC 91.
 - 🏋 CSES: Minimizing Coins, Coin Combinations I, Removing Digits.
 
@@ -419,7 +422,7 @@ backtrack(state):
 
 ### Resources
 
-- 🎥 Striver DP series: the grid lectures (unique paths, obstacles, min path sum, triangle, falling path sum, and cherry pickup).
+- 🎥 Striver DP series, **DP 8–DP 13**: the grid lectures (unique paths, obstacles, min path sum, triangle, falling path sum, and cherry pickup). Also **DP 56** count square submatrices, the same idea as LC 221.
 - 📖 [USACO Guide](https://usaco.guide): Gold → *Paths on Grids* module.
 - 🏋 CSES: Grid Paths. AtCoder DP Contest problem H (Grid 1).
 
@@ -432,7 +435,7 @@ backtrack(state):
 | Wed | 1–1.5 h | LC 64. |
 | Thu | 1–1.5 h | LC 120 (bottom-up from the last row). |
 | Fri | 1–1.5 h | LC 931. |
-| **Sat** (weekend) | 3–4 h | Watch Striver's grid DP lectures. Solve LC 221, LC 174 (work out why it must be filled backward), and LC 329 (memoized DFS). |
+| **Sat** (weekend) | 3–4 h | Watch Striver's grid DP lectures (DP 8–DP 13). Solve LC 221, LC 174 (work out why it must be filled backward), and LC 329 (memoized DFS). |
 | **Sun** (weekend) | 2–3 h | **Checkpoint:** reduce LC 64 to O(n) space. Solve CSES Grid Paths and AtCoder H. Preview Week 8 with the first Aditya Verma LCS video. |
 
 **Key ideas**
@@ -469,7 +472,7 @@ backtrack(state):
 
 - 📖 Jeff Erickson, *Algorithms*, Ch 3: the *Edit Distance* section.
 - 🎥 Aditya Verma DP playlist: the LCS section (about 15 videos building variants from LCS).
-- 🎥 Striver DP series: the DP-on-strings lectures (LCS through wildcard matching).
+- 🎥 Striver DP series, **DP 25–DP 34**: the DP-on-strings lectures (LCS through wildcard matching).
 - 🎥 MIT 6.006 Spring 2020: the DP lecture on subsequence problems (LCS, LIS).
 - 🏋 AtCoder DP Contest problem F (LCS). CSES Edit Distance.
 
@@ -524,7 +527,7 @@ backtrack(state):
 - 🎥 Aditya Verma DP playlist: the 0/1 knapsack and unbounded knapsack sections. This is the most-recommended knapsack series.
 - 📖 [USACO Guide](https://usaco.guide): Gold → *Knapsack DP* module.
 - 📖 [CP-Algorithms: Knapsack Problem](https://cp-algorithms.com/dynamic_programming/knapsack.html).
-- 🎥 Striver DP series: the DP-on-subsequences lectures (subset sum through coin change II).
+- 🎥 Striver DP series, **DP 14–DP 24**: the DP-on-subsequences lectures (subset sum through coin change II, DP 22), plus unbounded knapsack and rod cutting (DP 23–DP 24).
 - 🏋 AtCoder DP Contest problems D (Knapsack 1) and E (Knapsack 2). CSES Book Shop and Money Sums.
 
 ### Study Guide
@@ -574,7 +577,7 @@ backtrack(state):
 ### Resources
 
 - 🎥 Aditya Verma DP playlist: the Matrix Chain Multiplication section (MCM and its variants).
-- 🎥 Striver DP series: the partition DP lectures (MCM, cutting a stick, burst balloons, palindrome partitioning II).
+- 🎥 Striver DP series, **DP 48–DP 54**: the partition DP lectures (MCM, cutting a stick, burst balloons, boolean expression, palindrome partitioning II, partition array for max sum).
 - 📖 [USACO Guide](https://usaco.guide): Platinum → *Range DP* module.
 - 🏋 AtCoder DP Contest problems L (Deque) and N (Slimes).
 
@@ -626,7 +629,7 @@ backtrack(state):
 - 📖 [USACO Guide](https://usaco.guide): Gold → *DP on Trees* module.
 - 📖 Competitive Programmer's Handbook: the tree algorithms chapter (sections on tree DP).
 - 📝 LeetCode Discuss post by *fun4LeetCode*: "Most consistent ways of dealing with the series of stock problems". Search the title on LeetCode. This is the best write-up of the stock problems.
-- 🎥 Striver DP series: the DP-on-stocks lectures.
+- 🎥 Striver DP series, **DP 35–DP 40**: the DP-on-stocks lectures.
 - 🏋 AtCoder DP Contest problem P (Independent Set). CSES Tree Matching.
 
 ### Study Guide

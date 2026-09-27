@@ -15,6 +15,21 @@
 | **Sat** (weekend) | 3–4 h | Harder problems: LC 543 (return height, update a global answer) and LC 236 (what does each subtree report back?). Watch the NeetCode solutions after you attempt them. |
 | **Sun** (weekend) | 2–3 h | Re-solve LC 543 from memory, then do the **checkpoint**. Preview Week 3 by reading the start of Erickson Ch 2. |
 
+## Videos
+
+[Striver's Tree series](https://www.youtube.com/playlist?list=PLgUwDviBIf0q8Hkd7bK2Bpryj2xVJk8Vk) — lecture numbers as in the video titles.
+
+| When | Lectures |
+|---|---|
+| Before Mon | **L1** introduction, **L2** representation in C++, **L4** traversals (BFS / DFS), **L5** preorder, **L6** inorder, **L7** postorder. Skip L3 (Java) and L8–L13 (level-order and iterative). |
+| After LC 104 | **L14** maximum depth |
+| After LC 100 | **L18** identical trees |
+| After LC 98 | **L46** validate a BST |
+| After LC 543 | **L16** diameter, then **L17** maximum path sum |
+| After LC 236 | **L27** lowest common ancestor |
+
+Also: NeetCode's solutions for LC 543 and LC 236, after attempting them.
+
 ## Problems
 
 ⭐ = core, don't skip
