@@ -12,8 +12,8 @@
 | Wed | 1–1.5 h | LC 231, then LC 206 (solve it recursively). |
 | Thu | 1–1.5 h | LC 21 (recursive merge). |
 | Fri | 1–1.5 h | LC 50 Pow(x, n). Work out why halving the exponent gives O(log n). |
-| **Sat** (weekend) | 3–4 h | Watch the rest of Striver's recursion basics. Solve Tower of Hanoi from scratch and write its recurrence. Re-solve LC 206 without notes. Use any leftover time to catch up on missed weekdays. |
-| **Sun** (weekend) | 2–3 h | Redo 3 problems from memory, then do the **checkpoint**. Preview Week 2 with Striver's tree traversal videos (30 min). |
+| **Sat** (weekend) | 3–4 h | Watch the rest of Striver's recursion basics (Re 4–Re 5). Solve Tower of Hanoi from scratch and write its recurrence. Re-solve LC 206 without notes. Use any leftover time to catch up on missed weekdays. |
+| **Sun** (weekend) | 2–3 h | Redo 3 problems from memory, then do the **checkpoint**. Preview Week 2 with Striver's tree traversal videos (L1, L2, L4–L7; 40 min). |
 
 ## Problems
 
