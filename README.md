@@ -36,14 +36,14 @@ Source in [`docs/`](docs/).
 
 | Week | Dates | Topic | Done |
 |---|---|---|---|
-| [1](weeks/week-01-recursion-fundamentals/) | Sep 21 – Sep 27 | Recursion Fundamentals | ☐ |
+| [1](weeks/week-01-recursion-fundamentals/) | Sep 21 – Sep 27 | Recursion Fundamentals | ☑ |
 | [2](weeks/week-02-recursion-on-trees-and-structures/) | Sep 28 – Oct 4 | Recursion on Trees and Structures | ☐ |
-| [3](weeks/week-03-backtracking-i/) | Subsets, Permutations, Combinations) (Oct 5 – Oct 11 | Backtracking I | ☐ |
+| [3](weeks/week-03-backtracking-i/) | Oct 5 – Oct 11 | Backtracking I (Subsets, Permutations, Combinations) | ☐ |
 | [4](weeks/week-04-backtracking-ii-and-divide-conquer/) | Oct 12 – Oct 18 | Backtracking II and Divide & Conquer | ☐ |
 | [5](weeks/week-05-from-memoization-to-dp/) | Oct 19 – Oct 25 | From Memoization to DP | ☐ |
-| [6](weeks/week-06-1d-dp/) | Sequences and Decisions) (Oct 26 – Nov 1 | 1D DP | ☐ |
+| [6](weeks/week-06-1d-dp/) | Oct 26 – Nov 1 | 1D DP (Sequences and Decisions) | ☐ |
 | [7](weeks/week-07-2d-grid-dp/) | Nov 2 – Nov 8 | 2D Grid DP | ☐ |
-| [8](weeks/week-08-string-dp/) | Two Sequences) (Nov 9 – Nov 15 | String DP | ☐ |
+| [8](weeks/week-08-string-dp/) | Nov 9 – Nov 15 | String DP (Two Sequences) | ☐ |
 | [9](weeks/week-09-the-knapsack-family/) | Nov 16 – Nov 22 | The Knapsack Family | ☐ |
 | [10](weeks/week-10-interval-dp/) | Nov 23 – Nov 29 | Interval DP | ☐ |
 | [11](weeks/week-11-tree-dp-and-state-machine-dp/) | Nov 30 – Dec 6 | Tree DP and State Machine DP | ☐ |
