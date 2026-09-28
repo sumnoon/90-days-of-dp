@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="sumnoon">
+<meta name="description" content="Step through preorder, inorder and postorder traversals and LC 104 Maximum Depth on the same binary tree: a vector passed down, and a number returned up.">
+<title>Down the tree, back up it — 90 Days of DP</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Spline+Sans+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="../assets/system.css">
+<style>
+  .tree { display: block; width: 100%; height: auto; margin: 0 auto; }
+
+  /* this page's code is wider than the usual aside: the line that moves must be readable */
+  @media (min-width: 801px) { .work { grid-template-columns: minmax(0, 1fr) 380px; } }
+
+  .t-edge { stroke: var(--hair); stroke-width: 2.5; fill: none; }
+  .t-edge.to-stub { stroke: var(--idle); stroke-width: 1.5; stroke-dasharray: 4 4; }
+
+  .t-node circle { fill: var(--plate); stroke: var(--idle); stroke-width: 2.5;
+    transition: fill var(--t-state) var(--ease-out), stroke var(--t-state) var(--ease-out),
+                stroke-width var(--t-state) var(--ease-out), transform var(--t-state) var(--ease-out); }
+  .t-node.is-open circle { stroke: var(--ink); stroke-width: 4.5; }
+  .t-node.is-done circle { fill: var(--set-wash); stroke: var(--set-line); }
+  .t-node.is-now circle { fill: var(--now-wash); stroke: var(--now-line); stroke-width: 5; }
+  .t-val { font: 700 13px/1 var(--data); fill: var(--ink); text-anchor: middle; pointer-events: none; }
+
+  .t-stub rect { fill: none; stroke: var(--idle); stroke-width: 1.5; stroke-dasharray: 3 3;
+    transition: fill var(--t-state) var(--ease-out), stroke var(--t-state) var(--ease-out); }
+  .t-stub.is-hit rect { stroke: var(--base-line); stroke-dasharray: none; }
+  .t-stub.is-now rect { fill: var(--base-wash); stroke: var(--base-line); stroke-width: 3; stroke-dasharray: none; }
+
+  .t-badge { font: 700 12px/1 var(--data); fill: var(--set); opacity: 0;
+    transition: opacity var(--t-state) var(--ease-out), transform var(--t-state) var(--ease-out);
+    transform: translateY(4px); }
+  .t-badge.is-on { opacity: 1; transform: none; }
+  .t-badge.is-new { fill: var(--now); }
+  .t-stub .t-badge { fill: var(--base); }
+
+  /* ans: the vector every call writes into */
+  .ans { display: flex; align-items: stretch; flex-wrap: wrap; gap: 0; margin-top: var(--s4);
+    font: 700 13px/1 var(--data); }
+  .ans__k { display: inline-flex; align-items: center; padding: 0 var(--s3) 0 0; color: var(--ink-3);
+    letter-spacing: .12em; text-transform: uppercase; font-size: 11px; }
+  .ans__c { min-width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center;
+    border: var(--w-rule) solid var(--hair); margin-right: -2px; color: transparent; background: var(--plate);
+    font-variant-numeric: tabular-nums;
+    transition: background-color var(--t-state) var(--ease-out), border-color var(--t-state) var(--ease-out),
+                color var(--t-state) var(--ease-out); }
+  .ans__c.is-on { color: var(--ink); background: var(--set-wash); border-color: var(--set-line); position: relative; }
+  .ans__c.is-new { background: var(--now-wash); border-color: var(--now-line); z-index: 1; }
+  .ans[hidden] { display: none; }
+
+  .result { margin-top: var(--s4); font: 400 13px/1.4 var(--data); color: var(--ink-3); }
+  .result b { color: var(--set); font-size: 18px; }
+  .result[hidden] { display: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .t-badge { transform: none; }
+    .t-node circle, .t-stub rect, .t-badge, .ans__c { transition-duration: 80ms; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <nav class="rail">
+    <a class="rail__home" href="../">90 Days of DP</a>
+    <span class="rail__where">Week <b>2</b> &middot; Day <b>8</b> &middot; LC 144 / 94 / 145 &middot; LC 104</span>
+  </nav>
+
+  <header class="masthead">
+    <h1>Down the tree, back up it</h1>
+    <p class="claim">The traversals pass a vector down. Max depth passes a number up.</p>
+    <p class="lede">The same walk over the same tree, four ways. Pick an order and watch <code class="inline">ans</code> fill as it is handed down to every call; then pick <b>max depth</b> and watch each subtree report a number back to its parent.</p>
+  </header>
+
+  <div class="setup">
+    <label for="treePick">tree
+      <select id="treePick">
+        <option value="mine">1, 2, 4, 3 &mdash; your first tree</option>
+        <option value="lc104">3, 9, 20, &empty;, &empty;, 15, 7 &mdash; LC 104 example</option>
+        <option value="lc144">LC 144 example 2 &mdash; 9 nodes</option>
+        <option value="chain">1, 2, &empty;, 3, &empty;, 4 &mdash; left chain</option>
+      </select>
+    </label>
+    <span class="grp">walk
+      <button type="button" class="toggle toggle--data" data-mode="pre" aria-pressed="true">preorder</button>
+      <button type="button" class="toggle toggle--data" data-mode="in" aria-pressed="false">inorder</button>
+      <button type="button" class="toggle toggle--data" data-mode="post" aria-pressed="false">postorder</button>
+      <button type="button" class="toggle toggle--data toggle--hot" data-mode="depth" aria-pressed="false">max depth</button>
+    </span>
+  </div>
+
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:var(--s4)">
+      <div class="plate">
+        <div class="scroll-x">
+          <svg id="tree" class="tree" role="img" aria-labelledby="treeTitle">
+            <title id="treeTitle">The binary tree being walked, with each call's state</title>
+            <g id="gEdges"></g><g id="gNodes"></g>
+          </svg>
+        </div>
+        <div class="ans" id="ans" aria-label="The ans vector"></div>
+        <p class="result" id="result" hidden></p>
+        <div class="legend">
+          <span><i style="background:var(--now-line)"></i>running now</span>
+          <span><i style="background:var(--ink)"></i>waiting on the stack</span>
+          <span><i style="background:var(--set-line)"></i>returned</span>
+          <span><i style="background:var(--base-line)"></i>empty subtree (nullptr)</span>
+        </div>
+      </div>
+
+      <p class="say" id="say">Press <b>Next</b> to make the first call.</p>
+      <div class="transport" id="transport"></div>
+    </div>
+
+    <div class="aside">
+      <div class="panel"><h2 class="panel__head">Call stack</h2><ul class="frames" id="frames"></ul></div>
+      <div class="panel"><h2 class="panel__head" id="codeHead">preorder</h2><div class="panel__body"><div class="code" id="code"></div></div></div>
+    </div>
+  </div>
+
+  <section class="read">
+    <h2>One line moves, the order changes</h2>
+    <p>Switch between the three orders and watch the code panel. The recursion never changes: the same two calls, left then right, in the same place. Only <code>ans.push_back</code> moves &mdash; before both calls, between them, or after them. That is Day 1's print 1..N versus N..1 again, with two recursive calls instead of one.</p>
+    <p>Inorder on the LC 144 tree gives <b>4 2 6 5 7 1 3 9 8</b>: every value lands after everything in its left subtree and before everything in its right. On a binary search tree that is the sorted order, which LC 98 uses on Thursday.</p>
+
+    <h2>Down versus up</h2>
+    <p>The traversals return nothing. They get their work done by handing <code>ans</code> down <b>by reference</b>, so every call writes into the same vector. Pass it by value and each call would fill its own copy, thrown away when it returns.</p>
+    <p>Max depth is the other way round. Nothing goes down; each call waits for its two children to <b>report back</b>, then returns <code>1 + max(l, r)</code> to its own parent. It is a postorder walk: a node can only answer once both subtrees have.</p>
+    <p class="pull">Top-down passes information to the children. Bottom-up waits for them to answer.</p>
+    <p>Saturday's LC 543 needs both at once. Each call returns a height, exactly like here, but the diameter it is asked for is a different number, kept on the side and updated as the heights come back.</p>
+
+    <h2>Why the empty boxes are there</h2>
+    <p>Every missing child is still a real call: <code>helper(nullptr)</code> runs, hits the base case and returns. A tree of n nodes makes <b>2n + 1</b> calls, n + 1 of them on empty subtrees. For max depth those empty calls are where every count starts: each one returns 0, so a leaf gets <code>1 + max(0, 0) = 1</code> without any special case.</p>
+  </section>
+
+  <footer class="foot">
+    Notes: <a href="https://github.com/sumnoon/90-days-of-dp/blob/main/weeks/week-02-recursion-on-trees-and-structures/notes/tree_traversals.md">tree traversals</a> &middot;
+    <a href="https://github.com/sumnoon/90-days-of-dp/blob/main/weeks/week-02-recursion-on-trees-and-structures/notes/lc0104_maximum_depth_of_binary_tree.md">LC 104</a> &middot;
+    <a href="../">All visualizations</a>
+  </footer>
+
+</div>
+
+<script src="../assets/stepper.js"></script>
+<script>
+(function () {
+  "use strict";
+  var S = window.Schematic, NS = S.svgNS;
+  var E = function (id) { return document.getElementById(id); };
+
+  var PRESETS = {
+    mine:  [1, 2, 4, 3],
+    lc104: [3, 9, 20, null, null, 15, 7],
+    lc144: [1, 2, 3, 4, 5, null, 8, null, null, 6, 7, 9],
+    chain: [1, 2, null, 3, null, 4]
+  };
+
+  var NAMES = { pre: "preorder", "in": "inorder", post: "postorder", depth: "max depth" };
+  var OPS = { pre: ["V", "L", "R"], "in": ["L", "V", "R"], post: ["L", "R", "V"] };
+  var OP_SRC = {
+    V: "    ans.push_back(root->val);",
+    L: "    helper(root->left, ans);",
+    R: "    helper(root->right, ans);"
+  };
+  var WRAP = { pre: "preorderTraversal", "in": "inorderTraversal", post: "postorderTraversal" };
+
+  function traversalCode(mode) {
+    var lines = [
+      "void helper(TreeNode* root, vector<int>& ans) {",
+      "    if (root == nullptr) return;"
+    ];
+    OPS[mode].forEach(function (op) { lines.push(OP_SRC[op]); });
+    return lines.concat([
+      "}",
+      "",
+      "vector<int> " + WRAP[mode] + "(TreeNode* root) {",
+      "    vector<int> ans;",
+      "    helper(root, ans);",
+      "    return ans;",
+      "}"
+    ]);
+  }
+
+  var DEPTH_CODE = [
+    "int helper(TreeNode* root) {",
+    "    if (root == nullptr) {",
+    "        return 0;",
+    "    }",
+    "    int l = helper(root->left);",
+    "    int r = helper(root->right);",
+    "    return 1 + max(l, r);",
+    "}",
+    "",
+    "int maxDepth(TreeNode* root) {",
+    "    return helper(root);",
+    "}"
+  ];
+
+  /* ---------- the tree: LeetCode's level order, plus a stub per missing child ---------- */
+
+  function buildTree(lv) {
+    var nodes = [], stubs = [];
+    if (!lv.length || lv[0] == null) return { root: null, nodes: nodes, stubs: stubs };
+    function mkNode(v, depth) { var n = { id: "n" + nodes.length, val: v, depth: depth, left: null, right: null }; nodes.push(n); return n; }
+    var root = mkNode(lv[0], 0), q = [root], i = 1;
+    while (q.length && i < lv.length) {
+      var p = q.shift();
+      if (i < lv.length && lv[i] != null) { p.left = mkNode(lv[i], p.depth + 1); q.push(p.left); } i++;
+      if (i < lv.length && lv[i] != null) { p.right = mkNode(lv[i], p.depth + 1); q.push(p.right); } i++;
+    }
+    nodes.forEach(function (n) {
+      ["left", "right"].forEach(function (side) {
+        if (!n[side]) {
+          var s = { id: "s" + stubs.length, stub: true, parent: n, side: side, depth: n.depth + 1 };
+          stubs.push(s);
+          n[side] = s;
+        }
+      });
+    });
+    return { root: root, nodes: nodes, stubs: stubs };
+  }
+
+  var SLOT = 46, STUB_SLOT = 26, GAP_Y = 62, PAD = 24, R = 17, SQ = 12;
+
+  function layout(t) {
+    var x = PAD, maxDepth = 0;
+    (function walk(n) {
+      if (n.stub) { n.x = x + STUB_SLOT / 2; x += STUB_SLOT; }
+      else { walk(n.left); n.x = x + SLOT / 2; x += SLOT; walk(n.right); }
+      n.y = PAD + R + n.depth * GAP_Y;
+      maxDepth = Math.max(maxDepth, n.depth);
+    })(t.root);
+    return { w: x + PAD, h: PAD * 2 + R + maxDepth * GAP_Y + SQ };
+  }
+
+  /* ---------- drawing: built once per tree, restyled per step ---------- */
+
+  var shapes = {};
+
+  function mk(tag, attrs, parent) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+
+  function draw(t) {
+    var size = layout(t), svg = E("tree"), gE = E("gEdges"), gN = E("gNodes");
+    svg.setAttribute("viewBox", "0 0 " + size.w + " " + size.h);
+    svg.style.maxWidth = size.w + "px";
+    svg.style.minWidth = Math.min(size.w * 0.8, 440) + "px";   /* below this the labels stop being readable; scroll instead */
+    gE.textContent = ""; gN.textContent = ""; shapes = {};
+
+    t.nodes.forEach(function (n) {
+      [n.left, n.right].forEach(function (c) {
+        var y2 = c.stub ? c.y - SQ / 2 : c.y - R;
+        mk("path", { d: "M " + n.x + " " + (n.y + R) + " L " + c.x + " " + y2, "class": "t-edge" + (c.stub ? " to-stub" : "") }, gE);
+      });
+    });
+    t.nodes.forEach(function (n) {
+      var g = mk("g", { "class": "t-node" }, gN);
+      mk("circle", { cx: n.x, cy: n.y, r: R, "class": "node-ring" }, g);
+      mk("text", { x: n.x, y: n.y + 4.5, "class": "t-val" }, g).textContent = String(n.val);
+      var b = mk("text", { x: n.x + R + 4, y: n.y - R + 4, "class": "t-badge" }, g);
+      shapes[n.id] = { g: g, badge: b };
+    });
+    t.stubs.forEach(function (s) {
+      var g = mk("g", { "class": "t-stub" }, gN);
+      mk("rect", { x: s.x - SQ / 2, y: s.y - SQ / 2, width: SQ, height: SQ }, g);
+      var b = mk("text", { x: s.x, y: s.y + SQ / 2 + 13, "class": "t-badge", "text-anchor": "middle" }, g);
+      shapes[s.id] = { g: g, badge: b };
+    });
+
+    var ans = E("ans");
+    ans.textContent = "";
+    ans.appendChild(S.el("span", "ans__k", "ans"));
+    t.nodes.forEach(function () { ans.appendChild(S.el("span", "ans__c", "")); });
+  }
+
+  /* ---------- steps ---------- */
+
+  function name(n) { return n.stub ? "nullptr" : String(n.val); }
+  function childDesc(c) { return c.stub ? "its empty " + c.side + " child" : "<b>" + c.val + "</b>"; }
+
+  function traversalSteps(t, mode) {
+    var ops = OPS[mode], steps = [], frames = [], open = {}, done = {}, hit = {}, ans = [];
+    var cur = null, newAt = -1, explained = false;
+    var lineOf = {}; ops.forEach(function (op, k) { lineOf[op] = 3 + k; });
+    var where = { pre: "before either subtree", "in": "after its left subtree and before its right", post: "after both subtrees" }[mode];
+
+    function snap(line, note) {
+      steps.push({ line: line, note: note, cur: cur, newAt: newAt,
+        frames: frames.map(function (f) { return { main: f.main, aside: f.aside }; }),
+        open: Object.assign({}, open), done: Object.assign({}, done), hit: Object.assign({}, hit),
+        ans: ans.slice(), badges: {} });
+      newAt = -1;
+    }
+
+    function rec(n) {
+      if (n.stub) {
+        frames.push({ main: "helper(nullptr)" }); cur = n.id; hit[n.id] = true;
+        snap(2, "<b>helper(nullptr)</b>: the " + n.side + " child of " + n.parent.val + " is empty. Base case &mdash; return, and nothing is added to <code>ans</code>.");
+        frames.pop();
+        return;
+      }
+      frames.push({ main: "helper(" + n.val + ")" }); open[n.id] = true; cur = n.id;
+      ops.forEach(function (op) {
+        cur = n.id;
+        if (op === "V") {
+          ans.push(n.val); newAt = ans.length - 1;
+          snap(lineOf.V, "<b>helper(" + n.val + ")</b> writes " + n.val + ": <code>ans</code> is now [" + ans.join(", ") + "]. " +
+            NAMES[mode].charAt(0).toUpperCase() + NAMES[mode].slice(1) + " writes a node " + where + ".");
+        } else {
+          var c = op === "L" ? n.left : n.right;
+          var extra = explained ? "" : " <code>ans</code> goes down <b>by reference</b>, so that call writes into the same vector.";
+          explained = true;
+          snap(lineOf[op], "<b>helper(" + n.val + ")</b> goes " + (op === "L" ? "left" : "right") + " to " + childDesc(c) + "." + extra);
+          rec(c);
+        }
+      });
+      cur = n.id;
+      snap(6, "<b>helper(" + n.val + ")</b> returns. Every value under " + n.val + " is in <code>ans</code> now.");
+      delete open[n.id]; done[n.id] = true; frames.pop();
+    }
+
+    snap(null, "Press <b>Next</b> to start the " + NAMES[mode] + " traversal.");
+    snap(10, "<b>" + WRAP[mode] + "</b> makes an empty <code>ans</code> and hands it to <b>helper(" + t.root.val + ")</b>.");
+    rec(t.root);
+    cur = null;
+    snap(11, "Done: <code>return ans</code> gives <b>[" + ans.join(", ") + "]</b>. " + t.nodes.length + " nodes, " + (2 * t.nodes.length + 1) + " calls.");
+    return steps;
+  }
+
+  function depthSteps(t) {
+    var steps = [], frames = [], open = {}, done = {}, hit = {}, badges = {}, cur = null, fresh = null, first = true;
+
+    function snap(line, note) {
+      steps.push({ line: line, note: note, cur: cur, fresh: fresh,
+        frames: frames.map(function (f) { return { main: f.main, aside: f.aside }; }),
+        open: Object.assign({}, open), done: Object.assign({}, done), hit: Object.assign({}, hit),
+        badges: Object.assign({}, badges), ans: [] });
+      fresh = null;
+    }
+
+    function rec(n, parentName) {
+      if (n.stub) {
+        frames.push({ main: "helper(nullptr)" }); cur = n.id; hit[n.id] = true; badges[n.id] = 0; fresh = n.id;
+        snap(3, "<b>helper(nullptr)</b>: the " + n.side + " child of " + n.parent.val + " is empty, so its depth is <b>0</b>. That 0 goes back up to helper(" + parentName + ").");
+        frames.pop();
+        return 0;
+      }
+      var f = { main: "helper(" + n.val + ")" };
+      frames.push(f); open[n.id] = true; cur = n.id;
+      snap(5, first
+        ? "<b>helper(" + n.val + ")</b> can't answer yet. It asks its left subtree for a depth and waits &mdash; nothing is passed down but the pointer."
+        : "<b>helper(" + n.val + ")</b> asks its left subtree, " + childDesc(n.left) + ", for a depth.");
+      first = false;
+      var l = rec(n.left, n.val);
+      f.aside = "l = " + l; cur = n.id;
+      snap(6, "Back in <b>helper(" + n.val + ")</b>: the left subtree reported <b>l = " + l + "</b>. Now ask the right, " + childDesc(n.right) + ".");
+      var r = rec(n.right, n.val);
+      f.aside = "l = " + l + ", r = " + r; cur = n.id;
+      var d = 1 + Math.max(l, r);
+      badges[n.id] = d; fresh = n.id;
+      snap(7, "<b>helper(" + n.val + ")</b>: l = " + l + ", r = " + r + ", so it returns 1 + max(" + l + ", " + r + ") = <b>" + d + "</b> " +
+        (parentName != null ? "up to helper(" + parentName + ")." : "up to maxDepth."));
+      delete open[n.id]; done[n.id] = true; frames.pop();
+      return d;
+    }
+
+    snap(null, "Press <b>Next</b> to start <b>maxDepth</b>.");
+    snap(11, "<b>maxDepth</b> hands the root to <b>helper(" + t.root.val + ")</b> and waits for one number back.");
+    var d = rec(t.root, null);
+    cur = null;
+    snap(11, "Done: <b>maxDepth</b> returns <b>" + d + "</b>. Every number came <b>up</b> from the empty subtrees; nothing was passed down.");
+    return steps;
+  }
+
+  /* ---------- wiring ---------- */
+
+  var tree, mode = "pre", stepper;
+
+  function render(st) {
+    tree.nodes.forEach(function (n) {
+      var g = shapes[n.id].g;
+      g.classList.toggle("is-now", st.cur === n.id);
+      g.classList.toggle("is-open", !!st.open[n.id] && st.cur !== n.id);
+      g.classList.toggle("is-done", !!st.done[n.id]);
+      g.firstChild.classList.toggle("is-now", st.cur === n.id);
+    });
+    tree.stubs.forEach(function (s) {
+      var g = shapes[s.id].g;
+      g.classList.toggle("is-now", st.cur === s.id);
+      g.classList.toggle("is-hit", !!st.hit[s.id]);
+    });
+    tree.nodes.concat(tree.stubs).forEach(function (n) {
+      var b = shapes[n.id].badge, has = st.badges[n.id] != null;
+      if (has) b.textContent = String(st.badges[n.id]);
+      b.classList.toggle("is-on", has);
+      b.classList.toggle("is-new", has && st.fresh === n.id && !n.stub);
+    });
+
+    var cells = E("ans").querySelectorAll(".ans__c");
+    for (var i = 0; i < cells.length; i++) {
+      var on = i < st.ans.length;
+      if (on) cells[i].textContent = String(st.ans[i]);
+      cells[i].classList.toggle("is-on", on);
+      cells[i].classList.toggle("is-new", on && i === st.newAt);
+    }
+
+    var res = E("result");
+    if (mode === "depth") {
+      var rootD = st.badges[tree.root.id];
+      res.innerHTML = rootD != null ? "maxDepth(root) = <b>" + rootD + "</b>" : "maxDepth(root) = <b>?</b> &mdash; waiting on the subtrees";
+    }
+  }
+
+  function stepsFor() { return mode === "depth" ? depthSteps(tree) : traversalSteps(tree, mode); }
+  function codeFor() { return mode === "depth" ? DEPTH_CODE : traversalCode(mode); }
+
+  function reload(keepPlace) {
+    E("ans").hidden = mode === "depth";
+    E("result").hidden = mode !== "depth";
+    E("codeHead").textContent = mode === "depth" ? "LC 104" : NAMES[mode];
+    stepper.opts.codeLines = codeFor();
+    stepper.stop();
+    stepper.rebuild(stepsFor(), keepPlace);
+  }
+
+  tree = buildTree(PRESETS.mine);
+  draw(tree);
+  stepper = S.stepper({
+    id: "trees",
+    steps: stepsFor(),
+    codeLines: codeFor(),
+    transport: E("transport"),
+    say: E("say"),
+    code: E("code"),
+    frames: E("frames"),
+    frameLabel: function (f) { return { main: f.main, aside: f.aside }; },
+    playMs: function () { return tree.nodes.length > 6 ? 650 : 900; },
+    render: render
+  });
+
+  E("treePick").addEventListener("change", function () {
+    tree = buildTree(PRESETS[this.value]);
+    draw(tree);
+    reload(false);
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-mode]"), function (b) {
+    b.addEventListener("click", function () {
+      if (mode === b.dataset.mode) return;
+      mode = b.dataset.mode;
+      document.querySelectorAll("[data-mode]").forEach(function (o) { o.setAttribute("aria-pressed", String(o === b)); });
+      reload(false);
+    });
+  });
+  reload(false);
+})();
+</script>
+</body>
+</html>

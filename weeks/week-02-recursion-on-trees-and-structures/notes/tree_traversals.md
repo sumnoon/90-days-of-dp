@@ -80,6 +80,13 @@ is *returned* up.
   an initializer list `: val(val)`, with `this->val = val`, or with a different
   parameter name.
 
+## See it
+
+- **Down the tree, back up it:** https://sumnoon.github.io/90-days-of-dp/trees/ —
+  step through all three orders on the same tree, with `ans` filling as it is
+  passed down and every empty-subtree call drawn in.
+  ([source](../../../docs/trees/index.html))
+
 ## Key insight
 
 One moved line changes the order; the recursion itself doesn't change.

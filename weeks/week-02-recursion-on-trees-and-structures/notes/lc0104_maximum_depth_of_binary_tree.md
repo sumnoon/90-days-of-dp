@@ -58,6 +58,13 @@ kept on the side.
 - `maxDepth` already has the right signature, so `helper` isn't needed: the
   three lines can go straight into `maxDepth`, which calls itself.
 
+## See it
+
+- **Down the tree, back up it:** https://sumnoon.github.io/90-days-of-dp/trees/ —
+  pick *max depth* to watch each empty subtree return 0 and every node report
+  `1 + max(l, r)` to its parent, with `l` and `r` on the call stack.
+  ([source](../../../docs/trees/index.html))
+
 ## Key insight
 
 Trust both children to report their depth; this node adds one.

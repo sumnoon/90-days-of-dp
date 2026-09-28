@@ -9,5 +9,11 @@ re-read before a redo, not while solving.
 | [Tree traversals (LC 144, 94, 145)](tree_traversals.md) | 8 | clean | Pre, in and post order are the same three lines; only where the visit sits moves. |
 | [⭐ LC 104 Maximum Depth](lc0104_maximum_depth_of_binary_tree.md) | 8 | clean | Trust both children to report their depth; this node adds one. The answer comes **up**, not down. |
 
+## Visualizations
+
+| Page | What it shows |
+|---|---|
+| [Down the tree, back up it](https://sumnoon.github.io/90-days-of-dp/trees/) | Pre, in and post order on one tree with `ans` passed down; LC 104 with depths returned up. |
+
 "clean" = solved without a hint. Anything else is on the
 [redo list](../../../redo-list.md).
