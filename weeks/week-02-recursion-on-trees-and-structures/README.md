@@ -34,7 +34,7 @@ Also: NeetCode's solutions for LC 543 and LC 236, after attempting them.
 
 ⭐ = core, don't skip
 
-- [ ] ⭐ LC 104 Maximum Depth of Binary Tree
+- [x] ⭐ LC 104 Maximum Depth of Binary Tree — [notes](notes/lc0104_maximum_depth_of_binary_tree.md)
 - [ ] ⭐ LC 226 Invert Binary Tree
 - [ ] LC 100 Same Tree
 - [ ] LC 112 Path Sum
@@ -49,4 +49,10 @@ Also: NeetCode's solutions for LC 543 and LC 236, after attempting them.
 
 ## Notes
 
-<!-- For each problem: state, transition, base case, key insight. -->
+One note per problem in [`notes/`](notes/): what the call returns, what it
+passes down, the base case, complexity, and the idea that unlocked it.
+Start at the [notes index](notes/README.md).
+
+Not from the problem list, but solved this week:
+
+- [Tree traversals: preorder, inorder, postorder (LC 144, 94, 145)](notes/tree_traversals.md)
