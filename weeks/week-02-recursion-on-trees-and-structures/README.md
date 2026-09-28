@@ -34,7 +34,7 @@ Also: NeetCode's solutions for LC 543 and LC 236, after attempting them.
 
 ⭐ = core, don't skip
 
-- [ ] ⭐ LC 104 Maximum Depth of Binary Tree
+- [x] ⭐ LC 104 Maximum Depth of Binary Tree — [notes](notes/lc0104_maximum_depth_of_binary_tree.md)
 - [ ] ⭐ LC 226 Invert Binary Tree
 - [ ] LC 100 Same Tree
 - [ ] LC 112 Path Sum
