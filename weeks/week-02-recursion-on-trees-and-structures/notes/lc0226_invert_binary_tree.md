@@ -59,6 +59,13 @@ LeetCode's two examples, an empty tree, one node, a left child becoming a
 right child, and a left chain becoming a right chain. Also: inverting the
 9-node LC 144 tree **twice** gives the original back.
 
+## See it
+
+- **Swap the halves, walk in lockstep:** https://sumnoon.github.io/90-days-of-dp/mirror/ —
+  watch each subtree slide to its mirrored side as its call returns. Step to
+  just after `root->left = invertTree(r)` to see the old left half held only
+  by the saved `l`. ([source](../../../docs/mirror/index.html))
+
 ## Key insight
 
 Mirror each half, then swap the halves; save one pointer before overwriting it.

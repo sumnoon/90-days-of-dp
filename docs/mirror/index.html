@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="sumnoon">
+<meta name="description" content="Step through LC 226 Invert Binary Tree as subtrees swap sides, and LC 100 Same Tree as two trees are walked in lockstep until the first difference.">
+<title>Swap the halves, walk in lockstep — 90 Days of DP</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Spline+Sans+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="../assets/system.css">
+<style>
+  .tree { display: block; width: 100%; height: auto; margin: 0 auto; }
+  @media (min-width: 801px) { .work { grid-template-columns: minmax(0, 1fr) 380px; } }
+
+  .t-edge { stroke: var(--hair); stroke-width: 2.5; fill: none; }
+  .t-edge.to-stub { stroke: var(--idle); stroke-width: 1.5; stroke-dasharray: 4 4; }
+  .t-edge.is-held { stroke: var(--now-line); stroke-width: 2.5; stroke-dasharray: 6 5; }
+
+  .t-node circle { fill: var(--plate); stroke: var(--idle); stroke-width: 2.5;
+    transition: fill var(--t-state) var(--ease-out), stroke var(--t-state) var(--ease-out),
+                stroke-width var(--t-state) var(--ease-out), transform var(--t-state) var(--ease-out); }
+  .t-node.is-open circle { stroke: var(--ink); stroke-width: 4.5; }
+  .t-node.is-done circle { fill: var(--set-wash); stroke: var(--set-line); }
+  .t-node.is-seen circle { stroke: var(--ink-3); stroke-width: 3; }
+  .t-node.is-now circle { fill: var(--now-wash); stroke: var(--now-line); stroke-width: 5; }
+  .t-node.is-bad circle { fill: var(--now-wash); stroke: var(--now-line); stroke-width: 5; stroke-dasharray: 5 3; }
+  .t-val { font: 700 13px/1 var(--data); fill: var(--ink); text-anchor: middle; pointer-events: none; }
+
+  .t-stub rect { fill: none; stroke: var(--idle); stroke-width: 1.5; stroke-dasharray: 3 3;
+    transition: fill var(--t-state) var(--ease-out), stroke var(--t-state) var(--ease-out); }
+  .t-stub.is-hit rect { stroke: var(--base-line); stroke-dasharray: none; }
+  .t-stub.is-now rect { fill: var(--base-wash); stroke: var(--base-line); stroke-width: 3; stroke-dasharray: none; }
+  .t-stub.is-bad rect { fill: var(--now-wash); stroke: var(--now-line); stroke-width: 3; stroke-dasharray: none; }
+
+  .t-title { font: 700 13px/1 var(--data); fill: var(--ink-3); letter-spacing: .12em; }
+
+  .result { margin-top: var(--s4); font: 400 13px/1.4 var(--data); color: var(--ink-3); }
+  .result b { color: var(--set); font-size: 16px; }
+  .result b.is-false { color: var(--now); }
+
+  .legend [data-for][hidden] { display: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .t-node circle, .t-stub rect { transition-duration: 80ms; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <nav class="rail">
+    <a class="rail__home" href="../">90 Days of DP</a>
+    <span class="rail__where">Week <b>2</b> &middot; Day <b>9</b> &middot; LC 226 &middot; LC 100</span>
+  </nav>
+
+  <header class="masthead">
+    <h1>Swap the halves, walk in lockstep</h1>
+    <p class="claim">Invert mirrors both halves and swaps them. Same Tree walks two trees at once and stops at the first difference.</p>
+    <p class="lede">Two Day 9 problems, both one recursive idea deep. Watch the subtrees of <b>invert</b> trade sides as each call returns, then switch to <b>same tree</b> and watch <code class="inline">p</code> and <code class="inline">q</code> move together.</p>
+  </header>
+
+  <div class="setup">
+    <span class="grp">problem
+      <button type="button" class="toggle toggle--data" data-mode="invert" aria-pressed="true">LC 226 invert</button>
+      <button type="button" class="toggle toggle--data" data-mode="same" aria-pressed="false">LC 100 same tree</button>
+    </span>
+    <label for="treePick">input
+      <select id="treePick"></select>
+    </label>
+  </div>
+
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:var(--s4)">
+      <div class="plate">
+        <div class="scroll-x">
+          <svg id="tree" class="tree" role="img" aria-labelledby="treeTitle">
+            <title id="treeTitle">The tree or trees being walked, with each call's state</title>
+            <g id="gTitles"></g><g id="gEdges"></g><g id="gNodes"></g>
+          </svg>
+        </div>
+        <p class="result" id="result"></p>
+        <div class="legend">
+          <span><i style="background:var(--now-line)"></i>running now</span>
+          <span><i style="background:var(--ink)"></i>waiting on the stack</span>
+          <span data-for="invert"><i style="background:var(--set-line)"></i>mirrored and returned</span>
+          <span data-for="invert"><svg class="dash" viewBox="0 0 18 4" aria-hidden="true" style="color:var(--now-line)"><line x1="0" y1="2" x2="18" y2="2"/></svg>held only by the saved <code class="inline">l</code></span>
+          <span data-for="same" hidden><i style="background:var(--set-line)"></i>matched, returned true</span>
+          <span data-for="same" hidden><i style="background:var(--ink-3)"></i>returned false</span>
+          <span><i style="background:var(--base-line)"></i>empty subtree (nullptr)</span>
+        </div>
+      </div>
+
+      <p class="say" id="say">Press <b>Next</b> to make the first call.</p>
+      <div class="transport" id="transport"></div>
+    </div>
+
+    <div class="aside">
+      <div class="panel"><h2 class="panel__head">Call stack</h2><ul class="frames" id="frames"></ul></div>
+      <div class="panel"><h2 class="panel__head" id="codeHead">LC 226</h2><div class="panel__body"><div class="code" id="code"></div></div></div>
+    </div>
+  </div>
+
+  <section class="read">
+    <h2>Invert: trust each half, then swap</h2>
+    <p>Each call hands back its subtree already mirrored. A mirror image puts the mirrored right half on the left and the mirrored left half on the right, so the only work a call does itself is to put the two answers in the opposite slots.</p>
+    <p>Step to the moment right after <code>root-&gt;left = invertTree(r)</code>. The right subtree has moved left, but <code>root-&gt;right</code> still points at it too: the old left subtree is no longer reachable from the tree at all. The dashed edge is the saved <code>l</code>, and it is the only thing still holding on. Without that copy, line 7 would read the new left child, mirror it back, and the old left half would be lost.</p>
+    <p class="pull">Read both children before you overwrite either.</p>
+
+    <h2>Same tree: two pointers, one walk</h2>
+    <p>This is the palindrome check again, on trees: two positions that move together and are compared at each step. <code>p == q</code> catches the case where both are empty. If only one is, the shapes differ.</p>
+    <p>Pick <b>different shape</b>: both trees hold 1 and 2, but one has 2 on the left and the other on the right, and the walk finds an empty subtree facing a node. Pick <b>one deep leaf</b>: the walk matches eight pairs and fails on the last. Pick <b>different values</b>: <code>&amp;&amp;</code> stops at the first false, and everything to the right is never visited.</p>
+  </section>
+
+  <footer class="foot">
+    Notes: <a href="https://github.com/sumnoon/90-days-of-dp/blob/main/weeks/week-02-recursion-on-trees-and-structures/notes/lc0226_invert_binary_tree.md">LC 226</a> &middot;
+    <a href="https://github.com/sumnoon/90-days-of-dp/blob/main/weeks/week-02-recursion-on-trees-and-structures/notes/lc0100_same_tree.md">LC 100</a> &middot;
+    <a href="../trees/">Down the tree, back up it</a> &middot;
+    <a href="../">All visualizations</a>
+  </footer>
+
+</div>
+
+<script src="../assets/stepper.js"></script>
+<script>
+(function () {
+  "use strict";
+  var S = window.Schematic, NS = S.svgNS;
+  var E = function (id) { return document.getElementById(id); };
+
+  var BIG = [1, 2, 3, 4, 5, null, 8, null, null, 6, 7, 9];
+  var BIG2 = [1, 2, 3, 4, 5, null, 8, null, null, 6, 7, 10];
+  var PRESETS = {
+    invert: [
+      { key: "lc", label: "4, 2, 7, 1, 3, 6, 9 — LC 226 example", tree: [4, 2, 7, 1, 3, 6, 9] },
+      { key: "small", label: "2, 1, 3 — LC 226 example 2", tree: [2, 1, 3] },
+      { key: "big", label: "LC 144 example 2 — 9 nodes", tree: BIG },
+      { key: "chain", label: "1, 2, ∅, 3, ∅, 4 — left chain", tree: [1, 2, null, 3, null, 4] }
+    ],
+    same: [
+      { key: "same", label: "1, 2, 3  vs  1, 2, 3 — the same", p: [1, 2, 3], q: [1, 2, 3] },
+      { key: "shape", label: "1, 2  vs  1, ∅, 2 — different shape", p: [1, 2], q: [1, null, 2] },
+      { key: "values", label: "1, 2, 1  vs  1, 1, 2 — different values", p: [1, 2, 1], q: [1, 1, 2] },
+      { key: "deep", label: "9 nodes vs 9 nodes — one deep leaf", p: BIG, q: BIG2 }
+    ]
+  };
+
+  var CODE = {
+    invert: [
+      "TreeNode* invertTree(TreeNode* root) {",
+      "    if (root == nullptr) return nullptr;",
+      "    TreeNode *l = root->left;",
+      "    TreeNode *r = root->right;",
+      "",
+      "    root->left = invertTree(r);",
+      "    root->right = invertTree(l);",
+      "",
+      "    return root;",
+      "}"
+    ],
+    same: [
+      "bool isSameTree(TreeNode* p, TreeNode* q) {",
+      "    if (p == q) return true;",
+      "    if (p == nullptr || q == nullptr) return false;",
+      "",
+      "    return p->val == q->val && isSameTree(p->left, q->left) && isSameTree(p->right, q->right);",
+      "}"
+    ]
+  };
+
+  /* ---------- a tree: ids, values, and a [left, right] per real node; missing children are stubs ---------- */
+
+  function buildTree(lv, prefix) {
+    var t = { root: null, kids: {}, val: {}, stub: {}, ids: [] };
+    var n = 0;
+    function mkNode(v) { var id = prefix + "n" + (n++); t.val[id] = v; t.kids[id] = [null, null]; t.ids.push(id); return id; }
+    function mkStub() { var id = prefix + "s" + (n++); t.stub[id] = true; t.ids.push(id); return id; }
+    if (!lv.length || lv[0] == null) { t.root = mkStub(); return t; }
+    t.root = mkNode(lv[0]);
+    var q = [t.root], i = 1;
+    while (q.length && i < lv.length) {
+      var p = q.shift();
+      for (var side = 0; side < 2; side++, i++) {
+        if (i < lv.length && lv[i] != null) { var c = mkNode(lv[i]); t.kids[p][side] = c; q.push(c); }
+      }
+    }
+    Object.keys(t.kids).forEach(function (id) {
+      for (var s = 0; s < 2; s++) if (!t.kids[id][s]) t.kids[id][s] = mkStub();
+    });
+    return t;
+  }
+
+  function cloneKids(k) { var o = {}; for (var id in k) o[id] = k[id].slice(); return o; }
+
+  var SLOT = 46, STUB_SLOT = 26, GAP_Y = 62, PAD = 24, TOP = 22, R = 17, SQ = 12;
+
+  /* inorder x, depth y — recomputed from whatever the kids look like at this step */
+  function layout(kids, stub, root, x0, y0, pos) {
+    var x = x0, maxD = 0;
+    (function walk(id, d) {
+      var y = y0 + TOP + PAD + R + d * GAP_Y;
+      maxD = Math.max(maxD, d);
+      if (stub[id]) { pos[id] = { x: x + STUB_SLOT / 2, y: y }; x += STUB_SLOT; return; }
+      walk(kids[id][0], d + 1);
+      pos[id] = { x: x + SLOT / 2, y: y };
+      x += SLOT;
+      walk(kids[id][1], d + 1);
+    })(root, 0);
+    return { w: x - x0, h: TOP + PAD * 2 + R + maxD * GAP_Y + SQ };
+  }
+
+  /* ---------- drawing ---------- */
+
+  var trees = [], shapes = {}, edges = {}, shown = {}, raf = 0;
+  var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function mk(tag, attrs, parent) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+
+  /* two trees are stacked, p above q, so each keeps the full width */
+  function positionsFor(kidsList) {
+    var pos = {}, y = 0, w = 0, tops = [];
+    trees.forEach(function (t, i) {
+      tops.push(y);
+      var size = layout(kidsList[i], t.stub, t.root, PAD, y, pos);
+      y += size.h;
+      w = Math.max(w, size.w + PAD * 2);
+    });
+    return { pos: pos, w: w, h: y, tops: tops };
+  }
+
+  function draw() {
+    var gT = E("gTitles"), gE = E("gEdges"), gN = E("gNodes"), svg = E("tree");
+    gT.textContent = ""; gE.textContent = ""; gN.textContent = "";
+    shapes = {}; edges = {}; shown = {};
+    cancelAnimationFrame(raf);
+
+    var L = positionsFor(trees.map(function (t) { return t.kids; }));
+    svg.setAttribute("viewBox", "0 0 " + L.w + " " + L.h);
+    svg.style.maxWidth = L.w + "px";
+    svg.style.minWidth = Math.min(L.w * 0.8, 440) + "px";
+
+    if (trees.length > 1) {
+      trees.forEach(function (t, i) {
+        mk("text", { x: 4, y: L.tops[i] + 18, "class": "t-title", "text-anchor": "start" }, gT).textContent = t.name;
+        if (i > 0) mk("line", { x1: 0, x2: L.w, y1: L.tops[i], y2: L.tops[i], "class": "t-edge" }, gT);
+      });
+    }
+    trees.forEach(function (t) {
+      Object.keys(t.kids).forEach(function (id) {
+        for (var s = 0; s < 2; s++) edges[id + ":" + s] = mk("line", { "class": "t-edge" }, gE);
+      });
+      t.ids.forEach(function (id) {
+        var g;
+        if (t.stub[id]) {
+          g = mk("g", { "class": "t-stub" }, gN);
+          mk("rect", { x: -SQ / 2, y: -SQ / 2, width: SQ, height: SQ }, g);
+        } else {
+          g = mk("g", { "class": "t-node" }, gN);
+          mk("circle", { cx: 0, cy: 0, r: R, "class": "node-ring" }, g);
+          mk("text", { x: 0, y: 4.5, "class": "t-val" }, g).textContent = String(t.val[id]);
+        }
+        shapes[id] = g;
+      });
+    });
+  }
+
+  function apply(pos, kidsList, held) {
+    trees.forEach(function (t, i) {
+      var kids = kidsList[i];
+      t.ids.forEach(function (id) { shapes[id].setAttribute("transform", "translate(" + pos[id].x + " " + pos[id].y + ")"); });
+      Object.keys(kids).forEach(function (id) {
+        for (var s = 0; s < 2; s++) {
+          var c = kids[id][s], e = edges[id + ":" + s], isStub = !!t.stub[c];
+          e.setAttribute("x1", pos[id].x); e.setAttribute("y1", pos[id].y + R);
+          e.setAttribute("x2", pos[c].x); e.setAttribute("y2", pos[c].y - (isStub ? SQ / 2 : R));
+          e.setAttribute("class", "t-edge" + (isStub ? " to-stub" : "") + (held && held[id] && s === 1 ? " is-held" : ""));
+        }
+      });
+    });
+  }
+
+  /* subtrees glide to their new side when a call swaps them; everything else just restyles */
+  function moveTo(kidsList, held) {
+    var target = positionsFor(kidsList).pos;
+    cancelAnimationFrame(raf);
+    var from = shown, moved = Object.keys(target).some(function (id) {
+      return from[id] && (Math.abs(from[id].x - target[id].x) > 0.5 || Math.abs(from[id].y - target[id].y) > 0.5);
+    });
+    if (!moved || reduced) { shown = target; apply(target, kidsList, held); return; }
+    var t0 = performance.now(), D = 300;
+    function frame(now) {
+      var t = Math.min(1, (now - t0) / D), e = 1 - Math.pow(1 - t, 3), p = {};
+      for (var id in target) {
+        var a = from[id] || target[id], b = target[id];
+        p[id] = { x: a.x + (b.x - a.x) * e, y: a.y + (b.y - a.y) * e };
+      }
+      shown = p;
+      apply(p, kidsList, held);
+      if (t < 1) raf = requestAnimationFrame(frame);
+    }
+    raf = requestAnimationFrame(frame);
+  }
+
+  /* ---------- steps: invert ---------- */
+
+  function serialize(t, kids) {
+    var out = [], q = [t.root];
+    while (q.length) {
+      var id = q.shift();
+      if (t.stub[id]) { out.push(null); continue; }
+      out.push(t.val[id]);
+      q.push(kids[id][0], kids[id][1]);
+    }
+    while (out.length && out[out.length - 1] == null) out.pop();
+    return "[" + out.map(function (v) { return v == null ? "null" : v; }).join(",") + "]";
+  }
+
+  function invertSteps(t) {
+    var kids = cloneKids(t.kids), steps = [], frames = [], open = {}, done = {}, hit = {}, held = {}, cur = null, first = true;
+    function nm(id) { return t.stub[id] ? "nullptr" : String(t.val[id]); }
+    function sub(id) { return t.stub[id] ? "an empty subtree" : "the subtree under <b>" + t.val[id] + "</b>"; }
+    function snap(line, note, extra) {
+      steps.push({ line: line, note: note, cur: [cur],
+        frames: frames.map(function (f) { return { main: f.main, aside: f.aside }; }),
+        open: Object.assign({}, open), done: Object.assign({}, done), hit: Object.assign({}, hit), bad: {}, seen: {},
+        held: Object.assign({}, held), kids: [cloneKids(kids)], result: extra || "" });
+    }
+    function rec(id) {
+      if (t.stub[id]) {
+        frames.push({ main: "invertTree(nullptr)" }); cur = id; hit[id] = true;
+        snap(2, "<b>invertTree(nullptr)</b>: the mirror image of an empty tree is empty. Return <code>nullptr</code>.");
+        frames.pop();
+        return id;
+      }
+      var v = t.val[id], f = { main: "invertTree(" + v + ")" };
+      frames.push(f); open[id] = true; cur = id;
+      var l = kids[id][0], r = kids[id][1];
+      f.aside = "l = " + nm(l) + ", r = " + nm(r);
+      snap(4, "<b>invertTree(" + v + ")</b> saves both children first: <code>l</code> = " + nm(l) + ", <code>r</code> = " + nm(r) + "." +
+        (first ? " It is about to overwrite <code>root-&gt;left</code>, and this copy is the only way back to the old left subtree." : ""));
+      first = false;
+      snap(6, "<b>invertTree(" + v + ")</b> mirrors the right half first: <code>invertTree(r)</code> on " + sub(r) + ".");
+      var nr = rec(r);
+      cur = id;
+      kids[id][0] = nr; kids[id][1] = l; held[id] = true;
+      snap(6, "<code>root-&gt;left</code> = the mirrored right half, so it moves to the left. <code>root-&gt;right</code> still points at it too: " +
+        (t.stub[l] ? "the old left child was empty, so nothing is at risk here." : "the old left subtree, under <b>" + nm(l) + "</b> on the dashed edge, is now held <b>only</b> by the saved <code>l</code>."));
+      snap(7, "Now the saved left half: <code>invertTree(l)</code> on " + sub(l) + ".");
+      var nl = rec(l);
+      cur = id;
+      kids[id][1] = nl; delete held[id];
+      snap(7, "<code>root-&gt;right</code> = the mirrored left half. Both halves of " + v + " are mirrored and swapped.");
+      snap(9, "<b>invertTree(" + v + ")</b> returns " + v + " itself: the same node, with everything under it mirrored.");
+      delete open[id]; done[id] = true; frames.pop();
+      return id;
+    }
+    snap(null, "Press <b>Next</b> to call <b>invertTree</b> on the root.", "input " + serialize(t, kids));
+    rec(t.root);
+    cur = null;
+    snap(9, "Done. The tree is mirrored in place; no node was created or copied, only pointers moved.", "output <b>" + serialize(t, kids) + "</b>");
+    return steps;
+  }
+
+  /* ---------- steps: same tree ---------- */
+
+  function sameSteps(P, Q) {
+    var steps = [], frames = [], open = {}, done = {}, seen = {}, hit = {}, bad = {}, cur = [], result = "isSameTree(p, q) = <b>?</b>";
+    function nm(t, id) { return t.stub[id] ? "nullptr" : String(t.val[id]); }
+    function snap(line, note) {
+      steps.push({ line: line, note: note, cur: cur.slice(),
+        frames: frames.map(function (f) { return { main: f.main, aside: f.aside }; }),
+        open: Object.assign({}, open), done: Object.assign({}, done), seen: Object.assign({}, seen), hit: Object.assign({}, hit),
+        bad: Object.assign({}, bad), held: {}, kids: [P.kids, Q.kids], result: result });
+    }
+    function rec(a, b) {
+      var f = { main: "isSameTree(" + nm(P, a) + ", " + nm(Q, b) + ")" };
+      frames.push(f); cur = [a, b];
+      if (P.stub[a] && Q.stub[b]) {
+        hit[a] = hit[b] = true;
+        snap(2, "Both empty: <code>p == q</code> (both <code>nullptr</code>), so <b>true</b>.");
+        frames.pop(); return true;
+      }
+      if (P.stub[a] || Q.stub[b]) {
+        bad[a] = bad[b] = true;
+        snap(3, "Only one side is empty: p is " + nm(P, a) + ", q is " + nm(Q, b) + ". The shapes differ, so <b>false</b>.");
+        frames.pop(); return false;
+      }
+      if (P.val[a] !== Q.val[b]) {
+        bad[a] = bad[b] = true;
+        snap(5, "<code>p-&gt;val</code> = " + P.val[a] + ", <code>q-&gt;val</code> = " + Q.val[b] + ". Not equal: <b>false</b>. <code>&amp;&amp;</code> stops here, so nothing below this pair is compared.");
+        frames.pop(); return false;
+      }
+      open[a] = open[b] = true;
+      f.aside = "val ✓";
+      snap(5, "Both are " + P.val[a] + ". The values match; now compare the left subtrees, in lockstep.");
+      var left = rec(P.kids[a][0], Q.kids[b][0]);
+      cur = [a, b];
+      if (!left) {
+        delete open[a]; delete open[b]; seen[a] = seen[b] = true;
+        snap(5, "The left subtrees differ, so <code>&amp;&amp;</code> stops: the right subtrees are <b>never compared</b>. Return <b>false</b>.");
+        frames.pop(); return false;
+      }
+      f.aside = "val ✓, left ✓";
+      snap(5, "The left subtrees match. Now the right, " + nm(P, P.kids[a][1]) + " against " + nm(Q, Q.kids[b][1]) + ".");
+      var right = rec(P.kids[a][1], Q.kids[b][1]);
+      cur = [a, b];
+      delete open[a]; delete open[b];
+      if (right) { done[a] = done[b] = true; } else { seen[a] = seen[b] = true; }
+      snap(5, right
+        ? "Value, left and right all match: return <b>true</b>. The subtrees under " + P.val[a] + " are the same."
+        : "The right subtrees differ: return <b>false</b>.");
+      frames.pop(); return right;
+    }
+    snap(null, "Press <b>Next</b> to compare the two roots.");
+    var ans = rec(P.root, Q.root);
+    cur = [];
+    result = "isSameTree(p, q) = <b" + (ans ? "" : " class=\"is-false\"") + ">" + ans + "</b>";
+    snap(5, ans ? "Done: every pair matched, so the trees are the same." : "Done: <b>false</b> came back up through every waiting call. The first difference decided it.");
+    return steps;
+  }
+
+  /* ---------- wiring ---------- */
+
+  var mode = "invert", stepper;
+
+  function render(st) {
+    trees.forEach(function (t) {
+      t.ids.forEach(function (id) {
+        var g = shapes[id], now = st.cur.indexOf(id) >= 0;
+        g.classList.toggle("is-now", now && !st.bad[id]);
+        g.classList.toggle("is-bad", !!st.bad[id]);
+        if (t.stub[id]) { g.classList.toggle("is-hit", !!st.hit[id]); return; }
+        g.classList.toggle("is-open", !!st.open[id] && !now);
+        g.classList.toggle("is-done", !!st.done[id]);
+        g.classList.toggle("is-seen", !!st.seen[id]);
+        g.firstChild.classList.toggle("is-now", now);
+      });
+    });
+    moveTo(st.kids, st.held);
+    E("result").innerHTML = st.result;
+  }
+
+  function loadInput() {
+    var list = PRESETS[mode], pick = list.filter(function (p) { return p.key === E("treePick").value; })[0] || list[0];
+    if (mode === "invert") {
+      trees = [buildTree(pick.tree, "a")];
+    } else {
+      trees = [buildTree(pick.p, "p"), buildTree(pick.q, "q")];
+      trees[0].name = "p"; trees[1].name = "q";
+    }
+    draw();
+    return mode === "invert" ? invertSteps(trees[0]) : sameSteps(trees[0], trees[1]);
+  }
+
+  function fillPicker() {
+    var sel = E("treePick");
+    sel.textContent = "";
+    PRESETS[mode].forEach(function (p) {
+      var o = document.createElement("option");
+      o.value = p.key; o.textContent = p.label;
+      sel.appendChild(o);
+    });
+    E("codeHead").textContent = mode === "invert" ? "LC 226" : "LC 100";
+    document.querySelectorAll(".legend [data-for]").forEach(function (s) { s.hidden = s.dataset.for !== mode; });
+  }
+
+  fillPicker();
+  var first = loadInput();
+  stepper = S.stepper({
+    id: "mirror",
+    steps: first,
+    codeLines: CODE[mode],
+    transport: E("transport"),
+    say: E("say"),
+    code: E("code"),
+    frames: E("frames"),
+    frameLabel: function (f) { return { main: f.main, aside: f.aside }; },
+    playMs: function () { return mode === "invert" ? 520 : 800; },
+    render: render
+  });
+
+  function reload() {
+    stepper.stop();
+    var steps = loadInput();
+    stepper.opts.codeLines = CODE[mode];
+    stepper.rebuild(steps, false);
+  }
+
+  E("treePick").addEventListener("change", reload);
+  document.querySelectorAll("[data-mode]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      if (mode === b.dataset.mode) return;
+      mode = b.dataset.mode;
+      document.querySelectorAll("[data-mode]").forEach(function (o) { o.setAttribute("aria-pressed", String(o === b)); });
+      fillPicker();
+      reload();
+    });
+  });
+})();
+</script>
+</body>
+</html>

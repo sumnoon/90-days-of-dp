@@ -51,6 +51,12 @@ LeetCode's three examples, including `[1,2]` vs `[1,null,2]` (same values,
 different shape), both empty, each side empty on its own, the 9-node tree
 against itself, and against a copy with one deep leaf changed.
 
+## See it
+
+- **Swap the halves, walk in lockstep:** https://sumnoon.github.io/90-days-of-dp/mirror/ —
+  pick *LC 100 same tree* to walk `p` and `q` together; try *different shape*
+  and *one deep leaf*. ([source](../../../docs/mirror/index.html))
+
 ## Key insight
 
 Walk both trees together; the first difference decides it.
