@@ -37,7 +37,7 @@ Also: NeetCode's solutions for LC 543 and LC 236, after attempting them.
 - [x] ⭐ LC 104 Maximum Depth of Binary Tree — [notes](notes/lc0104_maximum_depth_of_binary_tree.md)
 - [x] ⭐ LC 226 Invert Binary Tree — [notes](notes/lc0226_invert_binary_tree.md)
 - [x] LC 100 Same Tree — [notes](notes/lc0100_same_tree.md)
-- [ ] LC 112 Path Sum
+- [x] LC 112 Path Sum — [notes](notes/lc0112_path_sum.md)
 - [ ] ⭐ LC 543 Diameter of Binary Tree
 - [ ] ⭐ LC 236 Lowest Common Ancestor of a Binary Tree
 - [ ] LC 98 Validate Binary Search Tree

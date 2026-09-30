@@ -23,6 +23,7 @@
                 stroke-width var(--t-state) var(--ease-out), transform var(--t-state) var(--ease-out); }
   .t-node.is-open circle { stroke: var(--ink); stroke-width: 4.5; }
   .t-node.is-done circle { fill: var(--set-wash); stroke: var(--set-line); }
+  .t-node.is-false circle { stroke: var(--ink-3); stroke-dasharray: 4 3; }
   .t-node.is-now circle { fill: var(--now-wash); stroke: var(--now-line); stroke-width: 5; }
   .t-val { font: 700 13px/1 var(--data); fill: var(--ink); text-anchor: middle; pointer-events: none; }
 
@@ -55,6 +56,12 @@
   .result { margin-top: var(--s4); font: 400 13px/1.4 var(--data); color: var(--ink-3); }
   .result b { color: var(--set); font-size: 18px; }
   .result[hidden] { display: none; }
+  .result b.is-false { color: var(--now); }
+
+  .target { font: 400 12.5px/1.3 var(--data); color: var(--ink-2); display: inline-flex; align-items: center; gap: var(--s2); }
+  .target[hidden] { display: none; }
+  .target input { font: 700 13.5px/1.3 var(--data); color: var(--ink); background: var(--plate);
+    border: var(--w-rule) solid var(--rule); padding: 5px 8px; width: 76px; }
 
   @media (prefers-reduced-motion: reduce) {
     .t-badge { transform: none; }
@@ -67,13 +74,13 @@
 
   <nav class="rail">
     <a class="rail__home" href="../">90 Days of DP</a>
-    <span class="rail__where">Week <b>2</b> &middot; Day <b>8</b> &middot; LC 144 / 94 / 145 &middot; LC 104</span>
+    <span class="rail__where">Week <b>2</b> &middot; Days <b>8 &amp; 10</b> &middot; tree walks</span>
   </nav>
 
   <header class="masthead">
     <h1>Down the tree, back up it</h1>
-    <p class="claim">The traversals pass a vector down. Max depth passes a number up.</p>
-    <p class="lede">The same walk over the same tree, four ways. Pick an order and watch <code class="inline">ans</code> fill as it is handed down to every call; then pick <b>max depth</b> and watch each subtree report a number back to its parent.</p>
+    <p class="claim">The traversals pass a vector down. Max depth passes a number up. Path sum passes a number down and a yes back up.</p>
+    <p class="lede">The same walk over the same tree, five ways. Pick an order and watch <code class="inline">ans</code> fill as it is handed down to every call; pick <b>max depth</b> and watch each subtree report a number back to its parent; pick <b>path sum</b> and watch the remaining target shrink on the way down.</p>
   </header>
 
   <div class="setup">
@@ -83,6 +90,7 @@
         <option value="lc104">3, 9, 20, &empty;, &empty;, 15, 7 &mdash; LC 104 example</option>
         <option value="lc144">LC 144 example 2 &mdash; 9 nodes</option>
         <option value="chain">1, 2, &empty;, 3, &empty;, 4 &mdash; left chain</option>
+        <option value="lc112">5, 4, 8, 11, &empty;, 13, 4, 7, 2, &hellip; &mdash; LC 112 example</option>
       </select>
     </label>
     <span class="grp">walk
@@ -90,7 +98,11 @@
       <button type="button" class="toggle toggle--data" data-mode="in" aria-pressed="false">inorder</button>
       <button type="button" class="toggle toggle--data" data-mode="post" aria-pressed="false">postorder</button>
       <button type="button" class="toggle toggle--data toggle--hot" data-mode="depth" aria-pressed="false">max depth</button>
+      <button type="button" class="toggle toggle--data toggle--hot" data-mode="sum" aria-pressed="false">path sum</button>
     </span>
+    <label class="target" for="target" id="targetBox" hidden>targetSum
+      <input id="target" type="number" inputmode="numeric" step="1" value="22">
+    </label>
   </div>
 
   <div class="work">
@@ -131,6 +143,7 @@
     <p>The traversals return nothing. They get their work done by handing <code>ans</code> down <b>by reference</b>, so every call writes into the same vector. Pass it by value and each call would fill its own copy, thrown away when it returns.</p>
     <p>Max depth is the other way round. Nothing goes down; each call waits for its two children to <b>report back</b>, then returns <code>1 + max(l, r)</code> to its own parent. It is a postorder walk: a node can only answer once both subtrees have.</p>
     <p class="pull">Top-down passes information to the children. Bottom-up waits for them to answer.</p>
+    <p><b>Path sum</b> does both. The remaining target goes <b>down</b> as a parameter &mdash; each call subtracts its own value, and every call has its own copy, so nothing is undone on the way back. A true or false comes back <b>up</b>, and <code>||</code> stops the search as soon as one side says yes. Try 22, 26 and 18 on the LC 112 tree (three different leaves), then 9: 5 &rarr; 4 adds to 9, but 4 isn't a leaf.</p>
     <p>Saturday's LC 543 needs both at once. Each call returns a height, exactly like here, but the diameter it is asked for is a different number, kept on the side and updated as the heights come back.</p>
 
     <h2>Why the empty boxes are there</h2>
@@ -156,10 +169,11 @@
     mine:  [1, 2, 4, 3],
     lc104: [3, 9, 20, null, null, 15, 7],
     lc144: [1, 2, 3, 4, 5, null, 8, null, null, 6, 7, 9],
-    chain: [1, 2, null, 3, null, 4]
+    chain: [1, 2, null, 3, null, 4],
+    lc112: [5, 4, 8, 11, null, 13, 4, 7, 2, null, null, null, 1]
   };
 
-  var NAMES = { pre: "preorder", "in": "inorder", post: "postorder", depth: "max depth" };
+  var NAMES = { pre: "preorder", "in": "inorder", post: "postorder", depth: "max depth", sum: "path sum" };
   var OPS = { pre: ["V", "L", "R"], "in": ["L", "V", "R"], post: ["L", "R", "V"] };
   var OP_SRC = {
     V: "    ans.push_back(root->val);",
@@ -197,6 +211,20 @@
     "",
     "int maxDepth(TreeNode* root) {",
     "    return helper(root);",
+    "}"
+  ];
+
+  var SUM_CODE = [
+    "bool func(TreeNode* root, int targetSum) {",
+    "    if (root == nullptr) return false;",
+    "    if (root->left == nullptr && root->right == nullptr) {",
+    "        return targetSum - root->val == 0;",
+    "    }",
+    "    return func(root->left, targetSum - root->val) || func(root->right, targetSum - root->val);",
+    "}",
+    "",
+    "bool hasPathSum(TreeNode* root, int targetSum) {",
+    "    return func(root, targetSum);",
     "}"
   ];
 
@@ -380,6 +408,64 @@
     return steps;
   }
 
+  function sumSteps(t, target) {
+    var steps = [], frames = [], open = {}, done = {}, no = {}, hit = {}, badges = {}, path = [];
+    var cur = null, fresh = null, result = "hasPathSum(root, " + target + ") = <b>?</b>";
+
+    function snap(line, note) {
+      steps.push({ line: line, note: note, cur: cur, fresh: fresh,
+        frames: frames.map(function (f) { return { main: f.main, aside: f.aside }; }),
+        open: Object.assign({}, open), done: Object.assign({}, done), no: Object.assign({}, no), hit: Object.assign({}, hit),
+        badges: Object.assign({}, badges), ans: [], result: result });
+      fresh = null;
+    }
+
+    var found = null;
+    function rec(n, need) {
+      if (n.stub) {
+        frames.push({ main: "func(nullptr, " + need + ")" }); cur = n.id; hit[n.id] = true;
+        snap(2, "<b>func(nullptr, " + need + ")</b>: no node here, so no path either. Return <b>false</b>, even if " + need + " were 0.");
+        frames.pop();
+        return false;
+      }
+      var f = { main: "func(" + n.val + ", " + need + ")", aside: "need " + need };
+      frames.push(f); open[n.id] = true; cur = n.id; badges[n.id] = need; fresh = n.id; path.push(n.val);
+      var ok;
+      if (n.left.stub && n.right.stub) {
+        ok = need - n.val === 0;
+        snap(4, "<b>" + n.val + "</b> is a leaf, so a path ends here. It needed " + need + "; " + need + " &minus; " + n.val + " = " + (need - n.val) +
+          (ok ? ", so <b>true</b>: the path " + path.join(" &rarr; ") + " adds up." : ", not 0, so <b>false</b>."));
+        if (ok) found = path.slice();
+      } else {
+        var rest = need - n.val;
+        snap(6, "<b>" + n.val + "</b> isn't a leaf. It uses " + n.val + " of the " + need + " still needed, so each child is asked for <b>" + need + " &minus; " + n.val + " = " + rest + "</b>. Left first.");
+        ok = rec(n.left, rest);
+        cur = n.id;
+        if (ok) {
+          snap(6, "The left side found a path, so <code>||</code> stops: <b>" + n.val + "</b>'s right subtree is never searched. Return <b>true</b>.");
+        } else {
+          snap(6, "Nothing on the left. Ask the right side, still for " + rest + ".");
+          ok = rec(n.right, rest);
+          cur = n.id;
+          snap(6, ok ? "The right side found one: return <b>true</b>." : "Neither side has a path that uses up " + rest + ": return <b>false</b>.");
+        }
+      }
+      delete open[n.id];
+      if (ok) done[n.id] = true; else no[n.id] = true;
+      frames.pop(); path.pop();
+      return ok;
+    }
+
+    snap(null, "Press <b>Next</b> to start <b>hasPathSum</b> with targetSum = " + target + ".");
+    snap(10, "<b>hasPathSum</b> hands the root and the whole target, " + target + ", to <b>func</b>.");
+    var ans = rec(t.root, target);
+    cur = null;
+    result = "hasPathSum(root, " + target + ") = <b" + (ans ? "" : " class=\"is-false\"") + ">" + ans + "</b>";
+    snap(10, ans ? "Done: <b>true</b>. The path " + found.join(" &rarr; ") + " sums to " + target + "; the blue nodes are the ones that returned true."
+                 : "Done: <b>false</b>. No root-to-leaf path sums to " + target + ".");
+    return steps;
+  }
+
   /* ---------- wiring ---------- */
 
   var tree, mode = "pre", stepper;
@@ -390,6 +476,7 @@
       g.classList.toggle("is-now", st.cur === n.id);
       g.classList.toggle("is-open", !!st.open[n.id] && st.cur !== n.id);
       g.classList.toggle("is-done", !!st.done[n.id]);
+      g.classList.toggle("is-false", !!(st.no && st.no[n.id]));
       g.firstChild.classList.toggle("is-now", st.cur === n.id);
     });
     tree.stubs.forEach(function (s) {
@@ -416,16 +503,25 @@
     if (mode === "depth") {
       var rootD = st.badges[tree.root.id];
       res.innerHTML = rootD != null ? "maxDepth(root) = <b>" + rootD + "</b>" : "maxDepth(root) = <b>?</b> &mdash; waiting on the subtrees";
+    } else if (mode === "sum") {
+      res.innerHTML = st.result;
     }
   }
 
-  function stepsFor() { return mode === "depth" ? depthSteps(tree) : traversalSteps(tree, mode); }
-  function codeFor() { return mode === "depth" ? DEPTH_CODE : traversalCode(mode); }
+  function target() { var v = parseInt(E("target").value, 10); return isFinite(v) ? v : 0; }
+  function stepsFor() {
+    if (mode === "depth") return depthSteps(tree);
+    if (mode === "sum") return sumSteps(tree, target());
+    return traversalSteps(tree, mode);
+  }
+  function codeFor() { return mode === "depth" ? DEPTH_CODE : mode === "sum" ? SUM_CODE : traversalCode(mode); }
 
   function reload(keepPlace) {
-    E("ans").hidden = mode === "depth";
-    E("result").hidden = mode !== "depth";
-    E("codeHead").textContent = mode === "depth" ? "LC 104" : NAMES[mode];
+    var numeric = mode === "depth" || mode === "sum";
+    E("ans").hidden = numeric;
+    E("result").hidden = !numeric;
+    E("targetBox").hidden = mode !== "sum";
+    E("codeHead").textContent = mode === "depth" ? "LC 104" : mode === "sum" ? "LC 112" : NAMES[mode];
     stepper.opts.codeLines = codeFor();
     stepper.stop();
     stepper.rebuild(stepsFor(), keepPlace);
@@ -446,16 +542,20 @@
     render: render
   });
 
-  E("treePick").addEventListener("change", function () {
-    tree = buildTree(PRESETS[this.value]);
+  function pickTree(key) {
+    E("treePick").value = key;
+    tree = buildTree(PRESETS[key]);
     draw(tree);
-    reload(false);
-  });
+  }
+  E("treePick").addEventListener("change", function () { pickTree(this.value); reload(false); });
+  E("target").addEventListener("input", function () { if (mode === "sum") reload(false); });
   Array.prototype.forEach.call(document.querySelectorAll("[data-mode]"), function (b) {
     b.addEventListener("click", function () {
       if (mode === b.dataset.mode) return;
       mode = b.dataset.mode;
       document.querySelectorAll("[data-mode]").forEach(function (o) { o.setAttribute("aria-pressed", String(o === b)); });
+      /* path sum needs a tree with a path worth finding; start it on LC 112's own example */
+      if (mode === "sum" && E("treePick").value !== "lc112") pickTree("lc112");
       reload(false);
     });
   });
