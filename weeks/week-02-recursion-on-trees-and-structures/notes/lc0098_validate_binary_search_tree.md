@@ -70,9 +70,10 @@ Space: **O(h)** stack.
 
 LeetCode's two examples, the 5-4-6-3-7 trap, a full valid BST, duplicates
 (`[1,1]`, `[2,2,2]`), a lone node, the empty tree, `[INT_MIN]`, `[INT_MAX]`,
-`[INT_MIN, null, INT_MAX]`, `[INT_MAX, INT_MIN]`, a node deep in a subtree
-that is inside its parent's range but outside its grandparent's, and one
-that is outside both.
+`[INT_MIN, null, INT_MAX]`, `[INT_MAX, INT_MIN]`, a node that fits every
+ancestor's range (`-1` under `INT_MIN` under `0`), and two that fit their
+parent but not their grandparent (`1` in the same spot; `6` under `15`
+under `10`).
 
 ## See it
 
