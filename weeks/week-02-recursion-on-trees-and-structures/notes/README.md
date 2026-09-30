@@ -17,7 +17,7 @@ re-read before a redo, not while solving.
 
 | Page | What it shows |
 |---|---|
-| [Down the tree, back up it](https://sumnoon.github.io/90-days-of-dp/trees/) | Pre, in and post order on one tree with `ans` passed down; LC 104 with depths returned up; LC 112 with the remaining target passed down. |
+| [Down the tree, back up it](https://sumnoon.github.io/90-days-of-dp/trees/) | Pre, in and post order on one tree with `ans` passed down; LC 104 with depths returned up; LC 112 with the remaining target passed down; LC 98 with the allowed range narrowing. |
 | [Swap the halves, walk in lockstep](https://sumnoon.github.io/90-days-of-dp/mirror/) | LC 226 subtrees swapping sides as calls return; LC 100 walking two trees in lockstep. |
 
 "clean" = solved without a hint. Anything else is on the

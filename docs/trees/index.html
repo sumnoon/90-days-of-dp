@@ -24,6 +24,9 @@
   .t-node.is-open circle { stroke: var(--ink); stroke-width: 4.5; }
   .t-node.is-done circle { fill: var(--set-wash); stroke: var(--set-line); }
   .t-node.is-false circle { stroke: var(--ink-3); stroke-dasharray: 4 3; }
+  .t-node.is-bad circle { fill: var(--now-wash); stroke: var(--now-line); stroke-width: 5; stroke-dasharray: 5 3; }
+  .t-badge.is-range { font-size: 11px; fill: var(--ink-2); }
+  .t-node.is-bad .t-badge { fill: var(--now); }
   .t-node.is-now circle { fill: var(--now-wash); stroke: var(--now-line); stroke-width: 5; }
   .t-val { font: 700 13px/1 var(--data); fill: var(--ink); text-anchor: middle; pointer-events: none; }
 
@@ -74,13 +77,13 @@
 
   <nav class="rail">
     <a class="rail__home" href="../">90 Days of DP</a>
-    <span class="rail__where">Week <b>2</b> &middot; Days <b>8 &amp; 10</b> &middot; tree walks</span>
+    <span class="rail__where">Week <b>2</b> &middot; Days <b>8&ndash;11</b> &middot; tree walks</span>
   </nav>
 
   <header class="masthead">
     <h1>Down the tree, back up it</h1>
     <p class="claim">The traversals pass a vector down. Max depth passes a number up. Path sum passes a number down and a yes back up.</p>
-    <p class="lede">The same walk over the same tree, five ways. Pick an order and watch <code class="inline">ans</code> fill as it is handed down to every call; pick <b>max depth</b> and watch each subtree report a number back to its parent; pick <b>path sum</b> and watch the remaining target shrink on the way down.</p>
+    <p class="lede">The same walk over the same tree, six ways. Pick an order and watch <code class="inline">ans</code> fill as it is handed down to every call; pick <b>max depth</b> and watch each subtree report a number back to its parent; pick <b>path sum</b> and watch the remaining target shrink on the way down; pick <b>validate BST</b> and watch the allowed range narrow.</p>
   </header>
 
   <div class="setup">
@@ -91,6 +94,9 @@
         <option value="lc144">LC 144 example 2 &mdash; 9 nodes</option>
         <option value="chain">1, 2, &empty;, 3, &empty;, 4 &mdash; left chain</option>
         <option value="lc112">5, 4, 8, 11, &empty;, 13, 4, 7, 2, &hellip; &mdash; LC 112 example</option>
+        <option value="trap">5, 4, 6, &empty;, &empty;, 3, 7 &mdash; BST trap</option>
+        <option value="lc98">5, 1, 4, &empty;, &empty;, 3, 6 &mdash; LC 98 example 2</option>
+        <option value="bst">3, 1, 5, 0, 2, 4, 6 &mdash; a valid BST</option>
       </select>
     </label>
     <span class="grp">walk
@@ -99,6 +105,7 @@
       <button type="button" class="toggle toggle--data" data-mode="post" aria-pressed="false">postorder</button>
       <button type="button" class="toggle toggle--data toggle--hot" data-mode="depth" aria-pressed="false">max depth</button>
       <button type="button" class="toggle toggle--data toggle--hot" data-mode="sum" aria-pressed="false">path sum</button>
+      <button type="button" class="toggle toggle--data toggle--hot" data-mode="bst" aria-pressed="false">validate BST</button>
     </span>
     <label class="target" for="target" id="targetBox" hidden>targetSum
       <input id="target" type="number" inputmode="numeric" step="1" value="22">
@@ -144,6 +151,7 @@
     <p>Max depth is the other way round. Nothing goes down; each call waits for its two children to <b>report back</b>, then returns <code>1 + max(l, r)</code> to its own parent. It is a postorder walk: a node can only answer once both subtrees have.</p>
     <p class="pull">Top-down passes information to the children. Bottom-up waits for them to answer.</p>
     <p><b>Path sum</b> does both. The remaining target goes <b>down</b> as a parameter &mdash; each call subtracts its own value, and every call has its own copy, so nothing is undone on the way back. A true or false comes back <b>up</b>, and <code>||</code> stops the search as soon as one side says yes. Try 22, 26 and 18 on the LC 112 tree (three different leaves), then 9: 5 &rarr; 4 adds to 9, but 4 isn't a leaf.</p>
+    <p><b>Validate BST</b> passes a whole range down. Going left, the current node becomes the new upper bound; going right, it becomes the new lower bound; the other side is inherited. Pick the <b>BST trap</b>: every parent and child are in order, yet 3 fails, because it arrives at 6's left with the range (5, 6), and it only knows about the 5 because that bound was passed all the way down.</p>
     <p>Saturday's LC 543 needs both at once. Each call returns a height, exactly like here, but the diameter it is asked for is a different number, kept on the side and updated as the heights come back.</p>
 
     <h2>Why the empty boxes are there</h2>
@@ -170,10 +178,13 @@
     lc104: [3, 9, 20, null, null, 15, 7],
     lc144: [1, 2, 3, 4, 5, null, 8, null, null, 6, 7, 9],
     chain: [1, 2, null, 3, null, 4],
-    lc112: [5, 4, 8, 11, null, 13, 4, 7, 2, null, null, null, 1]
+    lc112: [5, 4, 8, 11, null, 13, 4, 7, 2, null, null, null, 1],
+    trap: [5, 4, 6, null, null, 3, 7],
+    lc98: [5, 1, 4, null, null, 3, 6],
+    bst: [3, 1, 5, 0, 2, 4, 6]
   };
 
-  var NAMES = { pre: "preorder", "in": "inorder", post: "postorder", depth: "max depth", sum: "path sum" };
+  var NAMES = { pre: "preorder", "in": "inorder", post: "postorder", depth: "max depth", sum: "path sum", bst: "validate BST" };
   var OPS = { pre: ["V", "L", "R"], "in": ["L", "V", "R"], post: ["L", "R", "V"] };
   var OP_SRC = {
     V: "    ans.push_back(root->val);",
@@ -225,6 +236,25 @@
     "",
     "bool hasPathSum(TreeNode* root, int targetSum) {",
     "    return func(root, targetSum);",
+    "}"
+  ];
+
+  var BST_CODE = [
+    "bool validate(TreeNode* root, TreeNode* lo, TreeNode* hi) {",
+    "    if (root == nullptr) {",
+    "        return true;",
+    "    }",
+    "",
+    "    if ((lo != nullptr && lo->val >= root->val)",
+    "    || (hi != nullptr && hi->val <= root->val)) {",
+    "        return false;",
+    "    }",
+    "",
+    "    return validate(root->left, lo, root) && validate(root->right, root, hi);",
+    "}",
+    "",
+    "bool isValidBST(TreeNode* root) {",
+    "    return validate(root, nullptr, nullptr);",
     "}"
   ];
 
@@ -466,6 +496,70 @@
     return steps;
   }
 
+  function bstSteps(t) {
+    var steps = [], frames = [], open = {}, done = {}, no = {}, bad = {}, hit = {}, range = {};
+    var cur = null, result = "isValidBST(root) = <b>?</b>";
+    function b(v) { return v == null ? "null" : String(v); }
+    function rng(lo, hi) { return "(" + (lo == null ? "\u2212\u221e" : lo) + ", " + (hi == null ? "\u221e" : hi) + ")"; }
+
+    function snap(line, note) {
+      var badges = {};
+      for (var id in range) if (open[id] || bad[id] || id === cur) badges[id] = range[id];
+      steps.push({ line: line, note: note, cur: cur, fresh: null, rangeBadges: true,
+        frames: frames.map(function (f) { return { main: f.main, aside: f.aside }; }),
+        open: Object.assign({}, open), done: Object.assign({}, done), no: Object.assign({}, no), bad: Object.assign({}, bad),
+        hit: Object.assign({}, hit), badges: badges, ans: [], result: result });
+    }
+
+    function rec(n, lo, hi) {
+      if (n.stub) {
+        frames.push({ main: "validate(nullptr, " + b(lo) + ", " + b(hi) + ")" }); cur = n.id; hit[n.id] = true;
+        snap(3, "<b>validate(nullptr)</b>: an empty subtree breaks no rule. Return <b>true</b>.");
+        frames.pop();
+        return true;
+      }
+      var v = n.val;
+      frames.push({ main: "validate(" + v + ", " + b(lo) + ", " + b(hi) + ")", aside: rng(lo, hi) });
+      cur = n.id; open[n.id] = true; range[n.id] = rng(lo, hi);
+      var tooLow = lo != null && lo >= v, tooHigh = hi != null && hi <= v;
+      if (tooLow || tooHigh) {
+        delete open[n.id]; bad[n.id] = true;
+        snap(8, "<b>" + v + "</b> must be strictly inside " + rng(lo, hi) + ", but " +
+          (tooLow ? v + " &le; " + lo + ". The " + lo + " is an ancestor: " + v + " is somewhere in " + lo + "'s <b>right</b> subtree, so it must be bigger."
+                  : v + " &ge; " + hi + ". The " + hi + " is an ancestor: " + v + " is somewhere in " + hi + "'s <b>left</b> subtree, so it must be smaller.") +
+          " Return <b>false</b>.");
+        frames.pop();
+        return false;
+      }
+      snap(11, "<b>" + v + "</b> is inside " + rng(lo, hi) + ". Going left, " + v + " becomes the upper bound: the left subtree must fit in <b>" + rng(lo, v) + "</b>.");
+      var left = rec(n.left, lo, v);
+      cur = n.id;
+      var ok;
+      if (!left) {
+        snap(11, "The left subtree of " + v + " is not a BST, so <code>&amp;&amp;</code> stops: the right side is never checked. Return <b>false</b>.");
+        ok = false;
+      } else {
+        snap(11, "The left subtree fits. Going right, " + v + " becomes the lower bound: the right subtree must fit in <b>" + rng(v, hi) + "</b>.");
+        ok = rec(n.right, v, hi);
+        cur = n.id;
+        snap(11, ok ? "Both subtrees of " + v + " are valid: return <b>true</b>." : "The right subtree of " + v + " is not a BST: return <b>false</b>.");
+      }
+      delete open[n.id];
+      if (ok) done[n.id] = true; else no[n.id] = true;
+      frames.pop();
+      return ok;
+    }
+
+    snap(null, "Press <b>Next</b> to start <b>isValidBST</b>.");
+    snap(15, "<b>isValidBST</b> starts with no bounds at all: the root may be any value.");
+    var ans = rec(t.root, null, null);
+    cur = null;
+    result = "isValidBST(root) = <b" + (ans ? "" : " class=\"is-false\"") + ">" + ans + "</b>";
+    snap(15, ans ? "Done: <b>true</b>. Every node fit the range its ancestors handed down."
+                 : "Done: <b>false</b>. One node fell outside the range its ancestors allowed.");
+    return steps;
+  }
+
   /* ---------- wiring ---------- */
 
   var tree, mode = "pre", stepper;
@@ -477,6 +571,7 @@
       g.classList.toggle("is-open", !!st.open[n.id] && st.cur !== n.id);
       g.classList.toggle("is-done", !!st.done[n.id]);
       g.classList.toggle("is-false", !!(st.no && st.no[n.id]));
+      g.classList.toggle("is-bad", !!(st.bad && st.bad[n.id]));
       g.firstChild.classList.toggle("is-now", st.cur === n.id);
     });
     tree.stubs.forEach(function (s) {
@@ -489,6 +584,7 @@
       if (has) b.textContent = String(st.badges[n.id]);
       b.classList.toggle("is-on", has);
       b.classList.toggle("is-new", has && st.fresh === n.id && !n.stub);
+      b.classList.toggle("is-range", !!st.rangeBadges);
     });
 
     var cells = E("ans").querySelectorAll(".ans__c");
@@ -503,7 +599,7 @@
     if (mode === "depth") {
       var rootD = st.badges[tree.root.id];
       res.innerHTML = rootD != null ? "maxDepth(root) = <b>" + rootD + "</b>" : "maxDepth(root) = <b>?</b> &mdash; waiting on the subtrees";
-    } else if (mode === "sum") {
+    } else if (mode === "sum" || mode === "bst") {
       res.innerHTML = st.result;
     }
   }
@@ -512,16 +608,17 @@
   function stepsFor() {
     if (mode === "depth") return depthSteps(tree);
     if (mode === "sum") return sumSteps(tree, target());
+    if (mode === "bst") return bstSteps(tree);
     return traversalSteps(tree, mode);
   }
-  function codeFor() { return mode === "depth" ? DEPTH_CODE : mode === "sum" ? SUM_CODE : traversalCode(mode); }
+  function codeFor() { return mode === "depth" ? DEPTH_CODE : mode === "sum" ? SUM_CODE : mode === "bst" ? BST_CODE : traversalCode(mode); }
 
   function reload(keepPlace) {
-    var numeric = mode === "depth" || mode === "sum";
+    var numeric = mode === "depth" || mode === "sum" || mode === "bst";
     E("ans").hidden = numeric;
     E("result").hidden = !numeric;
     E("targetBox").hidden = mode !== "sum";
-    E("codeHead").textContent = mode === "depth" ? "LC 104" : mode === "sum" ? "LC 112" : NAMES[mode];
+    E("codeHead").textContent = { depth: "LC 104", sum: "LC 112", bst: "LC 98" }[mode] || NAMES[mode];
     stepper.opts.codeLines = codeFor();
     stepper.stop();
     stepper.rebuild(stepsFor(), keepPlace);
@@ -556,6 +653,7 @@
       document.querySelectorAll("[data-mode]").forEach(function (o) { o.setAttribute("aria-pressed", String(o === b)); });
       /* path sum needs a tree with a path worth finding; start it on LC 112's own example */
       if (mode === "sum" && E("treePick").value !== "lc112") pickTree("lc112");
+      if (mode === "bst" && ["trap", "lc98", "bst"].indexOf(E("treePick").value) < 0) pickTree("trap");
       reload(false);
     });
   });

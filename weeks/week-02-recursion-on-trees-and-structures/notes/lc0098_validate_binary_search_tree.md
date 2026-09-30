@@ -74,6 +74,13 @@ LeetCode's two examples, the 5-4-6-3-7 trap, a full valid BST, duplicates
 that is inside its parent's range but outside its grandparent's, and one
 that is outside both.
 
+## See it
+
+- **Down the tree, back up it:** https://sumnoon.github.io/90-days-of-dp/trees/ —
+  pick *validate BST* to see each node's `(lo, hi)` range as it is passed
+  down. The *BST trap* input fails at 3 with the range (5, 6).
+  ([source](../../../docs/trees/index.html))
+
 ## Key insight
 
 Pass the allowed range down; each step left or right narrows it by one side.
