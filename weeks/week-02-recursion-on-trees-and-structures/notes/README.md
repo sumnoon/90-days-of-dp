@@ -10,6 +10,7 @@ re-read before a redo, not while solving.
 | [⭐ LC 104 Maximum Depth](lc0104_maximum_depth_of_binary_tree.md) | 8 | clean | Trust both children to report their depth; this node adds one. The answer comes **up**, not down. |
 | [⭐ LC 226 Invert Binary Tree](lc0226_invert_binary_tree.md) | 9 | clean | Mirror each half, then swap the halves; save one pointer before overwriting it. |
 | [LC 100 Same Tree](lc0100_same_tree.md) | 9 | clean | Walk both trees together; `p == q` catches both-empty, and the first difference decides it. |
+| [LC 112 Path Sum](lc0112_path_sum.md) | 10 | clean | Pass down what's still needed; a leaf checks whether it's exactly its own value. |
 
 ## Visualizations
 
