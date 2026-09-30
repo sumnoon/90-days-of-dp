@@ -57,6 +57,13 @@ LeetCode's three examples, `[1,2]` with target 1 (false: 1 isn't a leaf),
 a lone root, negative values, and three different leaf paths in the example
 tree (22, 26, 18), plus 9, which only a non-leaf path reaches.
 
+## See it
+
+- **Down the tree, back up it:** https://sumnoon.github.io/90-days-of-dp/trees/ —
+  pick *path sum* to watch the remaining target shrink on the way down, the
+  winning path light up, and `||` skip the right subtree once the left finds
+  one. Try targets 22, 26, 18 and 9. ([source](../../../docs/trees/index.html))
+
 ## Key insight
 
 Pass down what's still needed; a leaf checks whether it's exactly its own value.
