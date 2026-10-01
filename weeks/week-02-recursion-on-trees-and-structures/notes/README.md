@@ -12,6 +12,7 @@ re-read before a redo, not while solving.
 | [LC 100 Same Tree](lc0100_same_tree.md) | 9 | clean | Walk both trees together; `p == q` catches both-empty, and the first difference decides it. |
 | [LC 112 Path Sum](lc0112_path_sum.md) | 10 | clean | Pass down what's still needed; a leaf checks whether it's exactly its own value. |
 | [LC 98 Validate BST](lc0098_validate_binary_search_tree.md) | 11 | clean | Pass the allowed range down; each step narrows it by one side. `nullptr` bounds dodge the `INT_MIN`/`INT_MAX` trap. |
+| [LC 24 Swap Nodes in Pairs](lc0024_swap_nodes_in_pairs.md) | 12 | clean | Trust the call to swap everything after this pair; rewire the pair and return its second node. |
 
 ## Visualizations
 
@@ -19,6 +20,7 @@ re-read before a redo, not while solving.
 |---|---|
 | [Down the tree, back up it](https://sumnoon.github.io/90-days-of-dp/trees/) | Pre, in and post order on one tree with `ans` passed down; LC 104 with depths returned up; LC 112 with the remaining target passed down; LC 98 with the allowed range narrowing. |
 | [Swap the halves, walk in lockstep](https://sumnoon.github.io/90-days-of-dp/mirror/) | LC 226 subtrees swapping sides as calls return; LC 100 walking two trees in lockstep. |
+| [Swap a pair, trust the rest](https://sumnoon.github.io/90-days-of-dp/lc24/) | LC 24: nothing changes going down; each frame rewires two links coming back up, then the nodes slide into their new order. |
 
 "clean" = solved without a hint. Anything else is on the
 [redo list](../../../redo-list.md).
