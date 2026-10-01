@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="sumnoon">
+<meta name="description" content="Step through LC 24 Swap Nodes in Pairs: each frame trusts the recursion with everything after its pair, then rewires two links on the way back up.">
+<title>Swap a pair, trust the rest — 90 Days of DP</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Spline+Sans+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="../assets/system.css">
+<style>
+  .route { display: block; width: 100%; height: auto; margin: 0 auto; }
+  @media (min-width: 801px) { .work { grid-template-columns: minmax(0, 1fr) 360px; } }
+
+  .ln circle { fill: var(--plate); stroke: var(--rule); stroke-width: 3;
+    transition: fill var(--t-state) var(--ease-out), stroke var(--t-state) var(--ease-out), stroke-width var(--t-state) var(--ease-out); }
+  .ln.is-pair circle { stroke: var(--ink); stroke-width: 4.5; }
+  .ln.is-now circle { fill: var(--now-wash); stroke: var(--now-line); stroke-width: 5; }
+  .ln.is-done circle { fill: var(--set-wash); stroke: var(--set-line); }
+  .ln text { font: 700 18px/1 var(--data); fill: var(--ink); text-anchor: middle; pointer-events: none; }
+
+  .ptr { fill: none; stroke: var(--idle); stroke-width: 3.5; }
+  .ptr.is-set { stroke: var(--set-line); }
+  .ptr.is-now { stroke: var(--now-line); stroke-width: 4.5; }
+  #m-idle path { fill: var(--idle); }
+  #m-set path { fill: var(--set-line); }
+  #m-now path { fill: var(--now-line); }
+
+  .tag { font: 700 11px/1 var(--data); text-anchor: middle; letter-spacing: .1em; fill: var(--ink-3); }
+  .tag.is-head { fill: var(--base); }
+
+  .result { margin-top: var(--s4); font: 400 13px/1.4 var(--data); color: var(--ink-3); }
+  .result b { color: var(--set); font-size: 16px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ln circle { transition-duration: 80ms; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <nav class="rail">
+    <a class="rail__home" href="../">90 Days of DP</a>
+    <span class="rail__where">Week <b>2</b> &middot; Day <b>12</b> &middot; LC 24</span>
+  </nav>
+
+  <header class="masthead">
+    <h1>Swap a pair, trust the rest</h1>
+    <p class="claim">Each frame rewires two links, after the recursion has swapped everything behind it.</p>
+    <p class="lede">The leap of faith from LC 206, two nodes at a time. On the way down nothing changes; on the way back up, each frame points its first node at the already-swapped rest, points its second node back at the first, and hands the second node up as the new head.</p>
+  </header>
+
+  <div class="setup">
+    <label for="listPick">list
+      <select id="listPick">
+        <option value="4">1 → 2 → 3 → 4</option>
+        <option value="5">1 → 2 → 3 → 4 → 5 (odd)</option>
+        <option value="6">1 → 2 → 3 → 4 → 5 → 6</option>
+        <option value="2">1 → 2</option>
+        <option value="1">1 (no pair)</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:var(--s4)">
+      <div class="plate">
+        <div class="scroll-x">
+          <svg id="route" class="route" role="img" aria-labelledby="routeTitle">
+            <title id="routeTitle">The list's nodes and next pointers at the current step</title>
+            <defs>
+              <marker id="m-idle" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z"/></marker>
+              <marker id="m-set" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z"/></marker>
+              <marker id="m-now" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z"/></marker>
+            </defs>
+            <g id="gPtr"></g><g id="gNodes"></g><g id="gTags"></g>
+          </svg>
+        </div>
+        <p class="result" id="result"></p>
+        <div class="legend">
+          <span><i style="background:var(--idle)"></i>original link</span>
+          <span><i style="background:var(--now-line)"></i>just rewired</span>
+          <span><i style="background:var(--set-line)"></i>rewired</span>
+          <span><i style="background:var(--ink)"></i>this frame's pair</span>
+          <span>&perp; nullptr</span>
+        </div>
+      </div>
+
+      <p class="say" id="say">Press <b>Next</b> to make the first call.</p>
+      <div class="transport" id="transport"></div>
+    </div>
+
+    <div class="aside">
+      <div class="panel"><h2 class="panel__head">Call stack</h2><ul class="frames" id="frames"></ul></div>
+      <div class="panel"><h2 class="panel__head">LC 24</h2><div class="panel__body"><div class="code" id="code"></div></div></div>
+    </div>
+  </div>
+
+  <section class="read">
+    <h2>Nothing changes on the way down</h2>
+    <p>Every frame names its pair and immediately calls <code>func</code> on what comes after it. Only when that call returns, with everything behind the pair already swapped, does the frame touch a pointer. The deepest frame finishes first, so the <b>last</b> pair is swapped first and the first pair last.</p>
+    <p>Each frame then writes exactly two links: <code>first-&gt;next</code> to the head the recursion returned, and <code>second-&gt;next</code> back to <code>first</code>. The third link, the one <i>into</i> this pair, belongs to the frame above: it gets written there, from the value this frame returns.</p>
+    <p class="pull">Trust the call with the rest; fix your own pair; return your new head.</p>
+
+    <h2>Why the order of the two lines matters</h2>
+    <p>Until line 9 runs, <code>secondNode-&gt;next</code> is the only pointer to the rest of the list, and line 9 is where it gets read. Swap lines 9 and 10 and <code>secondNode-&gt;next</code> would already point back at <code>first</code>: the call would be <code>func(first)</code> again, and the recursion would never end.</p>
+
+    <h2>Compared with LC 206</h2>
+    <p>LC 206 recursed one node on and flipped one link per frame, and every frame returned the same new head, the old tail. LC 24 recurses two nodes on, writes two links per frame, and each frame returns a <b>different</b> head: its own second node. Try the odd list: the 5 is a pair of one, returned unchanged by the base case.</p>
+  </section>
+
+  <footer class="foot">
+    Notes: <a href="https://github.com/sumnoon/90-days-of-dp/blob/main/weeks/week-02-recursion-on-trees-and-structures/notes/lc0024_swap_nodes_in_pairs.md">LC 24</a> &middot;
+    <a href="../lc206/">Reverse a linked list, one frame at a time</a> &middot;
+    <a href="../">All visualizations</a>
+  </footer>
+
+</div>
+
+<script src="../assets/stepper.js"></script>
+<script>
+(function () {
+  "use strict";
+  var S = window.Schematic, NS = S.svgNS;
+  var E = function (id) { return document.getElementById(id); };
+
+  var CODE = [
+    "ListNode* func(ListNode* head) {",
+    "    if (head == nullptr || head->next == nullptr) {",
+    "        return head;",
+    "    }",
+    "",
+    "    ListNode* firstNode = head;",
+    "    ListNode* secondNode = head->next;",
+    "",
+    "    firstNode->next = func(secondNode->next);",
+    "    secondNode->next = firstNode;",
+    "",
+    "    return secondNode;",
+    "}",
+    "",
+    "ListNode* swapPairs(ListNode* head) {",
+    "    return func(head);",
+    "}"
+  ];
+
+  var R = 22, GAP = 100, PAD = 46, CY = 92, H = 200;
+
+  /* ---------- steps: nodes are 0..n-1 holding values 1..n; next[i] is an index or null ---------- */
+
+  function buildSteps(n) {
+    var next = [], state = [], steps = [], frames = [];
+    for (var i = 0; i < n; i++) { next.push(i + 1 < n ? i + 1 : null); state.push("orig"); }
+    var pair = [], cur = [], done = {}, head = n ? 0 : null, order = null, result = "swapPairs(head) = <b>?</b>";
+    function v(i) { return i == null ? "nullptr" : String(i + 1); }
+
+    function snap(line, note, nowSet) {
+      var st = state.slice();
+      (nowSet || []).forEach(function (k) { st[k] = "now"; });
+      steps.push({ line: line, note: note, next: next.slice(), ptr: st, pair: pair.slice(), cur: cur.slice(),
+        done: Object.assign({}, done), head: head, order: order, result: result,
+        frames: frames.map(function (f) { return { main: f.main, aside: f.aside }; }) });
+      (nowSet || []).forEach(function (k) { state[k] = "set"; });
+    }
+
+    function rec(h, depth) {
+      if (h == null || next[h] == null) {
+        frames.push({ main: "func(" + v(h) + ")" });
+        cur = h == null ? [] : [h]; pair = [];
+        snap(3, h == null
+          ? "<b>func(nullptr)</b>: nothing left to swap. Return <code>nullptr</code>."
+          : "<b>func(" + v(h) + ")</b>: one node left over and no partner. Return " + v(h) + " unchanged.");
+        frames.pop();
+        return h;
+      }
+      var f = h, s = next[h], rest = next[s];
+      frames.push({ main: "func(" + v(f) + ")", aside: "first " + v(f) + ", second " + v(s) });
+      pair = [f, s]; cur = [f, s];
+      snap(9, "<b>func(" + v(f) + ")</b>: firstNode = " + v(f) + ", secondNode = " + v(s) + ". Before changing anything, it hands the rest, starting at " +
+        v(rest) + ", to <b>func(" + v(rest) + ")</b> and waits.");
+      var r = rec(rest, depth + 1);
+      pair = [f, s]; cur = [f];
+      next[f] = r;
+      snap(9, (r == null
+          ? "Back in <b>func(" + v(f) + ")</b>: nothing came after " + v(s) + ", so the call returned <code>nullptr</code>."
+          : "Back in <b>func(" + v(f) + ")</b>: everything after " + v(s) + " is swapped, and its new head is " + v(r) + ".") +
+        " <code>firstNode-&gt;next</code> = " + v(r) + ".", [f]);
+      cur = [s];
+      next[s] = f;
+      snap(10, "<code>secondNode-&gt;next</code> = firstNode: " + v(s) + " now points back at " + v(f) + ".", [s]);
+      cur = [s]; done[f] = true; done[s] = true;
+      snap(12, "<b>func(" + v(f) + ")</b> returns " + v(s) + ": this part now starts " + v(s) + " &rarr; " + v(f) + " &rarr; " + v(r) +
+        (depth === 0 ? ". That is the whole list." : ". The frame above links it in."));
+      frames.pop();
+      return s;
+    }
+
+    snap(null, "Press <b>Next</b> to call <b>swapPairs</b>.");
+    if (n) snap(16, "<b>swapPairs</b> hands the head, " + v(0) + ", to <b>func</b>.");
+    var newHead = rec(n ? 0 : null, 0);
+    pair = []; cur = [];
+    head = newHead;
+    var seq = [], p = newHead;
+    while (p != null) { seq.push(p); p = next[p]; }
+    result = "swapPairs(head) = <b>[" + seq.map(function (k) { return k + 1; }).join(", ") + "]</b>";
+    snap(16, "<b>swapPairs</b> returns " + v(newHead) + ". Following the links from there: " + (seq.length ? seq.map(function (k) { return k + 1; }).join(" &rarr; ") : "an empty list") + ".");
+    order = seq;
+    snap(16, "The same nodes, read in their new order. No value was copied; only <code>next</code> pointers moved.");
+    return steps;
+  }
+
+  /* ---------- drawing ---------- */
+
+  var n = 4, nodes = [], ptrs = [], nulls = [], tags = [], headTag, shown = null, raf = 0;
+  var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function mk(tag, attrs, parent) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+
+  function draw() {
+    var svg = E("route"), W = PAD * 2 + Math.max(1, n - 1) * GAP + 40;
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    svg.style.maxWidth = W + "px";
+    svg.style.minWidth = Math.min(W, 460) + "px";
+    var gP = E("gPtr"), gN = E("gNodes"), gT = E("gTags");
+    gP.textContent = ""; gN.textContent = ""; gT.textContent = "";
+    nodes = []; ptrs = []; nulls = []; tags = []; shown = null;
+    cancelAnimationFrame(raf);
+    for (var i = 0; i < n; i++) {
+      ptrs.push(mk("path", { "class": "ptr" }, gP));
+      nulls.push(mk("path", { "class": "ptr" }, gP));
+      var g = mk("g", { "class": "ln" }, gN);
+      mk("circle", { cx: 0, cy: 0, r: R }, g);
+      mk("text", { x: 0, y: 6.5 }, g).textContent = String(i + 1);
+      nodes.push(g);
+      tags.push(mk("text", { "class": "tag", y: H - 12 }, gT));
+    }
+    headTag = mk("text", { "class": "tag is-head", y: 18 }, gT);
+    headTag.textContent = "HEAD";
+  }
+
+  function pointerPath(a, b) {
+    var dx = b.x - a.x;
+    if (dx > 0 && Math.abs(dx - GAP) < 1) return "M " + (a.x + R) + " " + a.y + " L " + (b.x - R - 3) + " " + b.y;
+    var k = R * 0.72, h = 20 + Math.abs(dx) * 0.16;
+    if (dx > 0) {
+      return "M " + (a.x + k) + " " + (a.y - k) + " Q " + ((a.x + b.x) / 2) + " " + (a.y - R - h) + " " + (b.x - k - 2) + " " + (b.y - k - 2);
+    }
+    return "M " + (a.x - k) + " " + (a.y + k) + " Q " + ((a.x + b.x) / 2) + " " + (a.y + R + h) + " " + (b.x + k + 2) + " " + (b.y + k + 2);
+  }
+
+  function apply(pos, st) {
+    for (var i = 0; i < n; i++) {
+      nodes[i].setAttribute("transform", "translate(" + pos[i].x + " " + pos[i].y + ")");
+      var cls = st.ptr[i] === "orig" ? "" : st.ptr[i] === "now" ? " is-now" : " is-set";
+      var mark = st.ptr[i] === "orig" ? "m-idle" : st.ptr[i] === "now" ? "m-now" : "m-set";
+      var t = st.next[i];
+      if (t == null) {
+        ptrs[i].setAttribute("d", "");
+        nulls[i].setAttribute("d", "M " + pos[i].x + " " + (pos[i].y + R) + " L " + pos[i].x + " " + (pos[i].y + R + 16) +
+          " M " + (pos[i].x - 9) + " " + (pos[i].y + R + 16) + " L " + (pos[i].x + 9) + " " + (pos[i].y + R + 16));
+        nulls[i].setAttribute("class", "ptr" + cls);
+      } else {
+        nulls[i].setAttribute("d", "");
+        ptrs[i].setAttribute("d", pointerPath(pos[i], pos[t]));
+        ptrs[i].setAttribute("class", "ptr" + cls);
+        ptrs[i].setAttribute("marker-end", "url(#" + mark + ")");
+      }
+      tags[i].setAttribute("x", pos[i].x);
+    }
+    if (st.head != null) headTag.setAttribute("x", pos[st.head].x);
+  }
+
+  function targetPositions(st) {
+    var pos = [];
+    for (var i = 0; i < n; i++) pos.push({ x: PAD + i * GAP, y: CY });
+    if (st.order) st.order.forEach(function (node, k) { pos[node] = { x: PAD + k * GAP, y: CY }; });
+    return pos;
+  }
+
+  function moveTo(st) {
+    var target = targetPositions(st);
+    cancelAnimationFrame(raf);
+    var from = shown;
+    var moved = from && target.some(function (p, i) { return Math.abs(p.x - from[i].x) > 0.5; });
+    if (!moved || reduced) { shown = target; apply(target, st); return; }
+    var t0 = performance.now(), D = 420;
+    function frame(now) {
+      var t = Math.min(1, (now - t0) / D), e = 1 - Math.pow(1 - t, 3);
+      var p = target.map(function (b, i) { return { x: from[i].x + (b.x - from[i].x) * e, y: b.y }; });
+      shown = p;
+      apply(p, st);
+      if (t < 1) raf = requestAnimationFrame(frame);
+    }
+    raf = requestAnimationFrame(frame);
+  }
+
+  function render(st) {
+    for (var i = 0; i < n; i++) {
+      var g = nodes[i];
+      g.classList.toggle("is-now", st.cur.indexOf(i) >= 0);
+      g.classList.toggle("is-pair", st.pair.indexOf(i) >= 0 && st.cur.indexOf(i) < 0);
+      g.classList.toggle("is-done", !!st.done[i] && st.cur.indexOf(i) < 0);
+      tags[i].textContent = st.pair[0] === i ? "FIRST" : st.pair[1] === i ? "SECOND" : "";
+    }
+    headTag.style.display = st.head == null ? "none" : "";
+    moveTo(st);
+    E("result").innerHTML = st.result;
+  }
+
+  draw();
+  var stepper = S.stepper({
+    id: "lc24",
+    steps: buildSteps(n),
+    codeLines: CODE,
+    transport: E("transport"),
+    say: E("say"),
+    code: E("code"),
+    frames: E("frames"),
+    frameLabel: function (f) { return { main: f.main, aside: f.aside }; },
+    playMs: 1000,
+    render: render
+  });
+
+  E("listPick").addEventListener("change", function () {
+    n = Number(this.value);
+    stepper.stop();
+    draw();
+    stepper.rebuild(buildSteps(n), false);
+  });
+})();
+</script>
+</body>
+</html>

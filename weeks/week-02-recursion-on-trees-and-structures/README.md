@@ -41,7 +41,7 @@ Also: NeetCode's solutions for LC 543 and LC 236, after attempting them.
 - [ ] ⭐ LC 543 Diameter of Binary Tree
 - [ ] ⭐ LC 236 Lowest Common Ancestor of a Binary Tree
 - [x] LC 98 Validate Binary Search Tree — [notes](notes/lc0098_validate_binary_search_tree.md)
-- [ ] LC 24 Swap Nodes in Pairs
+- [x] LC 24 Swap Nodes in Pairs — [notes](notes/lc0024_swap_nodes_in_pairs.md)
 
 ## Checkpoint
 
