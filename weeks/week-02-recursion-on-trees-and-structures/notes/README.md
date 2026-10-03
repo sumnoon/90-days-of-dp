@@ -13,6 +13,8 @@ re-read before a redo, not while solving.
 | [LC 112 Path Sum](lc0112_path_sum.md) | 10 | clean | Pass down what's still needed; a leaf checks whether it's exactly its own value. |
 | [LC 98 Validate BST](lc0098_validate_binary_search_tree.md) | 11 | clean | Pass the allowed range down; each step narrows it by one side. `nullptr` bounds dodge the `INT_MIN`/`INT_MAX` trap. |
 | [LC 24 Swap Nodes in Pairs](lc0024_swap_nodes_in_pairs.md) | 12 | clean | Trust the call to swap everything after this pair; rewire the pair and return its second node. |
+| [⭐ LC 543 Diameter](lc0543_diameter_of_binary_tree.md) | 13 | clean | Return the height upward; record the diameter on the side. They are different numbers. |
+| [⭐ LC 236 Lowest Common Ancestor](lc0236_lowest_common_ancestor_of_a_binary_tree.md) | 13 | clean | Each subtree reports what it found; the first node that hears back from both sides is the answer. |
 
 ## Visualizations
 

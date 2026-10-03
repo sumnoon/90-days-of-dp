@@ -38,8 +38,8 @@ Also: NeetCode's solutions for LC 543 and LC 236, after attempting them.
 - [x] ⭐ LC 226 Invert Binary Tree — [notes](notes/lc0226_invert_binary_tree.md)
 - [x] LC 100 Same Tree — [notes](notes/lc0100_same_tree.md)
 - [x] LC 112 Path Sum — [notes](notes/lc0112_path_sum.md)
-- [ ] ⭐ LC 543 Diameter of Binary Tree
-- [ ] ⭐ LC 236 Lowest Common Ancestor of a Binary Tree
+- [x] ⭐ LC 543 Diameter of Binary Tree — [notes](notes/lc0543_diameter_of_binary_tree.md)
+- [x] ⭐ LC 236 Lowest Common Ancestor of a Binary Tree — [notes](notes/lc0236_lowest_common_ancestor_of_a_binary_tree.md)
 - [x] LC 98 Validate Binary Search Tree — [notes](notes/lc0098_validate_binary_search_tree.md)
 - [x] LC 24 Swap Nodes in Pairs — [notes](notes/lc0024_swap_nodes_in_pairs.md)
 
