@@ -66,6 +66,13 @@ depths), and 2,279 random (p, q) pairs on 500 random trees, each checked
 against a reference that builds both root-to-node paths and takes the last
 node they share.
 
+## See it
+
+- **What each subtree reports back:** https://sumnoon.github.io/90-days-of-dp/report/ —
+  pick *LC 236 LCA*, choose p and q, and watch each subtree's report appear
+  beside it. Try p = 5, q = 4: the walk never reaches 4.
+  ([source](../../../docs/report/index.html))
+
 ## Key insight
 
 Each subtree reports what it found; the first node that hears back from both sides is the answer.

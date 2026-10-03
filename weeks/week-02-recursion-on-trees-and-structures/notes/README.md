@@ -23,6 +23,7 @@ re-read before a redo, not while solving.
 | [Down the tree, back up it](https://sumnoon.github.io/90-days-of-dp/trees/) | Pre, in and post order on one tree with `ans` passed down; LC 104 with depths returned up; LC 112 with the remaining target passed down; LC 98 with the allowed range narrowing. |
 | [Swap the halves, walk in lockstep](https://sumnoon.github.io/90-days-of-dp/mirror/) | LC 226 subtrees swapping sides as calls return; LC 100 walking two trees in lockstep. |
 | [Swap a pair, trust the rest](https://sumnoon.github.io/90-days-of-dp/lc24/) | LC 24: nothing changes going down; each frame rewires two links coming back up, then the nodes slide into their new order. |
+| [What each subtree reports back](https://sumnoon.github.io/90-days-of-dp/report/) | LC 543 returning heights while the diameter is kept on the side; LC 236 with each subtree's report. |
 
 "clean" = solved without a hint. Anything else is on the
 [redo list](../../../redo-list.md).

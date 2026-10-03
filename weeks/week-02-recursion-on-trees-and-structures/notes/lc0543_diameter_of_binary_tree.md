@@ -73,6 +73,13 @@ doesn't pass through the root (6 edges, all under node 2; through the root
 it's only 4). Also 500 random trees, each checked against an O(n²) reference
 that recomputes heights at every node.
 
+## See it
+
+- **What each subtree reports back:** https://sumnoon.github.io/90-days-of-dp/report/ —
+  each node returns its height while the path turning at it is checked in
+  red and the longest so far is kept in blue. Try *longest path skips the
+  root*. ([source](../../../docs/report/index.html))
+
 ## Key insight
 
 Return the height upward; record the diameter on the side. They are different numbers.

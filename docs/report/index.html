@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="sumnoon">
+<meta name="description" content="Step through LC 543 Diameter of Binary Tree and LC 236 Lowest Common Ancestor: what each subtree reports back, and how the answer differs from the return value.">
+<title>What each subtree reports back — 90 Days of DP</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Spline+Sans+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="../assets/system.css">
+<style>
+  .tree { display: block; width: 100%; height: auto; margin: 0 auto; }
+  @media (min-width: 801px) { .work { grid-template-columns: minmax(0, 1fr) 380px; } }
+
+  .t-edge { stroke: var(--hair); stroke-width: 2.5; fill: none;
+    transition: stroke var(--t-state) var(--ease-out), stroke-width var(--t-state) var(--ease-out); }
+  .t-edge.to-stub { stroke: var(--idle); stroke-width: 1.5; stroke-dasharray: 4 4; }
+  .t-edge.is-best { stroke: var(--set-line); stroke-width: 5; }
+  .t-edge.is-cand { stroke: var(--now-line); stroke-width: 5; }
+
+  .t-node circle { fill: var(--plate); stroke: var(--idle); stroke-width: 2.5;
+    transition: fill var(--t-state) var(--ease-out), stroke var(--t-state) var(--ease-out),
+                stroke-width var(--t-state) var(--ease-out), transform var(--t-state) var(--ease-out); }
+  .t-node.is-open circle { stroke: var(--ink); stroke-width: 4.5; }
+  .t-node.is-done circle { fill: var(--set-wash); stroke: var(--set-line); }
+  .t-node.is-target circle { stroke: var(--base-line); stroke-width: 4.5; }
+  .t-node.is-answer circle { fill: var(--set-line); stroke: var(--set-line); }
+  .t-node.is-answer .t-val { fill: var(--on-ink); }
+  .t-node.is-now circle { fill: var(--now-wash); stroke: var(--now-line); stroke-width: 5; }
+  .t-val { font: 700 13px/1 var(--data); fill: var(--ink); text-anchor: middle; pointer-events: none; }
+  .t-pq { font: 700 11px/1 var(--data); fill: var(--base); text-anchor: middle; letter-spacing: .08em; }
+
+  .t-stub rect { fill: none; stroke: var(--idle); stroke-width: 1.5; stroke-dasharray: 3 3;
+    transition: fill var(--t-state) var(--ease-out), stroke var(--t-state) var(--ease-out); }
+  .t-stub.is-hit rect { stroke: var(--base-line); stroke-dasharray: none; }
+  .t-stub.is-now rect { fill: var(--base-wash); stroke: var(--base-line); stroke-width: 3; stroke-dasharray: none; }
+
+  .t-badge { font: 700 12px/1 var(--data); fill: var(--set); opacity: 0;
+    transition: opacity var(--t-state) var(--ease-out), transform var(--t-state) var(--ease-out);
+    transform: translateY(4px); }
+  .t-badge.is-on { opacity: 1; transform: none; }
+  .t-badge.is-new { fill: var(--now); }
+  .t-badge.is-empty { fill: var(--ink-3); font-weight: 400; }
+
+  .result { margin-top: var(--s4); font: 400 13px/1.4 var(--data); color: var(--ink-3); }
+  .result b { color: var(--set); font-size: 16px; }
+
+  .pq { display: inline-flex; gap: var(--s3); align-items: center; }
+  .pq[hidden] { display: none; }
+  .legend [data-for][hidden] { display: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .t-badge { transform: none; }
+    .t-node circle, .t-stub rect, .t-badge, .t-edge { transition-duration: 80ms; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <nav class="rail">
+    <a class="rail__home" href="../">90 Days of DP</a>
+    <span class="rail__where">Week <b>2</b> &middot; Day <b>13</b> &middot; LC 543 &middot; LC 236</span>
+  </nav>
+
+  <header class="masthead">
+    <h1>What each subtree reports back</h1>
+    <p class="claim">The return value is what the parent needs. The answer can be something else.</p>
+    <p class="lede">Saturday's two problems. In <b>diameter</b>, every call returns a height but checks a path, and the best path is kept on the side. In <b>lowest common ancestor</b>, every call reports what it found, and the answer is the first node to hear back from both sides.</p>
+  </header>
+
+  <div class="setup">
+    <span class="grp">problem
+      <button type="button" class="toggle toggle--data" data-mode="dia" aria-pressed="true">LC 543 diameter</button>
+      <button type="button" class="toggle toggle--data" data-mode="lca" aria-pressed="false">LC 236 LCA</button>
+    </span>
+    <label for="treePick">tree
+      <select id="treePick"></select>
+    </label>
+    <span class="pq grp" id="pqBox" hidden>
+      <label for="pPick">p <select id="pPick"></select></label>
+      <label for="qPick">q <select id="qPick"></select></label>
+    </span>
+  </div>
+
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:var(--s4)">
+      <div class="plate">
+        <div class="scroll-x">
+          <svg id="tree" class="tree" role="img" aria-labelledby="treeTitle">
+            <title id="treeTitle">The tree being walked, with what each call has returned</title>
+            <g id="gEdges"></g><g id="gNodes"></g>
+          </svg>
+        </div>
+        <p class="result" id="result"></p>
+        <div class="legend">
+          <span><i style="background:var(--now-line)"></i>running now</span>
+          <span><i style="background:var(--ink)"></i>waiting on the stack</span>
+          <span data-for="dia"><i style="background:var(--set-line)"></i>returned (its height beside it)</span>
+          <span data-for="dia"><i style="background:var(--now-line)"></i>path checked at this node</span>
+          <span data-for="dia"><i style="background:var(--set-line)"></i>longest path so far</span>
+          <span data-for="lca" hidden><i style="background:var(--set-line)"></i>returned (its report beside it)</span>
+          <span data-for="lca" hidden><i style="background:var(--base-line)"></i>p and q</span>
+          <span><i style="background:var(--base-line)"></i>empty subtree (nullptr)</span>
+        </div>
+      </div>
+
+      <p class="say" id="say">Press <b>Next</b> to make the first call.</p>
+      <div class="transport" id="transport"></div>
+    </div>
+
+    <div class="aside">
+      <div class="panel"><h2 class="panel__head">Call stack</h2><ul class="frames" id="frames"></ul></div>
+      <div class="panel"><h2 class="panel__head" id="codeHead">LC 543</h2><div class="panel__body"><div class="code" id="code"></div></div></div>
+    </div>
+  </div>
+
+  <section class="read">
+    <h2>Diameter: return one number, keep another</h2>
+    <p>Every path in a tree has one highest node, where it stops going up and starts going down. A path that turns at node <code>v</code> goes as deep as it can on the left and as deep as it can on the right: <code>lHeight + rHeight</code> edges. Each call checks that one candidate, so all turning points get checked once.</p>
+    <p>The parent can't use that path, though: a path can't fork. All the parent can extend is the deepest path going <b>straight down</b> through <code>v</code>, which is the height. So the function returns the height and only <b>records</b> the diameter. Pick the tree where the longest path skips the root: the answer is found under node 2 and never changes after that.</p>
+    <p class="pull">The return value is what the parent needs. The answer is kept on the side.</p>
+
+    <h2>LCA: report what you found</h2>
+    <p>Every call reports one of three things: nothing (<code>nullptr</code>), the one target it found, or the answer. A node that finds <code>p</code> or <code>q</code> returns it at once without looking below, so its subtree stays grey. The first node to hear back from <b>both</b> sides returns itself, and every node above it just passes that up.</p>
+    <p>Pick p = 5 and q = 4: the walk stops at 5 and never sees 4, yet the answer is right. Either 4 is below 5, which makes 5 the LCA, or it's somewhere else, and then some ancestor hears from both sides. LeetCode guarantees both nodes are in the tree, which is what makes the shortcut safe.</p>
+  </section>
+
+  <footer class="foot">
+    Notes: <a href="https://github.com/sumnoon/90-days-of-dp/blob/main/weeks/week-02-recursion-on-trees-and-structures/notes/lc0543_diameter_of_binary_tree.md">LC 543</a> &middot;
+    <a href="https://github.com/sumnoon/90-days-of-dp/blob/main/weeks/week-02-recursion-on-trees-and-structures/notes/lc0236_lowest_common_ancestor_of_a_binary_tree.md">LC 236</a> &middot;
+    <a href="../trees/">Down the tree, back up it</a> &middot;
+    <a href="../">All visualizations</a>
+  </footer>
+
+</div>
+
+<script src="../assets/stepper.js"></script>
+<script>
+(function () {
+  "use strict";
+  var S = window.Schematic, NS = S.svgNS;
+  var E = function (id) { return document.getElementById(id); };
+
+  var LCA_TREE = [3, 5, 1, 6, 2, 0, 8, null, null, 7, 4];
+  var PRESETS = {
+    dia: [
+      { key: "lc", label: "1, 2, 3, 4, 5 — LC 543 example", tree: [1, 2, 3, 4, 5] },
+      { key: "skip", label: "longest path skips the root", tree: [1, 2, null, 3, 4, 5, null, null, 6, 7, null, null, 8] },
+      { key: "lca", label: "3, 5, 1, 6, 2, 0, 8, … — LC 236 example", tree: LCA_TREE },
+      { key: "chain", label: "1, 2, ∅, 3, ∅, 4 — left chain", tree: [1, 2, null, 3, null, 4] }
+    ],
+    lca: [
+      { key: "lca", label: "3, 5, 1, 6, 2, 0, 8, … — LC 236 example", tree: LCA_TREE },
+      { key: "lc", label: "1, 2, 3, 4, 5", tree: [1, 2, 3, 4, 5] }
+    ]
+  };
+
+  var CODE = {
+    dia: [
+      "int diameter = 0;",
+      "int func(TreeNode* root) {",
+      "    if (root == nullptr) {",
+      "        return 0;",
+      "    }",
+      "",
+      "    int lHeight = func(root->left);",
+      "    int rHeight = func(root->right);",
+      "",
+      "    diameter = max(diameter, lHeight + rHeight);",
+      "",
+      "    return max(lHeight, rHeight) + 1;",
+      "}",
+      "int diameterOfBinaryTree(TreeNode* root) {",
+      "    diameter = 0;",
+      "    func(root);",
+      "    return diameter;",
+      "}"
+    ],
+    lca: [
+      "TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {",
+      "    if (root == nullptr || root == p || root == q) {",
+      "        return root;",
+      "    }",
+      "",
+      "    TreeNode* l = lowestCommonAncestor(root->left, p, q);",
+      "    TreeNode* r = lowestCommonAncestor(root->right, p, q);",
+      "",
+      "    if (l != nullptr && r != nullptr) {",
+      "        return root;",
+      "    }",
+      "",
+      "    return (l != nullptr) ? l : r;",
+      "}"
+    ]
+  };
+
+  /* ---------- the tree ---------- */
+
+  function buildTree(lv) {
+    var nodes = [], stubs = [];
+    function mkNode(v, depth, parent) { var n = { id: "n" + nodes.length, val: v, depth: depth, parent: parent, left: null, right: null }; nodes.push(n); return n; }
+    var root = mkNode(lv[0], 0, null), q = [root], i = 1;
+    while (q.length && i < lv.length) {
+      var p = q.shift();
+      if (i < lv.length && lv[i] != null) { p.left = mkNode(lv[i], p.depth + 1, p); q.push(p.left); } i++;
+      if (i < lv.length && lv[i] != null) { p.right = mkNode(lv[i], p.depth + 1, p); q.push(p.right); } i++;
+    }
+    nodes.forEach(function (n) {
+      ["left", "right"].forEach(function (side) {
+        if (!n[side]) {
+          var s = { id: "s" + stubs.length, stub: true, parent: n, side: side, depth: n.depth + 1 };
+          stubs.push(s);
+          n[side] = s;
+        }
+      });
+    });
+    return { root: root, nodes: nodes, stubs: stubs };
+  }
+
+  var SLOT = 46, STUB_SLOT = 26, GAP_Y = 62, PAD = 24, R = 17, SQ = 12;
+
+  function layout(t) {
+    var x = PAD, maxDepth = 0;
+    (function walk(n) {
+      if (n.stub) { n.x = x + STUB_SLOT / 2; x += STUB_SLOT; }
+      else { walk(n.left); n.x = x + SLOT / 2; x += SLOT; walk(n.right); }
+      n.y = PAD + R + n.depth * GAP_Y;
+      maxDepth = Math.max(maxDepth, n.depth);
+    })(t.root);
+    return { w: x + PAD, h: PAD * 2 + R + maxDepth * GAP_Y + SQ + 14 };
+  }
+
+  var shapes = {}, edgeTo = {};
+
+  function mk(tag, attrs, parent) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+
+  function draw(t) {
+    var size = layout(t), svg = E("tree"), gE = E("gEdges"), gN = E("gNodes");
+    svg.setAttribute("viewBox", "0 0 " + size.w + " " + size.h);
+    svg.style.maxWidth = size.w + "px";
+    svg.style.minWidth = Math.min(size.w * 0.8, 440) + "px";
+    gE.textContent = ""; gN.textContent = ""; shapes = {}; edgeTo = {};
+
+    t.nodes.forEach(function (n) {
+      [n.left, n.right].forEach(function (c) {
+        var y2 = c.stub ? c.y - SQ / 2 : c.y - R;
+        edgeTo[c.id] = mk("path", { d: "M " + n.x + " " + (n.y + R) + " L " + c.x + " " + y2, "class": "t-edge" + (c.stub ? " to-stub" : "") }, gE);
+      });
+    });
+    t.nodes.forEach(function (n) {
+      var g = mk("g", { "class": "t-node" }, gN);
+      mk("circle", { cx: n.x, cy: n.y, r: R, "class": "node-ring" }, g);
+      mk("text", { x: n.x, y: n.y + 4.5, "class": "t-val" }, g).textContent = String(n.val);
+      var b = mk("text", { x: n.x + R + 4, y: n.y - R + 4, "class": "t-badge" }, g);
+      var pq = mk("text", { x: n.x - R - 6, y: n.y - R + 4, "class": "t-pq", "text-anchor": "end" }, g);
+      shapes[n.id] = { g: g, badge: b, pq: pq };
+    });
+    t.stubs.forEach(function (s) {
+      var g = mk("g", { "class": "t-stub" }, gN);
+      mk("rect", { x: s.x - SQ / 2, y: s.y - SQ / 2, width: SQ, height: SQ }, g);
+      var b = mk("text", { x: s.x, y: s.y + SQ / 2 + 13, "class": "t-badge", "text-anchor": "middle" }, g);
+      shapes[s.id] = { g: g, badge: b };
+    });
+  }
+
+  /* ---------- steps: diameter ---------- */
+
+  function pathEdges(nodesOnPath) {
+    /* a path is a list of nodes; its edges are the links from each non-top node to its parent */
+    var top = nodesOnPath.reduce(function (a, b) { return b.depth < a.depth ? b : a; });
+    return nodesOnPath.filter(function (n) { return n !== top; }).map(function (n) { return n.id; });
+  }
+
+  function diaSteps(t) {
+    var steps = [], frames = [], open = {}, done = {}, hit = {}, badges = {};
+    var cur = null, fresh = null, best = 0, bestPath = [], cand = [], first = true;
+    function snap(line, note) {
+      steps.push({ line: line, note: note, cur: cur, fresh: fresh,
+        frames: frames.map(function (f) { return { main: f.main, aside: f.aside }; }),
+        open: Object.assign({}, open), done: Object.assign({}, done), hit: Object.assign({}, hit),
+        badges: Object.assign({}, badges), best: bestPath.length > 1 ? pathEdges(bestPath) : [],
+        cand: cand.length ? pathEdges(cand) : [], targets: {}, answer: null,
+        result: "diameter = <b>" + best + "</b>" + (bestPath.length > 1 ? " &nbsp;(" + bestPath.map(function (n) { return n.val; }).join(" &ndash; ") + ")" : "") });
+      fresh = null;
+    }
+    /* returns [height, the deepest straight-down path as a node list from this node] */
+    function rec(n) {
+      if (n.stub) {
+        frames.push({ main: "func(nullptr)" }); cur = n.id; hit[n.id] = true; badges[n.id] = 0;
+        snap(4, "<b>func(nullptr)</b>: an empty subtree has height <b>0</b>.");
+        frames.pop();
+        return [0, []];
+      }
+      var f = { main: "func(" + n.val + ")" };
+      frames.push(f); open[n.id] = true; cur = n.id; cand = [];
+      snap(7, first ? "<b>func(" + n.val + ")</b> needs the heights of both subtrees before it can do anything. Left first." : "<b>func(" + n.val + ")</b>: ask the left subtree for its height.");
+      first = false;
+      var L = rec(n.left);
+      f.aside = "lHeight " + L[0]; cur = n.id; cand = [];
+      snap(8, "Back in <b>func(" + n.val + ")</b>: lHeight = " + L[0] + ". Now the right.");
+      var Rr = rec(n.right);
+      f.aside = "lHeight " + L[0] + ", rHeight " + Rr[0]; cur = n.id;
+      var c = L[0] + Rr[0], path = L[1].slice().reverse().concat([n], Rr[1]);
+      cand = path.length > 1 ? path : [];
+      var improved = c > best;
+      if (improved) { best = c; bestPath = path; }
+      snap(10, "The longest path that <b>turns at " + n.val + "</b> goes down both sides: " + L[0] + " + " + Rr[0] + " = <b>" + c + "</b> edge" + (c === 1 ? "" : "s") + ". " +
+        (improved ? "That beats the best so far, so diameter = <b>" + c + "</b>." : "Not longer than " + best + ", so diameter stays " + best + "."));
+      var h = Math.max(L[0], Rr[0]) + 1;
+      badges[n.id] = h; fresh = n.id; cand = [];
+      snap(12, "But <b>func(" + n.val + ")</b> returns the <b>height</b>, " + h + ", not the path: a path through " + n.val + " can't fork, so all the parent can extend is the deepest way straight down.");
+      delete open[n.id]; done[n.id] = true; frames.pop();
+      var down = (L[0] >= Rr[0] ? L[1] : Rr[1]);
+      return [h, [n].concat(down)];
+    }
+    snap(null, "Press <b>Next</b> to start <b>diameterOfBinaryTree</b>.");
+    snap(15, "<code>diameter = 0</code>, then <b>func(" + t.root.val + ")</b>. Its return value will be thrown away: the answer is in <code>diameter</code>.");
+    var top = rec(t.root);
+    cur = null; cand = [];
+    snap(17, "<b>func(" + t.root.val + ")</b> returned " + top[0] + ", the height, and it is ignored. The answer is <code>diameter</code> = <b>" + best + "</b>.");
+    return steps;
+  }
+
+  /* ---------- steps: LCA ---------- */
+
+  function lcaSteps(t, pv, qv) {
+    var steps = [], frames = [], open = {}, done = {}, hit = {}, badges = {};
+    var cur = null, fresh = null, answer = null, result = "lowestCommonAncestor = <b>?</b>";
+    var P = t.nodes.filter(function (n) { return n.val === pv; })[0], Q = t.nodes.filter(function (n) { return n.val === qv; })[0];
+    var targets = {}; targets[P.id] = "p"; targets[Q.id] = "q";
+    function name(x) { return x == null ? "∅" : String(x.val); }
+    function snap(line, note) {
+      steps.push({ line: line, note: note, cur: cur, fresh: fresh,
+        frames: frames.map(function (f) { return { main: f.main, aside: f.aside }; }),
+        open: Object.assign({}, open), done: Object.assign({}, done), hit: Object.assign({}, hit),
+        badges: Object.assign({}, badges), best: [], cand: [], targets: targets, answer: answer, result: result });
+      fresh = null;
+    }
+    function report(x) {
+      if (x == null) return "nothing";
+      if (x === P) return "p (" + x.val + ")";
+      if (x === Q) return "q (" + x.val + ")";
+      return "the answer, " + x.val;
+    }
+    function rec(n) {
+      if (n.stub) {
+        frames.push({ main: "lca(nullptr)" }); cur = n.id; hit[n.id] = true; badges[n.id] = "∅";
+        snap(3, "<b>lca(nullptr)</b>: an empty subtree contains neither node. Return <code>nullptr</code>.");
+        frames.pop();
+        return null;
+      }
+      frames.push({ main: "lca(" + n.val + ")" }); cur = n.id;
+      if (n === P || n === Q) {
+        badges[n.id] = n.val; fresh = n.id; done[n.id] = true;
+        snap(3, "<b>" + n.val + "</b> is " + (n === P ? "p" : "q") + ". Return it straight away, <b>without looking below</b>: if the other node is down there, " + n.val + " is the answer anyway.");
+        frames.pop();
+        return n;
+      }
+      var f = frames[frames.length - 1];
+      open[n.id] = true;
+      snap(6, "<b>lca(" + n.val + ")</b> is neither p nor q. Ask the left subtree what it found.");
+      var l = rec(n.left);
+      f.aside = "l = " + name(l); cur = n.id;
+      snap(7, "The left subtree of " + n.val + " reported " + report(l) + ". Now the right.");
+      var r = rec(n.right);
+      f.aside = "l = " + name(l) + ", r = " + name(r); cur = n.id;
+      var out;
+      if (l && r) {
+        out = n; answer = n.id;
+        result = "lowestCommonAncestor = <b>" + n.val + "</b>";
+        snap(10, "Both sides found one: p is on one side of <b>" + n.val + "</b> and q on the other. <b>" + n.val + "</b> is the lowest common ancestor; return it.");
+      } else {
+        out = l || r;
+        snap(13, out ? "Only one side found something. Pass it up unchanged: " + report(out) + "." : "Neither side found anything. Return <code>nullptr</code>.");
+      }
+      badges[n.id] = name(out); fresh = n.id;
+      delete open[n.id]; done[n.id] = true; frames.pop();
+      return out;
+    }
+    snap(null, "Press <b>Next</b> to look for p = " + pv + " and q = " + qv + ".");
+    var top = rec(t.root);
+    cur = null;
+    if (top) { answer = top.id; result = "lowestCommonAncestor = <b>" + top.val + "</b>"; }
+    snap(null, "Done: the root's call returned <b>" + name(top) + "</b>, so the lowest common ancestor of " + pv + " and " + qv + " is <b>" + name(top) + "</b>.");
+    return steps;
+  }
+
+  /* ---------- wiring ---------- */
+
+  var mode = "dia", tree, stepper;
+
+  function render(st) {
+    tree.nodes.forEach(function (n) {
+      var sh = shapes[n.id], g = sh.g, now = st.cur === n.id;
+      g.classList.toggle("is-now", now);
+      g.classList.toggle("is-open", !!st.open[n.id] && !now);
+      g.classList.toggle("is-done", !!st.done[n.id] && !now);
+      g.classList.toggle("is-target", !!st.targets[n.id] && !now && st.answer !== n.id);
+      g.classList.toggle("is-answer", st.answer === n.id && !now);
+      g.firstChild.classList.toggle("is-now", now);
+      sh.pq.textContent = st.targets[n.id] || "";
+    });
+    tree.stubs.forEach(function (s) {
+      var g = shapes[s.id].g;
+      g.classList.toggle("is-now", st.cur === s.id);
+      g.classList.toggle("is-hit", !!st.hit[s.id]);
+    });
+    tree.nodes.concat(tree.stubs).forEach(function (n) {
+      var b = shapes[n.id].badge, has = st.badges[n.id] != null;
+      if (has) b.textContent = String(st.badges[n.id]);
+      b.classList.toggle("is-on", has);
+      b.classList.toggle("is-new", has && st.fresh === n.id);
+      b.classList.toggle("is-empty", has && st.badges[n.id] === "∅");
+    });
+    Object.keys(edgeTo).forEach(function (id) {
+      edgeTo[id].classList.toggle("is-cand", st.cand.indexOf(id) >= 0);
+      edgeTo[id].classList.toggle("is-best", st.best.indexOf(id) >= 0 && st.cand.indexOf(id) < 0);
+    });
+    E("result").innerHTML = st.result;
+  }
+
+  function fillTrees() {
+    var sel = E("treePick");
+    sel.textContent = "";
+    PRESETS[mode].forEach(function (p) {
+      var o = document.createElement("option");
+      o.value = p.key; o.textContent = p.label;
+      sel.appendChild(o);
+    });
+  }
+
+  function fillPQ(keepP, keepQ) {
+    var vals = tree.nodes.map(function (n) { return n.val; });
+    ["pPick", "qPick"].forEach(function (id, k) {
+      var sel = E(id), keep = k === 0 ? keepP : keepQ;
+      sel.textContent = "";
+      vals.forEach(function (v) { var o = document.createElement("option"); o.value = String(v); o.textContent = String(v); sel.appendChild(o); });
+      sel.value = String(vals.indexOf(keep) >= 0 ? keep : vals[k === 0 ? 1 : 2]);
+    });
+  }
+
+  function loadTree() {
+    var list = PRESETS[mode], pick = list.filter(function (p) { return p.key === E("treePick").value; })[0] || list[0];
+    tree = buildTree(pick.tree);
+    draw(tree);
+  }
+
+  function stepsNow() {
+    if (mode === "dia") return diaSteps(tree);
+    var pv = Number(E("pPick").value), qv = Number(E("qPick").value);
+    if (pv === qv) {
+      return [{ line: null, note: "p and q must be two different nodes. Pick another q.", cur: null, fresh: null, frames: [], open: {}, done: {}, hit: {},
+        badges: {}, best: [], cand: [], targets: {}, answer: null, result: "lowestCommonAncestor = <b>?</b>" }];
+    }
+    return lcaSteps(tree, pv, qv);
+  }
+
+  function reload() {
+    stepper.stop();
+    stepper.opts.codeLines = CODE[mode];
+    stepper.rebuild(stepsNow(), false);
+  }
+
+  fillTrees();
+  loadTree();
+  fillPQ(5, 1);
+  stepper = S.stepper({
+    id: "report",
+    steps: stepsNow(),
+    codeLines: CODE[mode],
+    transport: E("transport"),
+    say: E("say"),
+    code: E("code"),
+    frames: E("frames"),
+    frameLabel: function (f) { return { main: f.main, aside: f.aside }; },
+    playMs: function () { return tree.nodes.length > 8 ? 650 : 850; },
+    render: render
+  });
+
+  E("treePick").addEventListener("change", function () {
+    var p = Number(E("pPick").value), q = Number(E("qPick").value);
+    loadTree(); fillPQ(p, q); reload();
+  });
+  E("pPick").addEventListener("change", reload);
+  E("qPick").addEventListener("change", reload);
+  document.querySelectorAll("[data-mode]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      if (mode === b.dataset.mode) return;
+      mode = b.dataset.mode;
+      document.querySelectorAll("[data-mode]").forEach(function (o) { o.setAttribute("aria-pressed", String(o === b)); });
+      document.querySelectorAll(".legend [data-for]").forEach(function (s) { s.hidden = s.dataset.for !== mode; });
+      E("pqBox").hidden = mode !== "lca";
+      E("codeHead").textContent = mode === "dia" ? "LC 543" : "LC 236";
+      fillTrees(); loadTree(); fillPQ(5, 1); reload();
+    });
+  });
+})();
+</script>
+</body>
+</html>
