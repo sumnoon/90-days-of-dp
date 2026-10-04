@@ -13,7 +13,7 @@
 | Thu | 1–1.5 h | LC 46 using a `used[]` array. |
 | Fri | 1–1.5 h | LC 39 (the same element can be reused, so recurse with `i`, not `i+1`). |
 | **Sat** (weekend) | 3–4 h | The duplicate-handling problems: LC 90, LC 47, LC 40. Then LC 22 (prune with open/close counts). Read the issac3 backtracking post. |
-| **Sun** (weekend) | 2–3 h | Redo list, then do the **checkpoint**. Preview Week 4 by reading the N-Queens section of Erickson Ch 2. |
+| **Sun** (weekend) | 2–3 h | Redo list, then do the **checkpoint**. Preview Week 4 by re-reading Erickson section 2.1 (N Queens), properly this time. |
 
 ## Problems
 

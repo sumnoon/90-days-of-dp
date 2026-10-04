@@ -13,7 +13,7 @@
 | Thu | 1–1.5 h | LC 98 (pass (low, high) bounds down). |
 | Fri | 1–1.5 h | LC 24. |
 | **Sat** (weekend) | 3–4 h | Harder problems: LC 543 (return height, update a global answer) and LC 236 (what does each subtree report back?). Watch the NeetCode solutions after you attempt them. |
-| **Sun** (weekend) | 2–3 h | Re-solve LC 543 from memory, then do the **checkpoint**. Preview Week 3 by reading the start of Erickson Ch 2. |
+| **Sun** (weekend) | 2–3 h | Re-solve LC 543 from memory, then do the **checkpoint**. Preview Week 3 by reading Erickson Ch 2's introduction and section 2.1 (N Queens) for the shape of backtracking (30–45 min). |
 
 ## Videos
 
