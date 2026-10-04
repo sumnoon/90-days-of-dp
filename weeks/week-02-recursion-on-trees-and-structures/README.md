@@ -45,7 +45,8 @@ Also: NeetCode's solutions for LC 543 and LC 236, after attempting them.
 
 ## Checkpoint
 
-- [ ] For every problem, explain in one sentence what the function returns and what it passes down.
+- [x] For every problem, explain in one sentence what the function returns and what it passes down.
+  Passed Sun Oct 4: [answers](notes/README.md#checkpoint). LC 543 re-solved from memory in [`redos/`](redos/).
 
 ## Notes
 
