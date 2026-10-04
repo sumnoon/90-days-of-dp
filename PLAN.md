@@ -179,7 +179,7 @@ Every DP solution is a recursion with its repeated work cached. This month build
 | Thu | 1–1.5 h | LC 98 (pass (low, high) bounds down). |
 | Fri | 1–1.5 h | LC 24. |
 | **Sat** (weekend) | 3–4 h | Harder problems: LC 543 (return height, update a global answer) and LC 236 (what does each subtree report back?). Watch the NeetCode solutions after you attempt them. |
-| **Sun** (weekend) | 2–3 h | Re-solve LC 543 from memory, then do the **checkpoint**. Preview Week 3 by reading the start of Erickson Ch 2. |
+| **Sun** (weekend) | 2–3 h | Re-solve LC 543 from memory, then do the **checkpoint**. Preview Week 3 by reading Erickson Ch 2's introduction and section 2.1 (N Queens) for the shape of backtracking (30–45 min). |
 
 **Key ideas**
 
@@ -222,7 +222,7 @@ backtrack(state):
 
 ### Resources
 
-- 📖 Jeff Erickson, *Algorithms*, Ch 2 (Backtracking): sections 2.1–2.3.
+- 📖 Jeff Erickson, *Algorithms*, Ch 2 (Backtracking): section 2.3 (Subset Sum), the include-or-exclude tree behind this week's problems, and 2.4 (The General Pattern). Section 2.1 was the Week 2 Sunday preview; 2.2 (Game Trees) is optional.
 - 🎥 Striver's Recursion playlist: **L6** subsequences, **L7** all patterns (print all / print one / count), **L8** combination sum, **L9** combination sum II, **L10** subset sum I, **L11** subset sum II, **L12–L13** permutations (two approaches).
 - 📝 LeetCode Discuss post by *issac3*: "A general approach to backtracking questions (Subsets, Permutations, Combination Sum, Palindrome Partitioning)". Search the title on LeetCode.
 
@@ -236,7 +236,7 @@ backtrack(state):
 | Thu | 1–1.5 h | LC 46 using a `used[]` array. |
 | Fri | 1–1.5 h | LC 39 (the same element can be reused, so recurse with `i`, not `i+1`). |
 | **Sat** (weekend) | 3–4 h | The duplicate-handling problems: LC 90, LC 47, LC 40. Then LC 22 (prune with open/close counts). Read the issac3 backtracking post. |
-| **Sun** (weekend) | 2–3 h | Redo list, then do the **checkpoint**. Preview Week 4 by reading the N-Queens section of Erickson Ch 2. |
+| **Sun** (weekend) | 2–3 h | Redo list, then do the **checkpoint**. Preview Week 4 by re-reading Erickson section 2.1 (N Queens), properly this time. |
 
 **Key ideas**
 
@@ -272,7 +272,7 @@ backtrack(state):
 
 ### Resources
 
-- 📖 Jeff Erickson, *Algorithms*, Ch 2 (N-Queens, Subset Sum) and Ch 1 (Mergesort section).
+- 📖 Jeff Erickson, *Algorithms*, Ch 2, section 2.1 (N Queens), re-read in full before LC 51, and Ch 1 (Mergesort section). Subset Sum (2.3) was Week 3's reading.
 - 📖 Competitive Programmer's Handbook, Ch 5 (Complete Search: backtracking and pruning).
 - 🎥 Striver's Recursion playlist: **L14** N-Queens, **L15** Sudoku Solver, **L17** Palindrome Partitioning, and the unnumbered *Merge Sort* video (for LC 912). Word Search isn't in the playlist.
 - 🎥 NeetCode: LC 241 explanation.
