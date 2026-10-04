@@ -27,3 +27,14 @@ re-read before a redo, not while solving.
 
 "clean" = solved without a hint. Anything else is on the
 [redo list](../../../redo-list.md).
+
+## Checkpoint
+1. LC 144, 94, 145 -> no return type, answer is passed by reference
+2. LC 104 -> It passed down nothing but returns max depth from left and right subtree and +1 for own
+3. LC 226 -> return root of inverted tree. passed down left node and right node
+4. LC 100 -> return true/false based on if both tree are same. pass down left and right node of both trees
+5. LC 112 -> It returns if there is a path sum equals to target and passed down remaining target sum
+6. LC 98 -> Returnes true/false based on if the subtree is bst. Passed the allowed range
+7. LC 24 -> Swap the pair and return the second node as head. Passed down next of second node.
+8. LC 543 -> Return the height of the sub tree and record diameter. Passed down child node(left and right).
+9.  LC 236 -> Each sub tree reports what it found. Based on the answer from both side, LCA is determined. P and Q are passed down.
