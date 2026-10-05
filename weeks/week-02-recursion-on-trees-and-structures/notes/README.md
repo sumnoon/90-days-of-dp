@@ -37,4 +37,4 @@ re-read before a redo, not while solving.
 6. LC 98 -> Returnes true/false based on if the subtree is bst. Passed the allowed range
 7. LC 24 -> Swap the pair and return the second node as head. Passed down next of second node.
 8. LC 543 -> Return the height of the sub tree and record diameter. Passed down child node(left and right).
-9.  LC 236 -> Each sub tree reports what it found. Based on the answer from both side, LCA is determined. P and Q are passed down.
+9. LC 236 -> Each sub tree reports what it found. Based on the answer from both side, LCA is determined. P and Q are passed down.
