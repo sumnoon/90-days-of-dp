@@ -102,6 +102,14 @@ Space: **O(k)** for `cur` and the stack, plus the output.
 C(n, k) combinations, all distinct, matching a reference that takes every
 bitmask of n bits with k set.
 
+## See it
+
+- **Choose, explore, un-choose:** https://sumnoon.github.io/90-days-of-dp/subsets/ —
+  pick *LC 77 combinations* and switch between the three versions: the first
+  walks all 32 calls of the subsets tree for n = 5, the return trims what
+  hangs below a full `cur`, and the pruning leaves no wasted call at all.
+  ([source](../../../docs/subsets/index.html))
+
 ## Key insight
 
 LC 78's for-loop tree, keeping one layer. Stop a branch once it's full, and don't start one that can't fill up.
