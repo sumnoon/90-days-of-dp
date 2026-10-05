@@ -29,20 +29,24 @@ is: each combination exactly once.
 ## Base case
 
 ```cpp
-if (cur.size() == k) ans.push_back(cur);
+if (cur.size() == k) {
+    ans.push_back(cur);
+    return;
+}
 ```
 
-Record once `cur` holds `k` numbers.
+Record once `cur` holds `k` numbers, and **stop**: a full `cur` can't take
+another number.
 
-## Open question: what happens after recording?
+## What happened before the `return`
 
-The call records, then **keeps going**: the loop still pushes more numbers
-onto a `cur` that is already full. Those deeper calls can never record
-anything, because `cur.size()` only grows past `k`. The output is right, but
-the code walks the **entire subsets tree** of LC 78 and keeps only one layer.
-Measured, with an instrumented copy:
+The first version recorded, then **kept going**: the loop still pushes more numbers
+onto a `cur` that was already full. Those deeper calls could never record
+anything, because `cur.size()` only grows past `k`. The output was right, but
+the code walked the **entire subsets tree** of LC 78 and kept only one layer.
+Measured, with an instrumented copy of each version:
 
-| n, k | combinations | calls as written | with an early `return` | with pruning too |
+| n, k | combinations | first version | with the `return` (current) | with pruning too |
 |---|---|---|---|---|
 | 4, 2 | 6 | 16 | 11 | 10 |
 | 10, 3 | 120 | 1,024 | 176 | 165 |
@@ -50,7 +54,8 @@ Measured, with an instrumented copy:
 | 20, 10 | 184,756 | 1,048,576 | 616,666 | 352,716 |
 | 20, 18 | 190 | 1,048,576 | 1,048,555 | 1,330 |
 
-As written it is always 2ⁿ calls, whatever `k` is.
+The first version was always 2ⁿ calls, whatever `k` is. The `return` was
+added on Day 16, and the current file's counts match the middle column.
 
 - **Return after recording** stops a branch from growing past `k`. That's the
   big win when `k` is small.
@@ -58,15 +63,15 @@ As written it is always 2ⁿ calls, whatever `k` is.
   left to *reach* `k`. That's the big win when `k` is close to `n`: for
   (20, 18) a full `cur` is rare, but hopeless branches are everywhere.
 
-Both are worth working out before Saturday's problems; the pruning question
-is: *with `cur.size()` numbers chosen, what is the largest `i` that can still
-lead to a full combination?*
+**Still open: pruning.** *With `cur.size()` numbers chosen, what is the
+largest `i` that can still lead to a full combination?*
 
 ## Complexity
 
 Output size: C(n, k) combinations of length k.
-As written: **O(2ⁿ)** calls. With the return and pruning, the work is
-proportional to the output, **O(k · C(n, k))**.
+First version: **O(2ⁿ)** calls. With the return it is far fewer when `k`
+is small, but still about 2ⁿ when `k` is close to `n`. With pruning too, the
+work is proportional to the output, **O(k · C(n, k))**.
 Space: **O(k)** for `cur` and the stack, plus the output.
 
 ## Small notes on the code
