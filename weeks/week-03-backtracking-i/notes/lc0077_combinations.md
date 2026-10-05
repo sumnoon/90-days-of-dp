@@ -40,7 +40,7 @@ another number.
 
 ## What happened before the `return`
 
-The first version recorded, then **kept going**: the loop still pushes more numbers
+The first version recorded, then **kept going**: the loop still pushed more numbers
 onto a `cur` that was already full. Those deeper calls could never record
 anything, because `cur.size()` only grows past `k`. The output was right, but
 the code walked the **entire subsets tree** of LC 78 and kept only one layer.
