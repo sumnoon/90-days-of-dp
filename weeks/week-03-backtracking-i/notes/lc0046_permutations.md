@@ -77,6 +77,13 @@ LeetCode's three examples, `[3, -1, 7, 0]`, and `[6, 5, 4, 3, 2, 1]`
 (720 permutations): each time exactly n! distinct permutations, matching
 `std::next_permutation` run from the sorted order.
 
+## See it
+
+- **Choose, explore, un-choose:** https://sumnoon.github.io/90-days-of-dp/subsets/ —
+  pick *LC 46 permutations* to watch the `used` strip alongside `cur`: both
+  set before each call, both undone after, and every skipped slot shown.
+  ([source](../../../docs/subsets/index.html))
+
 ## Key insight
 
 Order matters, so every level may pick any number; `used[]` is what stops a number being picked twice.
