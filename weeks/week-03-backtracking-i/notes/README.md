@@ -7,7 +7,7 @@ Written to be re-read before a redo, not while solving.
 | Problem | Day | Solved | The one idea |
 |---|---|---|---|
 | [⭐ LC 78 Subsets](lc0078_subsets.md) | 15 | clean | Choose, explore, un-choose: the shared `cur` must look the same after a call as it did before. |
-| [⭐ LC 77 Combinations](lc0077_combinations.md) | 16 | clean | LC 78's for-loop tree, keeping one layer. Open: return after recording, and prune branches that can't reach `k`. |
+| [⭐ LC 77 Combinations](lc0077_combinations.md) | 16 | clean | LC 78's for-loop tree, keeping one layer; return as soon as `cur` is full. Open: prune branches that can't reach `k`. |
 
 ## Visualizations
 
