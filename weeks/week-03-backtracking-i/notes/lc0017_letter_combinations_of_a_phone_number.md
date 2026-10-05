@@ -74,6 +74,13 @@ Space: **O(n)** stack, plus the output (and, with by-value strings, a copy of
 and `"2345"`: each matches a reference that builds the answers one digit at
 a time, in the same order, with no duplicates.
 
+## See it
+
+- **Choose, explore, un-choose:** https://sumnoon.github.io/90-days-of-dp/subsets/ —
+  pick *LC 17 phone letters*: one level per digit, every leaf recorded, no
+  wasted call. Compare it with LC 77's first version on the same page.
+  ([source](../../../docs/subsets/index.html))
+
 ## Key insight
 
 One level per digit, one branch per letter: the depth is the input length, and every leaf is an answer.
