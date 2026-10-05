@@ -2,7 +2,7 @@
 
 - **Solution:** [`solutions/lc0077_combinations.cpp`](../solutions/lc0077_combinations.cpp)
 - **Day:** 16 (Tue)
-- **Solved without help?** yes
+- **Solved without help?** yes; the early `return` after a nudge, and the pruning bound after graded hints
 
 ## What the call does
 
@@ -15,7 +15,11 @@ and `idx`, the smallest number still allowed.
 ## Recursive case
 
 ```cpp
-for (int i = idx; i <= n; ++i) {
+int need = k - cur.size();
+int remain = n - idx + 1;
+int available = remain - need;
+
+for (int i = idx; i <= idx + available; ++i) {
     cur.push_back(i);
     func(cur, i + 1, n, k);
     cur.pop_back();
@@ -29,20 +33,24 @@ is: each combination exactly once.
 ## Base case
 
 ```cpp
-if (cur.size() == k) ans.push_back(cur);
+if (cur.size() == k) {
+    ans.push_back(cur);
+    return;
+}
 ```
 
-Record once `cur` holds `k` numbers.
+Record once `cur` holds `k` numbers, and **stop**: a full `cur` can't take
+another number.
 
-## Open question: what happens after recording?
+## Two fixes, measured
 
-The call records, then **keeps going**: the loop still pushes more numbers
-onto a `cur` that is already full. Those deeper calls can never record
-anything, because `cur.size()` only grows past `k`. The output is right, but
-the code walks the **entire subsets tree** of LC 78 and keeps only one layer.
-Measured, with an instrumented copy:
+The first version recorded, then **kept going**: the loop still pushed more numbers
+onto a `cur` that was already full. Those deeper calls could never record
+anything, because `cur.size()` only grows past `k`. The output was right, but
+the code walked the **entire subsets tree** of LC 78 and kept only one layer.
+Measured, with an instrumented copy of each version:
 
-| n, k | combinations | calls as written | with an early `return` | with pruning too |
+| n, k | combinations | first version | + `return` | + pruning (current) |
 |---|---|---|---|---|
 | 4, 2 | 6 | 16 | 11 | 10 |
 | 10, 3 | 120 | 1,024 | 176 | 165 |
@@ -50,7 +58,8 @@ Measured, with an instrumented copy:
 | 20, 10 | 184,756 | 1,048,576 | 616,666 | 352,716 |
 | 20, 18 | 190 | 1,048,576 | 1,048,555 | 1,330 |
 
-As written it is always 2ⁿ calls, whatever `k` is.
+The first version was always 2ⁿ calls, whatever `k` is. Both fixes were
+added on Day 16, and the current file's counts match the last column exactly.
 
 - **Return after recording** stops a branch from growing past `k`. That's the
   big win when `k` is small.
@@ -58,15 +67,27 @@ As written it is always 2ⁿ calls, whatever `k` is.
   left to *reach* `k`. That's the big win when `k` is close to `n`: for
   (20, 18) a full `cur` is rare, but hopeless branches are everywhere.
 
-Both are worth working out before Saturday's problems; the pruning question
-is: *with `cur.size()` numbers chosen, what is the largest `i` that can still
-lead to a full combination?*
+## The pruning bound
+
+`need = k - cur.size()` numbers are still missing. Picking `i` leaves only
+the numbers from `i` to `n` to choose from, `n - i + 1` of them, so a branch
+can only succeed while `n - i + 1 >= need`, that is `i <= n - need + 1`.
+
+The code reaches the same bound in its own words: `remain` counts the numbers
+from `idx` to `n`, and `available = remain - need` is how many of them can be
+**skipped** before the rest are all needed. So `i` may go `available` past
+`idx`: `idx + available = n - need + 1`.
+
+Worked hint for `n = 5, k = 3`: with `cur` empty the loop stops at 3
+(`3, 4, 5` is the last full run); with `cur = [1, 2]` it goes to 5.
 
 ## Complexity
 
 Output size: C(n, k) combinations of length k.
-As written: **O(2ⁿ)** calls. With the return and pruning, the work is
-proportional to the output, **O(k · C(n, k))**.
+First version: **O(2ⁿ)** calls. With the return it is far fewer when `k`
+is small, but still about 2ⁿ when `k` is close to `n`. With pruning too,
+every call is on the way to a combination, so the work is proportional to the
+output, **O(k · C(n, k))**.
 Space: **O(k)** for `cur` and the stack, plus the output.
 
 ## Small notes on the code
@@ -81,6 +102,14 @@ Space: **O(k)** for `cur` and the stack, plus the output.
 C(n, k) combinations, all distinct, matching a reference that takes every
 bitmask of n bits with k set.
 
+## See it
+
+- **Choose, explore, un-choose:** https://sumnoon.github.io/90-days-of-dp/subsets/ —
+  pick *LC 77 combinations* and switch between the three versions: the first
+  walks all 32 calls of the subsets tree for n = 5, the return trims what
+  hangs below a full `cur`, and the pruning leaves no wasted call at all.
+  ([source](../../../docs/subsets/index.html))
+
 ## Key insight
 
-LC 78's for-loop tree, keeping one layer: a call with `k` numbers is finished.
+LC 78's for-loop tree, keeping one layer. Stop a branch once it's full, and don't start one that can't fill up.

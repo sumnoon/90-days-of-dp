@@ -26,7 +26,7 @@
 - [x] ⭐ LC 77 Combinations — [notes](notes/lc0077_combinations.md)
 - [ ] ⭐ LC 39 Combination Sum
 - [ ] LC 40 Combination Sum II
-- [ ] LC 17 Letter Combinations of a Phone Number
+- [x] LC 17 Letter Combinations of a Phone Number — [notes](notes/lc0017_letter_combinations_of_a_phone_number.md)
 - [ ] ⭐ LC 22 Generate Parentheses
 
 ## Checkpoint

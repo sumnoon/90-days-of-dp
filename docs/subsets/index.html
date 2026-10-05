@@ -27,6 +27,8 @@
   .d-node.is-seen text, .d-node.is-open text, .d-node.is-now text { fill: var(--ink); }
   .d-node.is-open rect { stroke: var(--ink); stroke-dasharray: none; stroke-width: 3.5; }
   .d-node.is-rec rect { fill: var(--base-wash); stroke: var(--base-line); stroke-width: 2.5; stroke-dasharray: none; }
+  .d-node.is-waste rect { stroke: var(--now-line); stroke-dasharray: 4 3; stroke-width: 2; fill: transparent; }
+  .d-node.is-waste text { fill: var(--ink-3); }
   .d-node.is-now rect { fill: var(--now-wash); stroke: var(--now-line); stroke-width: 4; stroke-dasharray: none; }
 
   /* cur: the one vector every call shares */
@@ -47,6 +49,11 @@
   .chip { font: 700 12px/1.3 var(--data); padding: 4px 7px; border: var(--w-rule) solid var(--base-line); background: var(--base-wash); color: var(--ink); }
   .chip.is-new { border-color: var(--now-line); background: var(--now-wash); }
 
+  .tally { font: 400 12.5px/1.4 var(--data); color: var(--ink-3); margin-top: var(--s3); }
+  .tally b { color: var(--ink); }
+  .tally .w { color: var(--now); }
+  [data-only][hidden] { display: none; }
+
   @media (prefers-reduced-motion: reduce) {
     .d-node rect, .d-node text, .d-edge { transition-duration: 80ms; }
   }
@@ -57,21 +64,44 @@
 
   <nav class="rail">
     <a class="rail__home" href="../">90 Days of DP</a>
-    <span class="rail__where">Week <b>3</b> &middot; Day <b>15</b> &middot; LC 78</span>
+    <span class="rail__where">Week <b>3</b> &middot; Days <b>15&ndash;17</b> &middot; LC 78 &middot; LC 77 &middot; LC 17</span>
   </nav>
 
   <header class="masthead">
     <h1>Choose, explore, un-choose</h1>
     <p class="claim">One shared vector, pushed before every call and popped after it.</p>
-    <p class="lede">Backtracking is a tree walk where the tree is every decision you could make. Each box is one call, labelled with what <code class="inline">cur</code> holds when it starts. Watch the <code class="inline">cur</code> strip: it grows on the way down and shrinks on the way back, so every branch starts from the same state.</p>
+    <p class="lede">Backtracking is a tree walk where the tree is every decision you could make. Each box is one call, labelled with what <code class="inline">cur</code> holds when it starts. Watch the <code class="inline">cur</code> strip: it grows on the way down and shrinks on the way back, so every branch starts from the same state. <b>LC 77</b> compares three versions of one solution by how many calls they waste.</p>
   </header>
 
   <div class="setup">
     <span class="grp">version
       <button type="button" class="toggle toggle--data" data-mode="ie" aria-pressed="true">include / exclude</button>
       <button type="button" class="toggle toggle--data" data-mode="loop" aria-pressed="false">for loop from start</button>
+      <button type="button" class="toggle toggle--data toggle--hot" data-mode="comb" aria-pressed="false">LC 77 combinations</button>
+      <button type="button" class="toggle toggle--data toggle--hot" data-mode="phone" aria-pressed="false">LC 17 phone letters</button>
     </span>
-    <label for="nPick">nums
+    <label for="dPick" data-only="phone" hidden>digits
+      <select id="dPick">
+        <option value="2">"2"</option>
+        <option value="23" selected>"23"</option>
+        <option value="79">"79"</option>
+      </select>
+    </label>
+    <label for="nkPick" data-only="comb" hidden>n, k
+      <select id="nkPick">
+        <option value="4,2">n = 4, k = 2</option>
+        <option value="5,3" selected>n = 5, k = 3</option>
+        <option value="5,4">n = 5, k = 4</option>
+      </select>
+    </label>
+    <label for="vPick" data-only="comb" hidden>version
+      <select id="vPick">
+        <option value="0">first: no return</option>
+        <option value="1">+ return when full</option>
+        <option value="2" selected>+ pruning (current)</option>
+      </select>
+    </label>
+    <label for="nPick" data-only="sub">nums
       <select id="nPick">
         <option value="2">[1, 2]</option>
         <option value="3" selected>[1, 2, 3]</option>
@@ -98,11 +128,13 @@
           <span class="strip__k">ans</span>
           <span class="ans" id="ans"></span>
         </div>
+        <p class="tally" id="tally"></p>
         <div class="legend">
           <span><i style="background:var(--now-line)"></i>running now</span>
           <span><i style="background:var(--ink)"></i>on the stack</span>
           <span><i style="background:var(--set-line)"></i>returned</span>
           <span><i style="background:var(--base-line)"></i>recorded in ans</span>
+          <span data-only="comb" hidden><svg class="dash" viewBox="0 0 18 4" aria-hidden="true" style="color:var(--now-line)"><line x1="0" y1="2" x2="18" y2="2"/></svg>wasted call</span>
         </div>
       </div>
 
@@ -121,6 +153,12 @@
     <p><b>Include / exclude</b> asks one yes-or-no question per level: is <code>nums[start]</code> in? Every element doubles the paths, so there are 2<sup>n</sup> leaves, and a subset is only recorded at a leaf, once every element has been decided. The tree has 2<sup>n+1</sup> &minus; 1 calls.</p>
     <p><b>For loop from start</b> asks a different question: <i>which element comes next?</i> Every box is already a subset, so it is recorded as soon as the call starts, and the tree has exactly 2<sup>n</sup> calls. Recursing with <code>i + 1</code> means only later elements can follow, which is why <code>[2, 1]</code> never appears. LC 77, 39, 40 and 90 all reuse this shape.</p>
     <p class="pull">Whatever a call pushes, it pops before it returns.</p>
+
+    <h2>LC 77: the same tree, minus the waste</h2>
+    <p>Combinations are LC 78's for-loop tree keeping only one layer, the subsets of size <code>k</code>. Pick <b>first: no return</b>: the call records a full <code>cur</code> and then keeps pushing, so the whole subsets tree is walked and most of it is wasted. <b>+ return when full</b> cuts everything below a full <code>cur</code>. <b>+ pruning</b> also refuses to start a branch that can't reach <code>k</code>: with <code>need</code> numbers missing, <code>i</code> stops at <code>n &minus; need + 1</code>. Try n = 5, k = 4, where the return alone saves little and the pruning saves most.</p>
+
+    <h2>LC 17: every leaf is an answer</h2>
+    <p>One level per digit, one branch per letter, so the tree is exactly <code>digits.size()</code> deep and every leaf records. There's nothing to prune: no branch can fail. Try <b>"79"</b>, where both keys have four letters: 16 leaves, 16 answers, 21 calls, and not one wasted.</p>
 
     <h2>Why the pop</h2>
     <p><code>cur</code> is passed by reference, so every call writes into the same vector, as <code>ans</code> did in Week 2's traversals. After exploring the branch <i>with</i> an element, the next branch must not still contain it. <code>pop_back</code> undoes the choice, and the strip shows <code>cur</code> back where it was before the push. Leave it out and leftovers from one branch leak into every branch after it.</p>
@@ -168,8 +206,76 @@
     ]
   };
 
+  var COMB_CODE = [
+    [
+      "void func(vector<int> &cur, int idx, int n, int k) {",
+      "    if (cur.size() == k) {",
+      "        ans.push_back(cur);",
+      "    }",
+      "    for (int i = idx; i <= n; ++i) {",
+      "        cur.push_back(i);",
+      "        func(cur, i + 1, n, k);",
+      "        cur.pop_back();",
+      "    }",
+      "}"
+    ],
+    [
+      "void func(vector<int> &cur, int idx, int n, int k) {",
+      "    if (cur.size() == k) {",
+      "        ans.push_back(cur);",
+      "        return;",
+      "    }",
+      "    for (int i = idx; i <= n; ++i) {",
+      "        cur.push_back(i);",
+      "        func(cur, i + 1, n, k);",
+      "        cur.pop_back();",
+      "    }",
+      "}"
+    ],
+    [
+      "void func(vector<int> &cur, int idx, int n, int k) {",
+      "    if (cur.size() == k) {",
+      "        ans.push_back(cur);",
+      "        return;",
+      "    }",
+      "",
+      "    int need = k - cur.size();",
+      "    int remain = n - idx + 1;",
+      "    int available = remain - need;",
+      "",
+      "    for (int i = idx; i <= idx + available; ++i) {",
+      "        cur.push_back(i);",
+      "        func(cur, i + 1, n, k);",
+      "        cur.pop_back();",
+      "    }",
+      "}"
+    ]
+  ];
+  /* which code line does what, per version: record, return, loop/push, pop */
+  var PHONE_CODE = [
+    "void backtrack(int idx, string cur, string digits) {",
+    "    if (cur.size() == digits.size()) {",
+    "        ans.push_back(cur);",
+    "        return;",
+    "    }",
+    "",
+    "    for (auto c : mapper[digits[idx] - '2']) {",
+    "        cur.push_back(c);",
+    "        backtrack(idx + 1, cur, digits);",
+    "        cur.pop_back();",
+    "    }",
+    "}"
+  ];
+  var KEYS = { "2": "abc", "3": "def", "4": "ghi", "5": "jkl", "6": "mno", "7": "pqrs", "8": "tuv", "9": "wxyz" };
+
+  var COMB_LINES = [
+    { rec: 3, ret: null, loop: 5, push: 6, pop: 8 },
+    { rec: 3, ret: 4, loop: 6, push: 7, pop: 9 },
+    { rec: 3, ret: 4, loop: 11, push: 12, pop: 14 }
+  ];
+
   function fmt(a) { return "[" + a.join(", ") + "]"; }
-  function label(a) { return a.length ? a.join(",") : "∅"; }
+  function label(a) { return a.length ? a.join(mode === "phone" ? "" : ",") : "∅"; }
 
   /* ---------- the decision tree for each version ---------- */
 
@@ -182,7 +288,31 @@
       return nd;
     }
     var root;
-    if (mode === "ie") {
+    if (mode === "phone") {
+      (function grow(cur, idx, depth, parent, edge) {
+        var nd = mkNode(cur, depth, parent, edge);
+        if (!root) root = nd;
+        nd.records = idx === phone.length;
+        if (nd.records) return;
+        KEYS[phone[idx]].split("").forEach(function (c) { grow(cur.concat([c]), idx + 1, depth + 1, nd, c); });
+      })([], 0, 0, null, "");
+    } else if (mode === "comb") {
+      (function grow(cur, idx, depth, parent, edge) {
+        var nd = mkNode(cur, depth, parent, edge);
+        if (!root) root = nd;
+        nd.records = cur.length === comb.k;
+        if (comb.v >= 1 && nd.records) return;
+        var hi = comb.v === 2 ? comb.n - (comb.k - cur.length) + 1 : comb.n;
+        for (var i = idx; i <= hi; i++) grow(cur.concat([i]), i + 1, depth + 1, nd, "+" + i);
+      })([], 1, 0, null, "");
+      /* a call is wasted when nothing at or below it is ever recorded */
+      (function useful(nd) {
+        var any = nd.records;
+        nd.kids.forEach(function (c) { if (useful(c)) any = true; });
+        nd.waste = !any;
+        return any;
+      })(root);
+    } else if (mode === "ie") {
       (function grow(cur, start, depth, parent, edge) {
         var nd = mkNode(cur, depth, parent, edge);
         if (!root) root = nd;
@@ -307,6 +437,78 @@
       delete open[nd.id]; seen[nd.id] = true; frames.pop();
     }
 
+    function comb_(nd, idx) {
+      var L = COMB_LINES[comb.v];
+      frames.push({ main: "func(" + fmt(cur) + ", idx " + idx + ")", aside: "" });
+      open[nd.id] = true; now = nd.id;
+      if (nd.records) {
+        ans.push(cur.slice()); rec[nd.id] = true; newAns = true;
+        if (comb.v >= 1) {
+          snap(L.ret, "<code>cur</code> = <b>" + fmt(cur) + "</b> holds k = " + comb.k + " numbers: record it and <b>return</b>.");
+        } else {
+          snap(L.rec, "<code>cur</code> = <b>" + fmt(cur) + "</b> holds k = " + comb.k + " numbers: record it. With no <code>return</code>, the loop below still runs" +
+            (nd.kids.length ? " and pushes onto a full <code>cur</code>." : ", though here it has nothing left to push."));
+        }
+      } else if (!nd.kids.length) {
+        snap(L.loop, nd.waste
+          ? "<code>cur</code> = " + fmt(cur) + " can't record anything" + (cur.length > comb.k ? ": it is already past k." : ", and the loop has nothing left to try.") + " A <b>wasted</b> call."
+          : "Nothing to try from here.");
+      }
+      nd.kids.forEach(function (kid, j) {
+        var v = kid.cur[kid.cur.length - 1];
+        now = nd.id;
+        cur.push(v); op = { type: "push", v: v };
+        frames[frames.length - 1].aside = "i = " + v;
+        snap(L.push, "<code>i = " + v + "</code>: push " + v + ", recurse with <code>i + 1</code>." + (kid.waste ? " This branch will record nothing." : ""));
+        comb_(kid, v + 1);
+        now = nd.id;
+        cur.pop(); op = { type: "pop", v: v };
+        snap(L.pop, "<code>pop_back()</code>: " + v + " off, <code>cur</code> = " + fmt(cur) + ".");
+      });
+      delete open[nd.id]; seen[nd.id] = true; frames.pop();
+    }
+
+    function phone_(nd, idx) {
+      frames.push({ main: "backtrack(" + idx + ", \"" + cur.join("") + "\")", aside: "" });
+      open[nd.id] = true; now = nd.id;
+      if (nd.records) {
+        ans.push(cur.slice()); rec[nd.id] = true; newAns = true;
+        snap(4, "<code>cur</code> = <b>\"" + cur.join("") + "\"</b> has one letter per digit: record it and return.");
+      } else {
+        var d = phone[idx];
+        frames[frames.length - 1].aside = "digit " + d + " \u2192 " + KEYS[d];
+        nd.kids.forEach(function (kid, j) {
+          var c = kid.cur[kid.cur.length - 1];
+          now = nd.id;
+          cur.push(c); op = { type: "push", v: c };
+          snap(8, "Level " + idx + " decides digit <b>" + d + "</b> (" + KEYS[d] + "). Try <b>" + c + "</b>: <code>cur</code> = \"" + cur.join("") + "\"." +
+            (firstPop && j === 0 && idx === 0 ? " <code>cur</code> is passed by value, so the call below gets its own copy." : ""));
+          phone_(kid, idx + 1);
+          now = nd.id;
+          cur.pop(); op = { type: "pop", v: c };
+          snap(10, "<code>pop_back()</code>: " + c + " off this call's <code>cur</code>, ready for the next letter." +
+            (firstPop ? " Even with <code>cur</code> passed by value, this pop is needed: the same copy is reused for the whole loop." : ""));
+          firstPop = false;
+        });
+      }
+      delete open[nd.id]; seen[nd.id] = true; frames.pop();
+    }
+
+    if (mode === "phone") {
+      snap(null, "Press <b>Next</b> to call <b>backtrack(0, \"\")</b> on digits \"" + phone + "\".");
+      phone_(t.root, 0);
+      now = null;
+      snap(null, "Done: <b>" + ans.length + "</b> strings from <b>" + t.nodes.length + "</b> calls. Every leaf recorded; nothing was wasted.");
+      return steps;
+    }
+    if (mode === "comb") {
+      snap(null, "Press <b>Next</b> to call <b>func</b> with an empty <code>cur</code>, n = " + comb.n + ", k = " + comb.k + ".");
+      comb_(t.root, 1);
+      now = null;
+      var wasted = t.nodes.filter(function (x) { return x.waste; }).length;
+      snap(null, "Done: <b>" + ans.length + "</b> combinations from <b>" + t.nodes.length + "</b> calls, <b>" + wasted + "</b> of them wasted.");
+      return steps;
+    }
     snap(null, "Press <b>Next</b> to call <b>backtrack(0)</b> with an empty <code>cur</code>.");
     (mode === "ie" ? ie : loop)(t.root, 0);
     now = null;
@@ -317,6 +519,8 @@
   /* ---------- rendering ---------- */
 
   var mode = "ie", n = 3, tree, stepper;
+  var comb = { n: 5, k: 3, v: 2 };
+  var phone = "23";
 
   function render(st) {
     tree.nodes.forEach(function (nd) {
@@ -325,6 +529,7 @@
       g.classList.toggle("is-open", !!st.open[nd.id] && !isNow);
       g.classList.toggle("is-seen", !!st.seen[nd.id]);
       g.classList.toggle("is-rec", !!st.rec[nd.id] && !isNow);
+      g.classList.toggle("is-waste", !!nd.waste && !!st.seen[nd.id] && !isNow);
       if (edges[nd.id]) {
         var on = !!st.open[nd.id];
         edges[nd.id].line.classList.toggle("is-path", on);
@@ -345,9 +550,15 @@
     var a = E("ans");
     a.textContent = "";
     st.ans.forEach(function (s, i) {
-      a.appendChild(S.el("span", "chip" + (st.newAns && i === st.ans.length - 1 ? " is-new" : ""), fmt(s)));
+      a.appendChild(S.el("span", "chip" + (st.newAns && i === st.ans.length - 1 ? " is-new" : ""), mode === "phone" ? "\"" + s.join("") + "\"" : fmt(s)));
     });
     if (!st.ans.length) a.appendChild(S.el("span", "op", "empty"));
+
+    var made = tree.nodes.filter(function (x) { return st.seen[x.id] || st.open[x.id]; }).length;
+    var wastedSoFar = tree.nodes.filter(function (x) { return x.waste && st.seen[x.id]; }).length;
+    E("tally").innerHTML = "calls so far <b>" + made + "</b> of " + tree.nodes.length +
+      " &middot; recorded <b>" + st.ans.length + "</b>" +
+      (mode === "comb" ? " &middot; <span class=\"w\">wasted <b class=\"w\">" + wastedSoFar + "</b></span>" : "");
   }
 
   function rebuild() {
@@ -373,12 +584,18 @@
   function reload() {
     stepper.stop();
     var steps = rebuild();
-    stepper.opts.codeLines = CODE[mode];
-    E("codeHead").textContent = mode === "ie" ? "include / exclude" : "for loop from start";
+    stepper.opts.codeLines = mode === "comb" ? COMB_CODE[comb.v] : mode === "phone" ? PHONE_CODE : CODE[mode];
+    E("codeHead").textContent = mode === "ie" ? "include / exclude" : mode === "loop" ? "for loop from start" : mode === "phone" ? "LC 17" : "LC 77, " + ["first version", "+ return", "+ pruning"][comb.v];
+    document.querySelectorAll("[data-only]").forEach(function (el) {
+      el.hidden = el.dataset.only === "sub" ? (mode !== "ie" && mode !== "loop") : el.dataset.only !== mode;
+    });
     stepper.rebuild(steps, false);
   }
 
   E("nPick").addEventListener("change", function () { n = Number(this.value); reload(); });
+  E("nkPick").addEventListener("change", function () { var a = this.value.split(","); comb.n = Number(a[0]); comb.k = Number(a[1]); reload(); });
+  E("vPick").addEventListener("change", function () { comb.v = Number(this.value); reload(); });
+  E("dPick").addEventListener("change", function () { phone = this.value; reload(); });
   document.querySelectorAll("[data-mode]").forEach(function (b) {
     b.addEventListener("click", function () {
       if (mode === b.dataset.mode) return;
