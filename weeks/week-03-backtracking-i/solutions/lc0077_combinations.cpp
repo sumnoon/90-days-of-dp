@@ -10,6 +10,7 @@ public:
     void func(vector<int> &cur, int idx, int n, int k) {
         if (cur.size() == k) {
             ans.push_back(cur);
+            return;
         }
         for (int i = idx; i <= n; ++i) {
             cur.push_back(i);
