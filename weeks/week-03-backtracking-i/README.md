@@ -19,7 +19,7 @@
 
 ⭐ = core, don't skip
 
-- [ ] ⭐ LC 78 Subsets
+- [x] ⭐ LC 78 Subsets — both ways, include/exclude and for-loop — [notes](notes/lc0078_subsets.md)
 - [ ] ⭐ LC 90 Subsets II
 - [ ] ⭐ LC 46 Permutations
 - [ ] LC 47 Permutations II
@@ -35,4 +35,6 @@
 
 ## Notes
 
-<!-- For each problem: state, transition, base case, key insight. -->
+One note per problem in [`notes/`](notes/): what the call records, what it
+passes down, where the choice is undone, complexity, and the idea that
+unlocked it. Start at the [notes index](notes/README.md).

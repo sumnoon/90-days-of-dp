@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="sumnoon">
+<meta name="description" content="Step through LC 78 Subsets as a decision tree, two ways: include/exclude and a for loop from a start index, with the shared cur vector pushed and popped at every step.">
+<title>Choose, explore, un-choose — 90 Days of DP</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Spline+Sans+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="../assets/system.css">
+<style>
+  .tree { display: block; width: 100%; height: auto; margin: 0 auto; }
+  @media (min-width: 801px) { .work { grid-template-columns: minmax(0, 1fr) 380px; } }
+
+  .d-edge { stroke: var(--hair); stroke-width: 2; fill: none;
+    transition: stroke var(--t-state) var(--ease-out), stroke-width var(--t-state) var(--ease-out); }
+  .d-edge.is-path { stroke: var(--ink); stroke-width: 3.5; }
+  .d-elabel { font: 400 11px/1 var(--data); fill: var(--ink-3); text-anchor: middle; }
+  .d-elabel.is-path { fill: var(--ink); font-weight: 700; }
+
+  .d-node rect { fill: var(--plate); stroke: var(--idle); stroke-width: 1.5; stroke-dasharray: 3 3;
+    transition: fill var(--t-state) var(--ease-out), stroke var(--t-state) var(--ease-out), stroke-width var(--t-state) var(--ease-out); }
+  .d-node text { font: 700 11.5px/1 var(--data); fill: var(--ink-3); text-anchor: middle; pointer-events: none;
+    transition: fill var(--t-state) var(--ease-out); }
+  .d-node.is-seen rect { stroke: var(--set-line); stroke-dasharray: none; stroke-width: 2.5; }
+  .d-node.is-seen text, .d-node.is-open text, .d-node.is-now text { fill: var(--ink); }
+  .d-node.is-open rect { stroke: var(--ink); stroke-dasharray: none; stroke-width: 3.5; }
+  .d-node.is-rec rect { fill: var(--base-wash); stroke: var(--base-line); stroke-width: 2.5; stroke-dasharray: none; }
+  .d-node.is-now rect { fill: var(--now-wash); stroke: var(--now-line); stroke-width: 4; stroke-dasharray: none; }
+
+  /* cur: the one vector every call shares */
+  .strip { display: flex; align-items: center; flex-wrap: wrap; gap: var(--s2) var(--s3); margin-top: var(--s4);
+    font: 700 13px/1.3 var(--data); }
+  .strip__k { color: var(--ink-3); letter-spacing: .12em; text-transform: uppercase; font-size: 11px; min-width: 34px; }
+  .cells { display: inline-flex; min-height: 34px; }
+  .cell { min-width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center;
+    border: var(--w-rule) solid var(--set-line); background: var(--set-wash); color: var(--ink); margin-right: -2px;
+    font-variant-numeric: tabular-nums; }
+  .cell.is-new { border-color: var(--now-line); background: var(--now-wash); position: relative; z-index: 1; }
+  .cell.is-gone { border-style: dashed; border-color: var(--now-line); background: transparent; color: var(--now); text-decoration: line-through; }
+  .cells .empty { color: var(--ink-3); font-weight: 400; align-self: center; }
+  .op { font: 400 12.5px/1.3 var(--data); color: var(--ink-3); }
+  .op b { color: var(--now); }
+
+  .ans { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; }
+  .chip { font: 700 12px/1.3 var(--data); padding: 4px 7px; border: var(--w-rule) solid var(--base-line); background: var(--base-wash); color: var(--ink); }
+  .chip.is-new { border-color: var(--now-line); background: var(--now-wash); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .d-node rect, .d-node text, .d-edge { transition-duration: 80ms; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <nav class="rail">
+    <a class="rail__home" href="../">90 Days of DP</a>
+    <span class="rail__where">Week <b>3</b> &middot; Day <b>15</b> &middot; LC 78</span>
+  </nav>
+
+  <header class="masthead">
+    <h1>Choose, explore, un-choose</h1>
+    <p class="claim">One shared vector, pushed before every call and popped after it.</p>
+    <p class="lede">Backtracking is a tree walk where the tree is every decision you could make. Each box is one call, labelled with what <code class="inline">cur</code> holds when it starts. Watch the <code class="inline">cur</code> strip: it grows on the way down and shrinks on the way back, so every branch starts from the same state.</p>
+  </header>
+
+  <div class="setup">
+    <span class="grp">version
+      <button type="button" class="toggle toggle--data" data-mode="ie" aria-pressed="true">include / exclude</button>
+      <button type="button" class="toggle toggle--data" data-mode="loop" aria-pressed="false">for loop from start</button>
+    </span>
+    <label for="nPick">nums
+      <select id="nPick">
+        <option value="2">[1, 2]</option>
+        <option value="3" selected>[1, 2, 3]</option>
+        <option value="4">[1, 2, 3, 4]</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:var(--s4)">
+      <div class="plate">
+        <div class="scroll-x">
+          <svg id="tree" class="tree" role="img" aria-labelledby="treeTitle">
+            <title id="treeTitle">The decision tree: one box per call, labelled with cur</title>
+            <g id="gEdges"></g><g id="gNodes"></g>
+          </svg>
+        </div>
+        <div class="strip">
+          <span class="strip__k">cur</span>
+          <span class="cells" id="cur"></span>
+          <span class="op" id="op"></span>
+        </div>
+        <div class="strip">
+          <span class="strip__k">ans</span>
+          <span class="ans" id="ans"></span>
+        </div>
+        <div class="legend">
+          <span><i style="background:var(--now-line)"></i>running now</span>
+          <span><i style="background:var(--ink)"></i>on the stack</span>
+          <span><i style="background:var(--set-line)"></i>returned</span>
+          <span><i style="background:var(--base-line)"></i>recorded in ans</span>
+        </div>
+      </div>
+
+      <p class="say" id="say">Press <b>Next</b> to make the first call.</p>
+      <div class="transport" id="transport"></div>
+    </div>
+
+    <div class="aside">
+      <div class="panel"><h2 class="panel__head">Call stack</h2><ul class="frames" id="frames"></ul></div>
+      <div class="panel"><h2 class="panel__head" id="codeHead">include / exclude</h2><div class="panel__body"><div class="code" id="code"></div></div></div>
+    </div>
+  </div>
+
+  <section class="read">
+    <h2>Two trees, same subsets</h2>
+    <p><b>Include / exclude</b> asks one yes-or-no question per level: is <code>nums[start]</code> in? Every element doubles the paths, so there are 2<sup>n</sup> leaves, and a subset is only recorded at a leaf, once every element has been decided. The tree has 2<sup>n+1</sup> &minus; 1 calls.</p>
+    <p><b>For loop from start</b> asks a different question: <i>which element comes next?</i> Every box is already a subset, so it is recorded as soon as the call starts, and the tree has exactly 2<sup>n</sup> calls. Recursing with <code>i + 1</code> means only later elements can follow, which is why <code>[2, 1]</code> never appears. LC 77, 39, 40 and 90 all reuse this shape.</p>
+    <p class="pull">Whatever a call pushes, it pops before it returns.</p>
+
+    <h2>Why the pop</h2>
+    <p><code>cur</code> is passed by reference, so every call writes into the same vector, as <code>ans</code> did in Week 2's traversals. After exploring the branch <i>with</i> an element, the next branch must not still contain it. <code>pop_back</code> undoes the choice, and the strip shows <code>cur</code> back where it was before the push. Leave it out and leftovers from one branch leak into every branch after it.</p>
+  </section>
+
+  <footer class="foot">
+    Notes: <a href="https://github.com/sumnoon/90-days-of-dp/blob/main/weeks/week-03-backtracking-i/notes/lc0078_subsets.md">LC 78</a> &middot;
+    <a href="../trees/">Down the tree, back up it</a> &middot;
+    <a href="../">All visualizations</a>
+  </footer>
+
+</div>
+
+<script src="../assets/stepper.js"></script>
+<script>
+(function () {
+  "use strict";
+  var S = window.Schematic, NS = S.svgNS;
+  var E = function (id) { return document.getElementById(id); };
+
+  var CODE = {
+    ie: [
+      "void backtrack(int start, vector<int>& cur, vector<int>& nums) {",
+      "    if (start == nums.size()) {",
+      "        ans.push_back(cur);",
+      "        return;",
+      "    }",
+      "",
+      "    backtrack(start + 1, cur, nums);",
+      "    cur.push_back(nums[start]);",
+      "    backtrack(start + 1, cur, nums);",
+      "    cur.pop_back();",
+      "}"
+    ],
+    loop: [
+      "void backtrack(int start, vector<int>& cur, vector<int>& nums) {",
+      "    ans.push_back(cur);",
+      "",
+      "    for (int i = start; i < nums.size(); ++i) {",
+      "        cur.push_back(nums[i]);",
+      "        backtrack(i + 1, cur, nums);",
+      "        cur.pop_back();",
+      "    }",
+      "}"
+    ]
+  };
+
+  function fmt(a) { return "[" + a.join(", ") + "]"; }
+  function label(a) { return a.length ? a.join(",") : "∅"; }
+
+  /* ---------- the decision tree for each version ---------- */
+
+  function buildTree(mode, n) {
+    var nodes = [], id = 0;
+    function mkNode(cur, depth, parent, edge) {
+      var nd = { id: "d" + (id++), cur: cur, depth: depth, parent: parent, edge: edge, kids: [] };
+      nodes.push(nd);
+      if (parent) parent.kids.push(nd);
+      return nd;
+    }
+    var root;
+    if (mode === "ie") {
+      (function grow(cur, start, depth, parent, edge) {
+        var nd = mkNode(cur, depth, parent, edge);
+        if (!root) root = nd;
+        if (start === n) return;
+        grow(cur, start + 1, depth + 1, nd, "skip " + (start + 1));
+        grow(cur.concat([start + 1]), start + 1, depth + 1, nd, "+" + (start + 1));
+      })([], 0, 0, null, "");
+    } else {
+      (function grow(cur, start, depth, parent, edge) {
+        var nd = mkNode(cur, depth, parent, edge);
+        if (!root) root = nd;
+        for (var i = start; i < n; i++) grow(cur.concat([i + 1]), i + 1, depth + 1, nd, "+" + (i + 1));
+      })([], 0, 0, null, "");
+    }
+    return { root: root, nodes: nodes };
+  }
+
+  var BH = 26, GAP_Y = 70, PAD = 18;
+
+  function layout(t) {
+    var x = PAD, maxD = 0;
+    function w(nd) { return Math.max(34, 8 + nd.cur.length * 14); }
+    (function walk(nd) {
+      maxD = Math.max(maxD, nd.depth);
+      nd.y = PAD + 4 + nd.depth * GAP_Y;
+      nd.w = w(nd);
+      if (!nd.kids.length) { nd.x = x + nd.w / 2; x += nd.w + 10; return; }
+      nd.kids.forEach(walk);
+      nd.x = (nd.kids[0].x + nd.kids[nd.kids.length - 1].x) / 2;
+    })(t.root);
+    return { w: x - 10 + PAD, h: PAD * 2 + 8 + maxD * GAP_Y + BH };
+  }
+
+  var shapes = {}, edges = {};
+
+  function mk(tag, attrs, parent) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+
+  function draw(t) {
+    var size = layout(t), svg = E("tree"), gE = E("gEdges"), gN = E("gNodes");
+    svg.setAttribute("viewBox", "0 0 " + size.w + " " + size.h);
+    svg.style.maxWidth = size.w + "px";
+    svg.style.minWidth = Math.min(size.w * 0.85, 520) + "px";
+    gE.textContent = ""; gN.textContent = ""; shapes = {}; edges = {};
+    t.nodes.forEach(function (nd) {
+      if (nd.parent) {
+        var p = nd.parent, x1 = p.x, y1 = p.y + BH, x2 = nd.x, y2 = nd.y;
+        var line = mk("path", { d: "M " + x1 + " " + y1 + " L " + x2 + " " + y2, "class": "d-edge" }, gE);
+        var lx = (x1 + x2) / 2 + (x2 < x1 ? -8 : 8), ly = (y1 + y2) / 2 + 4;
+        var lab = mk("text", { x: lx, y: ly, "class": "d-elabel", "text-anchor": x2 < x1 ? "end" : x2 > x1 ? "start" : "middle" }, gE);
+        lab.textContent = nd.edge;
+        edges[nd.id] = { line: line, lab: lab };
+      }
+      var g = mk("g", { "class": "d-node" }, gN);
+      mk("rect", { x: nd.x - nd.w / 2, y: nd.y, width: nd.w, height: BH }, g);
+      mk("text", { x: nd.x, y: nd.y + BH / 2 + 4 }, g).textContent = label(nd.cur);
+      shapes[nd.id] = g;
+    });
+  }
+
+  /* ---------- steps: replay the real code against the tree ---------- */
+
+  function buildSteps(t, mode, n) {
+    var steps = [], frames = [], cur = [], ans = [], open = {}, seen = {}, rec = {}, now = null;
+    var op = null, newAns = false, firstPop = true;
+    function snap(line, note) {
+      steps.push({ line: line, note: note, cur: cur.slice(), op: op, ans: ans.slice(), newAns: newAns, now: now,
+        open: Object.assign({}, open), seen: Object.assign({}, seen), rec: Object.assign({}, rec),
+        frames: frames.map(function (f) { return { main: f.main, aside: f.aside }; }) });
+      op = null; newAns = false;
+    }
+
+    function ie(nd, start) {
+      frames.push({ main: "backtrack(" + start + ")", aside: "cur " + fmt(cur) });
+      open[nd.id] = true; now = nd.id;
+      if (start === n) {
+        ans.push(cur.slice()); rec[nd.id] = true; newAns = true;
+        snap(3, "Every element is decided: <code>start == nums.size()</code>. Record <b>" + fmt(cur) + "</b> in <code>ans</code>.");
+      } else {
+        var v = start + 1;
+        snap(7, "<b>backtrack(" + start + ")</b> decides " + v + ". First the branch <b>without</b> it: call with <code>start + 1</code>, <code>cur</code> unchanged.");
+        ie(nd.kids[0], start + 1);
+        now = nd.id;
+        cur.push(v); op = { type: "push", v: v };
+        frames[frames.length - 1].aside = "cur " + fmt(cur);
+        snap(8, "Back in <b>backtrack(" + start + ")</b>. Now the branch <b>with</b> " + v + ": <code>push_back(" + v + ")</code>, so <code>cur</code> = " + fmt(cur) + ".");
+        ie(nd.kids[1], start + 1);
+        now = nd.id;
+        cur.pop(); op = { type: "pop", v: v };
+        frames[frames.length - 1].aside = "cur " + fmt(cur);
+        snap(10, "<code>pop_back()</code> removes the " + v + " this call pushed. <code>cur</code> is " + fmt(cur) + " again, exactly as the caller left it." +
+          (firstPop ? " That is the un-choose step." : ""));
+        firstPop = false;
+      }
+      delete open[nd.id]; seen[nd.id] = true; frames.pop();
+    }
+
+    function loop(nd, start) {
+      frames.push({ main: "backtrack(" + start + ")", aside: "cur " + fmt(cur) });
+      open[nd.id] = true; now = nd.id;
+      ans.push(cur.slice()); rec[nd.id] = true; newAns = true;
+      snap(2, "<b>backtrack(" + start + ")</b> records <code>cur</code> = <b>" + fmt(cur) + "</b> straight away: every call here is a subset." +
+        (start === n ? " The loop starts at " + start + " = <code>nums.size()</code>, so it runs zero times." : ""));
+      nd.kids.forEach(function (kid, k) {
+        var v = start + k + 1;
+        now = nd.id;
+        cur.push(v); op = { type: "push", v: v };
+        frames[frames.length - 1].aside = "i = " + (start + k) + ", cur " + fmt(cur);
+        snap(5, "<code>i = " + (start + k) + "</code>: choose " + v + ". <code>push_back(" + v + ")</code>, then explore with <code>i + 1</code> so only later numbers can follow.");
+        loop(kid, start + k + 1);
+        now = nd.id;
+        cur.pop(); op = { type: "pop", v: v };
+        frames[frames.length - 1].aside = "i = " + (start + k) + ", cur " + fmt(cur);
+        snap(7, "Un-choose: <code>pop_back()</code> removes " + v + ", so <code>cur</code> is " + fmt(cur) + " for the next <code>i</code>." +
+          (firstPop ? " Without this, " + v + " would leak into every later subset." : ""));
+        firstPop = false;
+      });
+      delete open[nd.id]; seen[nd.id] = true; frames.pop();
+    }
+
+    snap(null, "Press <b>Next</b> to call <b>backtrack(0)</b> with an empty <code>cur</code>.");
+    (mode === "ie" ? ie : loop)(t.root, 0);
+    now = null;
+    snap(null, "Done: <b>" + ans.length + "</b> subsets in <code>ans</code> from <b>" + t.nodes.length + "</b> calls, and <code>cur</code> is empty again: every push was undone.");
+    return steps;
+  }
+
+  /* ---------- rendering ---------- */
+
+  var mode = "ie", n = 3, tree, stepper;
+
+  function render(st) {
+    tree.nodes.forEach(function (nd) {
+      var g = shapes[nd.id], isNow = st.now === nd.id;
+      g.classList.toggle("is-now", isNow);
+      g.classList.toggle("is-open", !!st.open[nd.id] && !isNow);
+      g.classList.toggle("is-seen", !!st.seen[nd.id]);
+      g.classList.toggle("is-rec", !!st.rec[nd.id] && !isNow);
+      if (edges[nd.id]) {
+        var on = !!st.open[nd.id];
+        edges[nd.id].line.classList.toggle("is-path", on);
+        edges[nd.id].lab.classList.toggle("is-path", on);
+      }
+    });
+
+    var c = E("cur");
+    c.textContent = "";
+    st.cur.forEach(function (v, i) {
+      var cell = S.el("span", "cell" + (st.op && st.op.type === "push" && i === st.cur.length - 1 ? " is-new" : ""), String(v));
+      c.appendChild(cell);
+    });
+    if (st.op && st.op.type === "pop") c.appendChild(S.el("span", "cell is-gone", String(st.op.v)));
+    if (!c.children.length) c.appendChild(S.el("span", "empty", "[ ]"));
+    E("op").innerHTML = st.op ? (st.op.type === "push" ? "<b>push_back(" + st.op.v + ")</b>" : "<b>pop_back()</b> removed " + st.op.v) : "";
+
+    var a = E("ans");
+    a.textContent = "";
+    st.ans.forEach(function (s, i) {
+      a.appendChild(S.el("span", "chip" + (st.newAns && i === st.ans.length - 1 ? " is-new" : ""), fmt(s)));
+    });
+    if (!st.ans.length) a.appendChild(S.el("span", "op", "empty"));
+  }
+
+  function rebuild() {
+    tree = buildTree(mode, n);
+    draw(tree);
+    return buildSteps(tree, mode, n);
+  }
+
+  var first = rebuild();
+  stepper = S.stepper({
+    id: "subsets",
+    steps: first,
+    codeLines: CODE[mode],
+    transport: E("transport"),
+    say: E("say"),
+    code: E("code"),
+    frames: E("frames"),
+    frameLabel: function (f) { return { main: f.main, aside: f.aside }; },
+    playMs: function () { return n >= 4 ? 520 : 800; },
+    render: render
+  });
+
+  function reload() {
+    stepper.stop();
+    var steps = rebuild();
+    stepper.opts.codeLines = CODE[mode];
+    E("codeHead").textContent = mode === "ie" ? "include / exclude" : "for loop from start";
+    stepper.rebuild(steps, false);
+  }
+
+  E("nPick").addEventListener("change", function () { n = Number(this.value); reload(); });
+  document.querySelectorAll("[data-mode]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      if (mode === b.dataset.mode) return;
+      mode = b.dataset.mode;
+      document.querySelectorAll("[data-mode]").forEach(function (o) { o.setAttribute("aria-pressed", String(o === b)); });
+      reload();
+    });
+  });
+})();
+</script>
+</body>
+</html>
