@@ -23,7 +23,7 @@
 - [ ] ⭐ LC 90 Subsets II
 - [ ] ⭐ LC 46 Permutations
 - [ ] LC 47 Permutations II
-- [ ] ⭐ LC 77 Combinations
+- [x] ⭐ LC 77 Combinations — [notes](notes/lc0077_combinations.md)
 - [ ] ⭐ LC 39 Combination Sum
 - [ ] LC 40 Combination Sum II
 - [ ] LC 17 Letter Combinations of a Phone Number
