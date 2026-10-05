@@ -12,7 +12,12 @@ public:
             ans.push_back(cur);
             return;
         }
-        for (int i = idx; i <= n; ++i) {
+
+        int need = k - cur.size();
+        int remain = n - idx + 1;
+        int available = remain - need;
+
+        for (int i = idx; i <= idx + available; ++i) {
             cur.push_back(i);
             func(cur, i + 1, n, k);
             cur.pop_back();
