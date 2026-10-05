@@ -91,6 +91,13 @@ LeetCode's two examples, `[-1, 5]`, and ten numbers (LeetCode's maximum): each
 time exactly 2ⁿ subsets, all distinct, matching a bitmask reference where
 subset k takes `nums[i]` when bit i of k is set.
 
+## See it
+
+- **Choose, explore, un-choose:** https://sumnoon.github.io/90-days-of-dp/subsets/ —
+  both versions as decision trees, one box per call, with the `cur` strip
+  growing on each push and shrinking on each pop. Compare the call counts:
+  15 against 8 for `[1, 2, 3]`. ([source](../../../docs/subsets/index.html))
+
 ## Key insight
 
 Choose, explore, un-choose: the shared `cur` must look the same after a call as it did before.
