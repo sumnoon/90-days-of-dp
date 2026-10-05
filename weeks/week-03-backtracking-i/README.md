@@ -21,7 +21,7 @@
 
 - [x] ⭐ LC 78 Subsets — both ways, include/exclude and for-loop — [notes](notes/lc0078_subsets.md)
 - [ ] ⭐ LC 90 Subsets II
-- [ ] ⭐ LC 46 Permutations
+- [x] ⭐ LC 46 Permutations — [notes](notes/lc0046_permutations.md)
 - [ ] LC 47 Permutations II
 - [x] ⭐ LC 77 Combinations — [notes](notes/lc0077_combinations.md)
 - [ ] ⭐ LC 39 Combination Sum
