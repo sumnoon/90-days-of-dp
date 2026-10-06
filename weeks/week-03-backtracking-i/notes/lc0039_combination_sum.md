@@ -80,6 +80,13 @@ with target 11, and LeetCode's largest target, `[2, 3, 5]` with 40
 matches a reference that decides, candidate by candidate, how many copies to
 take.
 
+## See it
+
+- **Choose, explore, un-choose:** https://sumnoon.github.io/90-days-of-dp/subsets/ —
+  pick *LC 39 combination sum*: each box shows `cur` and the target still
+  missing, a `+2` can follow a `+2`, and the dead ends where nothing fits are
+  dashed. ([source](../../../docs/subsets/index.html))
+
 ## Key insight
 
 Recurse with `i` to allow reuse, not `i + 1`; the shrinking target, not the candidates, is what ends each branch.

@@ -69,7 +69,7 @@
 
   <nav class="rail">
     <a class="rail__home" href="../">90 Days of DP</a>
-    <span class="rail__where">Week <b>3</b> &middot; Days <b>15&ndash;18</b> &middot; backtracking</span>
+    <span class="rail__where">Week <b>3</b> &middot; Days <b>15&ndash;19</b> &middot; backtracking</span>
   </nav>
 
   <header class="masthead">
@@ -85,7 +85,15 @@
       <button type="button" class="toggle toggle--data toggle--hot" data-mode="comb" aria-pressed="false">LC 77 combinations</button>
       <button type="button" class="toggle toggle--data toggle--hot" data-mode="phone" aria-pressed="false">LC 17 phone letters</button>
       <button type="button" class="toggle toggle--data toggle--hot" data-mode="perm" aria-pressed="false">LC 46 permutations</button>
+      <button type="button" class="toggle toggle--data toggle--hot" data-mode="csum" aria-pressed="false">LC 39 combination sum</button>
     </span>
+    <label for="cPick" data-only="csum" hidden>input
+      <select id="cPick">
+        <option value="2,3,6,7|7" selected>[2, 3, 6, 7], target 7</option>
+        <option value="2,3,5|8">[2, 3, 5], target 8</option>
+        <option value="3,5|9">[3, 5], target 9</option>
+      </select>
+    </label>
     <label for="pPick" data-only="perm" hidden>nums
       <select id="pPick">
         <option value="2">[1, 2]</option>
@@ -151,6 +159,7 @@
           <span><i style="background:var(--ink)"></i>on the stack</span>
           <span><i style="background:var(--set-line)"></i>returned</span>
           <span><i style="background:var(--base-line)"></i>recorded in ans</span>
+          <span data-only="csum" hidden><svg class="dash" viewBox="0 0 18 4" aria-hidden="true" style="color:var(--now-line)"><line x1="0" y1="2" x2="18" y2="2"/></svg>dead end</span>
           <span data-only="comb" hidden><svg class="dash" viewBox="0 0 18 4" aria-hidden="true" style="color:var(--now-line)"><line x1="0" y1="2" x2="18" y2="2"/></svg>wasted call</span>
         </div>
       </div>
@@ -179,6 +188,9 @@
 
     <h2>LC 46: order matters, so every level starts at 0</h2>
     <p>Subsets and combinations recursed with <code>i + 1</code> so only later numbers could follow, which is why <code>[2, 1]</code> never appeared. In a permutation it must, so each level loops over <b>all</b> of <code>nums</code>, and the <code>used</code> strip is what stops a number being picked twice. Choosing now changes two pieces of shared state, so both are undone after the call. The tree has n &middot; (n &minus; 1) &middot; &hellip; &middot; 1 = n! leaves, every one an answer; the skipped slots, shown in red on the <code>used</code> strip, are the only extra work.</p>
+
+    <h2>LC 39: recurse with i, not i + 1</h2>
+    <p>Each candidate can be reused, so after choosing one the call recurses from the <b>same</b> index: a <code>+2</code> can be followed by another <code>+2</code>, but never by anything earlier, so <code>[2, 3, 2]</code> is never built. Nothing runs out, so the shrinking target is what ends each branch; it's shown in each box. A branch whose remaining target no candidate fits is a dead end. Try <b>[3, 5], target 9</b>: only <code>[3, 3, 3]</code> works, and the dead ends show where the search gave up.</p>
 
     <h2>Why the pop</h2>
     <p><code>cur</code> is passed by reference, so every call writes into the same vector, as <code>ans</code> did in Week 2's traversals. After exploring the branch <i>with</i> an element, the next branch must not still contain it. <code>pop_back</code> undoes the choice, and the strip shows <code>cur</code> back where it was before the push. Leave it out and leftovers from one branch leak into every branch after it.</p>
@@ -304,6 +316,26 @@
     "}"
   ];
 
+  var CSUM_CODE = [
+    "void backtrack(int idx, vector<int>& cur, vector<int>& candidates, int target) {",
+    "    if (target == 0) {",
+    "        ans.push_back(cur);",
+    "        return;",
+    "    }",
+    "    if (target < 0) {",
+    "        return;",
+    "    }",
+    "",
+    "    for (int i = idx; i < candidates.size(); ++i) {",
+    "        if (candidates[i] <= target) {",
+    "            cur.push_back(candidates[i]);",
+    "            backtrack(i, cur, candidates, target - candidates[i]);",
+    "            cur.pop_back();",
+    "        }",
+    "    }",
+    "}"
+  ];
+
   var KEYS = { "2": "abc", "3": "def", "4": "ghi", "5": "jkl", "6": "mno", "7": "pqrs", "8": "tuv", "9": "wxyz" };
 
   var COMB_LINES = [
@@ -313,7 +345,10 @@
   ];
 
   function fmt(a) { return "[" + a.join(", ") + "]"; }
-  function label(a) { return a.length ? a.join(mode === "phone" ? "" : ",") : "∅"; }
+  function label(a, nd) {
+    var base = a.length ? a.join(mode === "phone" ? "" : ",") : "∅";
+    return mode === "csum" && nd ? base + " \u00b7 " + nd.left : base;
+  }
 
   /* ---------- the decision tree for each version ---------- */
 
@@ -326,7 +361,24 @@
       return nd;
     }
     var root;
-    if (mode === "perm") {
+    if (mode === "csum") {
+      (function grow(cur, idx, left, depth, parent, edge) {
+        var nd = mkNode(cur, depth, parent, edge);
+        if (!root) root = nd;
+        nd.left = left; nd.idx = idx;
+        nd.records = left === 0;
+        if (nd.records) return;
+        for (var i = idx; i < csum.c.length; i++) {
+          if (csum.c[i] <= left) grow(cur.concat([csum.c[i]]), i, left - csum.c[i], depth + 1, nd, "+" + csum.c[i]);
+        }
+      })([], 0, csum.t, 0, null, "");
+      (function useful(nd) {
+        var any = nd.records;
+        nd.kids.forEach(function (c) { if (useful(c)) any = true; });
+        nd.waste = !any;
+        return any;
+      })(root);
+    } else if (mode === "perm") {
       (function grow(cur, depth, parent, edge) {
         var nd = mkNode(cur, depth, parent, edge);
         if (!root) root = nd;
@@ -379,7 +431,7 @@
 
   function layout(t) {
     var x = PAD, maxD = 0;
-    function w(nd) { return Math.max(34, 8 + nd.cur.length * 14); }
+    function w(nd) { return mode === "csum" ? Math.max(34, 14 + label(nd.cur, nd).length * 7.4) : Math.max(34, 8 + nd.cur.length * 14); }
     (function walk(nd) {
       maxD = Math.max(maxD, nd.depth);
       nd.y = PAD + 4 + nd.depth * GAP_Y;
@@ -417,7 +469,7 @@
       }
       var g = mk("g", { "class": "d-node" }, gN);
       mk("rect", { x: nd.x - nd.w / 2, y: nd.y, width: nd.w, height: BH }, g);
-      mk("text", { x: nd.x, y: nd.y + BH / 2 + 4 }, g).textContent = label(nd.cur);
+      mk("text", { x: nd.x, y: nd.y + BH / 2 + 4 }, g).textContent = label(nd.cur, nd);
       shapes[nd.id] = g;
     });
   }
@@ -571,6 +623,44 @@
       delete open[nd.id]; seen[nd.id] = true; frames.pop();
     }
 
+    function csum_(nd) {
+      frames.push({ main: "backtrack(" + fmt(cur) + ")", aside: "target " + nd.left });
+      open[nd.id] = true; now = nd.id;
+      if (nd.records) {
+        ans.push(cur.slice()); rec[nd.id] = true; newAns = true;
+        snap(4, "<code>target == 0</code>: " + fmt(cur) + " adds up exactly. Record it and return.");
+      } else {
+        var k = 0;
+        for (var i = nd.idx; i < csum.c.length; i++) {
+          var v = csum.c[i];
+          now = nd.id;
+          if (v > nd.left) {
+            snap(11, "<code>i = " + i + "</code>: " + v + " is bigger than the " + nd.left + " still missing. Skip it.");
+            continue;
+          }
+          var kid = nd.kids[k++];
+          cur.push(v); op = { type: "push", v: v };
+          snap(13, "<code>i = " + i + "</code>: take " + v + ", target " + nd.left + " &rarr; " + (nd.left - v) + ". Recurse with <code>i</code>, not <code>i + 1</code>: " + v + " may be taken again.");
+          csum_(kid);
+          now = nd.id;
+          cur.pop(); op = { type: "pop", v: v };
+          snap(14, "<code>pop_back()</code>: " + v + " off. <code>cur</code> = " + fmt(cur) + ", target " + nd.left + " again.");
+        }
+        if (!nd.kids.length) {
+          snap(16, "No candidate fits the " + nd.left + " still missing: a <b>dead end</b>. Return with nothing recorded.");
+        }
+      }
+      delete open[nd.id]; seen[nd.id] = true; frames.pop();
+    }
+
+    if (mode === "csum") {
+      snap(null, "Press <b>Next</b> to look for combinations of " + fmt(csum.c) + " adding up to " + csum.t + ".");
+      csum_(t.root);
+      now = null;
+      var dead = t.nodes.filter(function (x) { return x.waste; }).length;
+      snap(null, "Done: <b>" + ans.length + "</b> combination" + (ans.length === 1 ? "" : "s") + " from <b>" + t.nodes.length + "</b> calls; <b>" + dead + "</b> of them led nowhere.");
+      return steps;
+    }
     if (mode === "perm") {
       snap(null, "Press <b>Next</b> to start with an empty <code>cur</code> and nothing used.");
       perm_(t.root);
@@ -606,6 +696,7 @@
   var comb = { n: 5, k: 3, v: 2 };
   var phone = "23";
   var perm = 3;
+  var csum = { c: [2, 3, 6, 7], t: 7 };
 
   function render(st) {
     tree.nodes.forEach(function (nd) {
@@ -655,7 +746,7 @@
     var wastedSoFar = tree.nodes.filter(function (x) { return x.waste && st.seen[x.id]; }).length;
     E("tally").innerHTML = "calls so far <b>" + made + "</b> of " + tree.nodes.length +
       " &middot; recorded <b>" + st.ans.length + "</b>" +
-      (mode === "comb" ? " &middot; <span class=\"w\">wasted <b class=\"w\">" + wastedSoFar + "</b></span>" : "");
+      (mode === "comb" || mode === "csum" ? " &middot; <span class=\"w\">" + (mode === "csum" ? "dead ends" : "wasted") + " <b class=\"w\">" + wastedSoFar + "</b></span>" : "");
   }
 
   function rebuild() {
@@ -681,8 +772,8 @@
   function reload() {
     stepper.stop();
     var steps = rebuild();
-    stepper.opts.codeLines = mode === "comb" ? COMB_CODE[comb.v] : mode === "phone" ? PHONE_CODE : mode === "perm" ? PERM_CODE : CODE[mode];
-    E("codeHead").textContent = mode === "ie" ? "include / exclude" : mode === "loop" ? "for loop from start" : mode === "phone" ? "LC 17" : mode === "perm" ? "LC 46" : "LC 77, " + ["first version", "+ return", "+ pruning"][comb.v];
+    stepper.opts.codeLines = mode === "comb" ? COMB_CODE[comb.v] : mode === "phone" ? PHONE_CODE : mode === "perm" ? PERM_CODE : mode === "csum" ? CSUM_CODE : CODE[mode];
+    E("codeHead").textContent = mode === "ie" ? "include / exclude" : mode === "loop" ? "for loop from start" : mode === "phone" ? "LC 17" : mode === "perm" ? "LC 46" : mode === "csum" ? "LC 39" : "LC 77, " + ["first version", "+ return", "+ pruning"][comb.v];
     document.querySelectorAll("[data-only]").forEach(function (el) {
       el.hidden = el.dataset.only === "sub" ? (mode !== "ie" && mode !== "loop") : el.dataset.only !== mode;
     });
@@ -694,6 +785,11 @@
   E("vPick").addEventListener("change", function () { comb.v = Number(this.value); reload(); });
   E("dPick").addEventListener("change", function () { phone = this.value; reload(); });
   E("pPick").addEventListener("change", function () { perm = Number(this.value); reload(); });
+  E("cPick").addEventListener("change", function () {
+    var parts = this.value.split("|");
+    csum = { c: parts[0].split(",").map(Number), t: Number(parts[1]) };
+    reload();
+  });
   document.querySelectorAll("[data-mode]").forEach(function (b) {
     b.addEventListener("click", function () {
       if (mode === b.dataset.mode) return;

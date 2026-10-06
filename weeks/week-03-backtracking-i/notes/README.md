@@ -16,7 +16,7 @@ Written to be re-read before a redo, not while solving.
 
 | Page | What it shows |
 |---|---|
-| [Choose, explore, un-choose](https://sumnoon.github.io/90-days-of-dp/subsets/) | LC 78 as a decision tree, include/exclude and for-loop, with `cur` pushed and popped; LC 77's three versions with wasted calls marked; LC 17's tree, where every leaf is an answer; LC 46 with the `used` strip. |
+| [Choose, explore, un-choose](https://sumnoon.github.io/90-days-of-dp/subsets/) | LC 78 as a decision tree, include/exclude and for-loop, with `cur` pushed and popped; LC 77's three versions with wasted calls marked; LC 17's tree, where every leaf is an answer; LC 46 with the `used` strip; LC 39 with reuse and dead ends. |
 
 "clean" = solved without a hint. Anything else is on the
 [redo list](../../../redo-list.md).
