@@ -20,9 +20,9 @@
 ⭐ = core, don't skip
 
 - [x] ⭐ LC 78 Subsets — both ways, include/exclude and for-loop — [notes](notes/lc0078_subsets.md)
-- [ ] ⭐ LC 90 Subsets II
+- [x] ⭐ LC 90 Subsets II
 - [x] ⭐ LC 46 Permutations — [notes](notes/lc0046_permutations.md)
-- [ ] LC 47 Permutations II
+- [x] LC 47 Permutations II
 - [x] ⭐ LC 77 Combinations — [notes](notes/lc0077_combinations.md)
 - [x] ⭐ LC 39 Combination Sum — [notes](notes/lc0039_combination_sum.md)
 - [ ] LC 40 Combination Sum II
