@@ -41,6 +41,11 @@
     font-variant-numeric: tabular-nums; }
   .cell.is-new { border-color: var(--now-line); background: var(--now-wash); position: relative; z-index: 1; }
   .cell.is-gone { border-style: dashed; border-color: var(--now-line); background: transparent; color: var(--now); text-decoration: line-through; }
+  .ucell { min-width: 34px; height: 34px; display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+    border: var(--w-rule) solid var(--hair); margin-right: -2px; color: var(--ink-3); font: 700 13px/1.1 var(--data); }
+  .ucell small { font: 400 9.5px/1 var(--data); color: var(--ink-3); }
+  .ucell.is-used { border-color: var(--ink); background: var(--plate-2); color: var(--ink); position: relative; }
+  .ucell.is-skip { border-color: var(--now-line); color: var(--now); position: relative; z-index: 1; }
   .cells .empty { color: var(--ink-3); font-weight: 400; align-self: center; }
   .op { font: 400 12.5px/1.3 var(--data); color: var(--ink-3); }
   .op b { color: var(--now); }
@@ -64,7 +69,7 @@
 
   <nav class="rail">
     <a class="rail__home" href="../">90 Days of DP</a>
-    <span class="rail__where">Week <b>3</b> &middot; Days <b>15&ndash;17</b> &middot; LC 78 &middot; LC 77 &middot; LC 17</span>
+    <span class="rail__where">Week <b>3</b> &middot; Days <b>15&ndash;18</b> &middot; backtracking</span>
   </nav>
 
   <header class="masthead">
@@ -79,7 +84,14 @@
       <button type="button" class="toggle toggle--data" data-mode="loop" aria-pressed="false">for loop from start</button>
       <button type="button" class="toggle toggle--data toggle--hot" data-mode="comb" aria-pressed="false">LC 77 combinations</button>
       <button type="button" class="toggle toggle--data toggle--hot" data-mode="phone" aria-pressed="false">LC 17 phone letters</button>
+      <button type="button" class="toggle toggle--data toggle--hot" data-mode="perm" aria-pressed="false">LC 46 permutations</button>
     </span>
+    <label for="pPick" data-only="perm" hidden>nums
+      <select id="pPick">
+        <option value="2">[1, 2]</option>
+        <option value="3" selected>[1, 2, 3]</option>
+      </select>
+    </label>
     <label for="dPick" data-only="phone" hidden>digits
       <select id="dPick">
         <option value="2">"2"</option>
@@ -124,6 +136,11 @@
           <span class="cells" id="cur"></span>
           <span class="op" id="op"></span>
         </div>
+        <div class="strip" data-only="perm" hidden>
+          <span class="strip__k">used</span>
+          <span class="cells" id="used"></span>
+          <span class="op" id="usedOp"></span>
+        </div>
         <div class="strip">
           <span class="strip__k">ans</span>
           <span class="ans" id="ans"></span>
@@ -159,6 +176,9 @@
 
     <h2>LC 17: every leaf is an answer</h2>
     <p>One level per digit, one branch per letter, so the tree is exactly <code>digits.size()</code> deep and every leaf records. There's nothing to prune: no branch can fail. Try <b>"79"</b>, where both keys have four letters: 16 leaves, 16 answers, 21 calls, and not one wasted.</p>
+
+    <h2>LC 46: order matters, so every level starts at 0</h2>
+    <p>Subsets and combinations recursed with <code>i + 1</code> so only later numbers could follow, which is why <code>[2, 1]</code> never appeared. In a permutation it must, so each level loops over <b>all</b> of <code>nums</code>, and the <code>used</code> strip is what stops a number being picked twice. Choosing now changes two pieces of shared state, so both are undone after the call. The tree has n &middot; (n &minus; 1) &middot; &hellip; &middot; 1 = n! leaves, every one an answer; the skipped slots, shown in red on the <code>used</code> strip, are the only extra work.</p>
 
     <h2>Why the pop</h2>
     <p><code>cur</code> is passed by reference, so every call writes into the same vector, as <code>ans</code> did in Week 2's traversals. After exploring the branch <i>with</i> an element, the next branch must not still contain it. <code>pop_back</code> undoes the choice, and the strip shows <code>cur</code> back where it was before the push. Leave it out and leftovers from one branch leak into every branch after it.</p>
@@ -266,6 +286,24 @@
     "    }",
     "}"
   ];
+  var PERM_CODE = [
+    "void backtrack(int idx, vector<int>& cur, vector<int>& nums) {",
+    "    if (cur.size() == nums.size()) {",
+    "        ans.push_back(cur);",
+    "        return;",
+    "    }",
+    "",
+    "    for (int i = 0; i < nums.size(); ++i) {",
+    "        if (used[i]) continue;",
+    "        used[i] = true;",
+    "        cur.push_back(nums[i]);",
+    "        backtrack(i, cur, nums);",
+    "        used[i] = false;",
+    "        cur.pop_back();",
+    "    }",
+    "}"
+  ];
+
   var KEYS = { "2": "abc", "3": "def", "4": "ghi", "5": "jkl", "6": "mno", "7": "pqrs", "8": "tuv", "9": "wxyz" };
 
   var COMB_LINES = [
@@ -288,7 +326,14 @@
       return nd;
     }
     var root;
-    if (mode === "phone") {
+    if (mode === "perm") {
+      (function grow(cur, depth, parent, edge) {
+        var nd = mkNode(cur, depth, parent, edge);
+        if (!root) root = nd;
+        nd.records = cur.length === perm;
+        for (var v = 1; v <= perm; v++) if (cur.indexOf(v) < 0) grow(cur.concat([v]), depth + 1, nd, "+" + v);
+      })([], 0, null, "");
+    } else if (mode === "phone") {
       (function grow(cur, idx, depth, parent, edge) {
         var nd = mkNode(cur, depth, parent, edge);
         if (!root) root = nd;
@@ -382,11 +427,14 @@
   function buildSteps(t, mode, n) {
     var steps = [], frames = [], cur = [], ans = [], open = {}, seen = {}, rec = {}, now = null;
     var op = null, newAns = false, firstPop = true;
+    var used = [], skip = -1, freed = -1;
+    for (var u = 0; u < (mode === "perm" ? perm : 0); u++) used.push(false);
     function snap(line, note) {
       steps.push({ line: line, note: note, cur: cur.slice(), op: op, ans: ans.slice(), newAns: newAns, now: now,
+        used: used.slice(), skip: skip, freed: freed,
         open: Object.assign({}, open), seen: Object.assign({}, seen), rec: Object.assign({}, rec),
         frames: frames.map(function (f) { return { main: f.main, aside: f.aside }; }) });
-      op = null; newAns = false;
+      op = null; newAns = false; skip = -1; freed = -1;
     }
 
     function ie(nd, start) {
@@ -494,6 +542,42 @@
       delete open[nd.id]; seen[nd.id] = true; frames.pop();
     }
 
+    function perm_(nd) {
+      frames.push({ main: "backtrack(" + fmt(cur) + ")", aside: "" });
+      open[nd.id] = true; now = nd.id;
+      if (nd.records) {
+        ans.push(cur.slice()); rec[nd.id] = true; newAns = true;
+        snap(4, "All " + perm + " numbers placed: record <b>" + fmt(cur) + "</b> and return.");
+      } else {
+        var k = 0;
+        for (var i = 0; i < perm; i++) {
+          var v = i + 1;
+          now = nd.id;
+          frames[frames.length - 1].aside = "i = " + i;
+          if (used[i]) {
+            skip = i;
+            snap(8, "<code>i = " + i + "</code>: " + v + " is already in <code>cur</code> (<code>used[" + i + "]</code> is true). Skip it.");
+            continue;
+          }
+          var kid = nd.kids[k++];
+          used[i] = true; cur.push(v); op = { type: "push", v: v };
+          snap(10, "<code>i = " + i + "</code>: mark <code>used[" + i + "]</code> and push " + v + ". The loop started at 0, so earlier numbers are still on offer." );
+          perm_(kid);
+          now = nd.id;
+          used[i] = false; cur.pop(); op = { type: "pop", v: v }; freed = i;
+          snap(13, "Undo <b>both</b>: <code>used[" + i + "] = false</code> and <code>pop_back()</code>. " + v + " is free again for the next branch.");
+        }
+      }
+      delete open[nd.id]; seen[nd.id] = true; frames.pop();
+    }
+
+    if (mode === "perm") {
+      snap(null, "Press <b>Next</b> to start with an empty <code>cur</code> and nothing used.");
+      perm_(t.root);
+      now = null;
+      snap(null, "Done: <b>" + ans.length + "</b> permutations from <b>" + t.nodes.length + "</b> calls. Every leaf is an answer.");
+      return steps;
+    }
     if (mode === "phone") {
       snap(null, "Press <b>Next</b> to call <b>backtrack(0, \"\")</b> on digits \"" + phone + "\".");
       phone_(t.root, 0);
@@ -521,6 +605,7 @@
   var mode = "ie", n = 3, tree, stepper;
   var comb = { n: 5, k: 3, v: 2 };
   var phone = "23";
+  var perm = 3;
 
   function render(st) {
     tree.nodes.forEach(function (nd) {
@@ -554,6 +639,18 @@
     });
     if (!st.ans.length) a.appendChild(S.el("span", "op", "empty"));
 
+    if (mode === "perm") {
+      var uh = E("used");
+      uh.textContent = "";
+      st.used.forEach(function (on, i) {
+        var c = S.el("span", "ucell" + (on ? " is-used" : "") + (st.skip === i ? " is-skip" : ""));
+        c.appendChild(document.createTextNode(String(i + 1)));
+        c.appendChild(S.el("small", null, on ? "used" : "free"));
+        uh.appendChild(c);
+      });
+      E("usedOp").innerHTML = st.skip >= 0 ? "<b>skip</b> " + (st.skip + 1) : st.freed >= 0 ? "<b>freed</b> " + (st.freed + 1) : "";
+    }
+
     var made = tree.nodes.filter(function (x) { return st.seen[x.id] || st.open[x.id]; }).length;
     var wastedSoFar = tree.nodes.filter(function (x) { return x.waste && st.seen[x.id]; }).length;
     E("tally").innerHTML = "calls so far <b>" + made + "</b> of " + tree.nodes.length +
@@ -584,8 +681,8 @@
   function reload() {
     stepper.stop();
     var steps = rebuild();
-    stepper.opts.codeLines = mode === "comb" ? COMB_CODE[comb.v] : mode === "phone" ? PHONE_CODE : CODE[mode];
-    E("codeHead").textContent = mode === "ie" ? "include / exclude" : mode === "loop" ? "for loop from start" : mode === "phone" ? "LC 17" : "LC 77, " + ["first version", "+ return", "+ pruning"][comb.v];
+    stepper.opts.codeLines = mode === "comb" ? COMB_CODE[comb.v] : mode === "phone" ? PHONE_CODE : mode === "perm" ? PERM_CODE : CODE[mode];
+    E("codeHead").textContent = mode === "ie" ? "include / exclude" : mode === "loop" ? "for loop from start" : mode === "phone" ? "LC 17" : mode === "perm" ? "LC 46" : "LC 77, " + ["first version", "+ return", "+ pruning"][comb.v];
     document.querySelectorAll("[data-only]").forEach(function (el) {
       el.hidden = el.dataset.only === "sub" ? (mode !== "ie" && mode !== "loop") : el.dataset.only !== mode;
     });
@@ -596,6 +693,7 @@
   E("nkPick").addEventListener("change", function () { var a = this.value.split(","); comb.n = Number(a[0]); comb.k = Number(a[1]); reload(); });
   E("vPick").addEventListener("change", function () { comb.v = Number(this.value); reload(); });
   E("dPick").addEventListener("change", function () { phone = this.value; reload(); });
+  E("pPick").addEventListener("change", function () { perm = Number(this.value); reload(); });
   document.querySelectorAll("[data-mode]").forEach(function (b) {
     b.addEventListener("click", function () {
       if (mode === b.dataset.mode) return;
