@@ -24,7 +24,7 @@
 - [x] ⭐ LC 46 Permutations — [notes](notes/lc0046_permutations.md)
 - [ ] LC 47 Permutations II
 - [x] ⭐ LC 77 Combinations — [notes](notes/lc0077_combinations.md)
-- [ ] ⭐ LC 39 Combination Sum
+- [x] ⭐ LC 39 Combination Sum — [notes](notes/lc0039_combination_sum.md)
 - [ ] LC 40 Combination Sum II
 - [x] LC 17 Letter Combinations of a Phone Number — [notes](notes/lc0017_letter_combinations_of_a_phone_number.md)
 - [ ] ⭐ LC 22 Generate Parentheses

@@ -10,6 +10,7 @@ Written to be re-read before a redo, not while solving.
 | [⭐ LC 77 Combinations](lc0077_combinations.md) | 16 | hint | Stop a branch once it's full; don't start one that can't fill up: `i <= n - need + 1`. |
 | [LC 17 Letter Combinations](lc0017_letter_combinations_of_a_phone_number.md) | 17 | clean | One level per digit, one branch per letter; every leaf is an answer, so nothing to prune. `""` must return `[]`. |
 | [⭐ LC 46 Permutations](lc0046_permutations.md) | 18 | hint | Order matters, so every level loops from 0; `used[]` stops a number being picked twice, and is undone with `cur`. |
+| [⭐ LC 39 Combination Sum](lc0039_combination_sum.md) | 19 | clean | Recurse with `i` to allow reuse; the shrinking target, not the candidates, ends each branch. |
 
 ## Visualizations
 
