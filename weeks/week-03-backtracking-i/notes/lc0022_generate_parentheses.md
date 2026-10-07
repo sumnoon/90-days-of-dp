@@ -60,9 +60,10 @@ here.
 ## Counting
 
 The number of balanced strings with n pairs is the **Catalan number** Cₙ:
-1, 2, 5, 14, 42, 132, 429, 1430 for n = 1 … 8. It grows roughly like 4ⁿ,
-much slower than the 2²ⁿ unrestricted strings, because the rules cut every
-invalid branch.
+1, 2, 5, 14, 42, 132, 429, 1430 for n = 1 … 8. That's about 4ⁿ / n^1.5,
+against 2²ⁿ = 4ⁿ unrestricted strings of length 2n: for n = 8, 1,430 valid
+strings out of 65,536. The rules cut every invalid branch before it starts,
+so the search only ever builds the 1,430.
 
 ## Small notes on the code
 
