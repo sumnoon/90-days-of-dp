@@ -13,6 +13,7 @@ Written to be re-read before a redo, not while solving.
 | [⭐ LC 39 Combination Sum](lc0039_combination_sum.md) | 19 | clean | Recurse with `i` to allow reuse; the shrinking target, not the candidates, ends each branch. |
 | [⭐ LC 90 Subsets II](lc0090_subsets_ii.md) | 20 | clean | Sort, then at each level try each value once: skip a copy unless it's the first this level tried (`i != idx`). |
 | [LC 47 Permutations II](lc0047_permutations_ii.md) | 20 | solution | Sort, then never place a copy before the one to its left: `!used[i-1]` cuts duplicates at the root (9 vs 2,781 calls on eight 1s). |
+| [LC 40 Combination Sum II](lc0040_combination_sum_ii.md) | 20 | clean | LC 39 with `i + 1`, plus LC 90's skip: a value is tried once per level, but copies can be used one per level going down. |
 
 ## Visualizations
 
