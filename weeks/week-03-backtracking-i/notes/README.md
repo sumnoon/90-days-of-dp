@@ -11,6 +11,10 @@ Written to be re-read before a redo, not while solving.
 | [LC 17 Letter Combinations](lc0017_letter_combinations_of_a_phone_number.md) | 17 | clean | One level per digit, one branch per letter; every leaf is an answer, so nothing to prune. `""` must return `[]`. |
 | [⭐ LC 46 Permutations](lc0046_permutations.md) | 18 | hint | Order matters, so every level loops from 0; `used[]` stops a number being picked twice, and is undone with `cur`. |
 | [⭐ LC 39 Combination Sum](lc0039_combination_sum.md) | 19 | clean | Recurse with `i` to allow reuse; the shrinking target, not the candidates, ends each branch. |
+| [⭐ LC 90 Subsets II](lc0090_subsets_ii.md) | 20 | clean | Sort, then at each level try each value once: skip a copy unless it's the first this level tried (`i != idx`). |
+| [LC 47 Permutations II](lc0047_permutations_ii.md) | 20 | solution | Sort, then never place a copy before the one to its left: `!used[i-1]` cuts duplicates at the root (9 vs 2,781 calls on eight 1s). |
+| [LC 40 Combination Sum II](lc0040_combination_sum_ii.md) | 20 | clean | LC 39 with `i + 1`, plus LC 90's skip: a value is tried once per level, but copies can be used one per level going down. |
+| [⭐ LC 22 Generate Parentheses](lc0022_generate_parentheses.md) | 20 | hint | `(` while any are left; `)` only when it has something to close. Counting what's left flips the comparison: `lPar < rPar`. |
 
 ## Visualizations
 

@@ -20,14 +20,14 @@
 ⭐ = core, don't skip
 
 - [x] ⭐ LC 78 Subsets — both ways, include/exclude and for-loop — [notes](notes/lc0078_subsets.md)
-- [ ] ⭐ LC 90 Subsets II
+- [x] ⭐ LC 90 Subsets II — [notes](notes/lc0090_subsets_ii.md)
 - [x] ⭐ LC 46 Permutations — [notes](notes/lc0046_permutations.md)
-- [ ] LC 47 Permutations II
+- [x] LC 47 Permutations II — [notes](notes/lc0047_permutations_ii.md)
 - [x] ⭐ LC 77 Combinations — [notes](notes/lc0077_combinations.md)
 - [x] ⭐ LC 39 Combination Sum — [notes](notes/lc0039_combination_sum.md)
-- [ ] LC 40 Combination Sum II
+- [x] LC 40 Combination Sum II — [notes](notes/lc0040_combination_sum_ii.md)
 - [x] LC 17 Letter Combinations of a Phone Number — [notes](notes/lc0017_letter_combinations_of_a_phone_number.md)
-- [ ] ⭐ LC 22 Generate Parentheses
+- [x] ⭐ LC 22 Generate Parentheses — [notes](notes/lc0022_generate_parentheses.md)
 
 ## Checkpoint
 
