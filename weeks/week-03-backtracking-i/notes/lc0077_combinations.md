@@ -110,6 +110,10 @@ bitmask of n bits with k set.
   hangs below a full `cur`, and the pruning leaves no wasted call at all.
   ([source](../../../docs/subsets/index.html))
 
+## In my own words
+
+call records list combination of k number from list of n numbers. It passed down next index of number list and cur. the choice is undone after the recursive function is called. the complexity is O(k * C(n, k)) where n is total numbers and k is numbers size to choose. The idea that unlocks stops the call when cur is size of k and if a branch don't have enough numbers than don't proceed the calling
+
 ## Key insight
 
 LC 78's for-loop tree, keeping one layer. Stop a branch once it's full, and don't start one that can't fill up.
