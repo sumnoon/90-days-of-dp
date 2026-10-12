@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="sumnoon">
+<meta name="description" content="Step through LC 79 Word Search: grid backtracking that marks each cell on the path with '#' and gives the letter back when the branch fails.">
+<title>The board is the visited set — 90 Days of DP</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Spline+Sans+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="../assets/system.css">
+<style>
+  @media (min-width: 801px) { .work { grid-template-columns: minmax(0, 1fr) 380px; } }
+
+  .stage { position: relative; display: inline-block; }
+  .board { display: grid; gap: 0; border: var(--w-rule) solid var(--rule); }
+  .cell { width: 56px; height: 56px; position: relative; display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--hair); background: var(--plate); font: 700 22px/1 var(--data); color: var(--ink);
+    transition: background-color var(--t-state) var(--ease-out), color var(--t-state) var(--ease-out), box-shadow var(--t-state) var(--ease-out); }
+  .cell small { position: absolute; left: 4px; top: 3px; font: 700 10px/1 var(--data); color: var(--ink-3); }
+  .cell.is-path { background: var(--plate-2); color: var(--ink-3); box-shadow: inset 0 0 0 3px var(--ink); }
+  .cell.is-path small { color: var(--ink); }
+  .cell.is-now { background: var(--now-wash); color: var(--ink); box-shadow: inset 0 0 0 4px var(--now-line); }
+  .cell.is-miss { box-shadow: inset 0 0 0 3px var(--now-line); color: var(--now); }
+  .cell.is-back { background: var(--base-wash); box-shadow: inset 0 0 0 3px var(--base-line); }
+  .cell.is-found { background: var(--set-wash); box-shadow: inset 0 0 0 3px var(--set-line); }
+  .trail { position: absolute; inset: 0; pointer-events: none; }
+  .trail polyline { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linejoin: miter; opacity: .55; }
+
+  .wordrow { display: flex; align-items: center; gap: var(--s3); margin-top: var(--s4); flex-wrap: wrap; }
+  .wordrow .k { font: 700 11px/1.3 var(--data); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+  .letters { display: inline-flex; }
+  .letters span { width: 30px; height: 32px; display: inline-flex; align-items: center; justify-content: center;
+    border: var(--w-rule) solid var(--hair); margin-right: -2px; font: 700 15px/1.3 var(--data); color: var(--ink-3); background: var(--plate); }
+  .letters span.is-done { color: var(--ink); border-color: var(--set-line); background: var(--set-wash); position: relative; }
+  .letters span.is-need { color: var(--ink); border-color: var(--now-line); background: var(--now-wash); position: relative; z-index: 1; }
+
+  .result { margin-top: var(--s4); font: 400 13px/1.4 var(--data); color: var(--ink-3); }
+  .result b { color: var(--set); font-size: 16px; }
+  .result b.is-false { color: var(--now); }
+
+  @media (max-width: 520px) { .cell { width: 44px; height: 44px; font-size: 18px; } }
+  @media (prefers-reduced-motion: reduce) { .cell { transition-duration: 80ms; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <nav class="rail">
+    <a class="rail__home" href="../">90 Days of DP</a>
+    <span class="rail__where">Week <b>4</b> &middot; Day <b>22</b> &middot; LC 79</span>
+  </nav>
+
+  <header class="masthead">
+    <h1>The board is the visited set</h1>
+    <p class="claim">Write # going in, put the letter back coming out.</p>
+    <p class="lede">LC 79 is the Week 3 template on a grid: the choices are the four neighbours, and choose / un-choose is writing <code class="inline">#</code> into the cell and restoring its letter. A cell holding <code class="inline">#</code> can never match a letter, so the path can't loop back on itself.</p>
+  </header>
+
+  <div class="setup">
+    <label for="casePick">search
+      <select id="casePick">
+        <option value="0" selected>"ABCCED" on example 1</option>
+        <option value="1">"SEE" on example 1</option>
+        <option value="2">"ABCB" on example 1 (needs a B twice)</option>
+        <option value="3">"ABA" on [A B]</option>
+        <option value="4">"ABCESEEEFS", the long snake</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:var(--s4)">
+      <div class="plate">
+        <div class="scroll-x">
+          <div class="stage" id="stage">
+            <div class="board" id="board"></div>
+            <svg class="trail" id="trail" aria-hidden="true"><polyline id="trailLine" points=""/></svg>
+          </div>
+        </div>
+        <div class="wordrow">
+          <span class="k">word</span>
+          <span class="letters" id="letters"></span>
+        </div>
+        <p class="result" id="result"></p>
+        <div class="legend">
+          <span><i style="background:var(--now-line)"></i>running now</span>
+          <span><i style="background:var(--ink)"></i>on the path, holds #</span>
+          <span><i style="background:var(--base-line)"></i>letter given back</span>
+          <span><i style="background:var(--set-line)"></i>the word, found</span>
+        </div>
+      </div>
+
+      <p class="say" id="say">Press <b>Next</b> to start.</p>
+      <div class="transport" id="transport"></div>
+    </div>
+
+    <div class="aside">
+      <div class="panel"><h2 class="panel__head">Call stack</h2><ul class="frames" id="frames"></ul></div>
+      <div class="panel"><h2 class="panel__head">LC 79</h2><div class="panel__body"><div class="code" id="code"></div></div></div>
+    </div>
+  </div>
+
+  <section class="read">
+    <h2>Why # works as a visited mark</h2>
+    <p>Every call starts by comparing its cell with the letter it needs. A cell on the current path holds <code>#</code>, which matches no letter, so a call that steps back onto the path fails at once. Pick <b>"ABA" on [A B]</b>: the walk reaches B, looks for an A, finds only the one it started from, and that one says <code>#</code>.</p>
+    <p>On the way out, a failed branch writes <code>word[idx]</code> back. That is always the right letter: the call only got past its first check because the cell held exactly <code>word[idx]</code>. Pick <b>"ABCB"</b> and watch the cells turn green as each dead end hands its letter back.</p>
+    <p class="pull">Whatever a call marks, it unmarks before returning false.</p>
+
+    <h2>What happens on success</h2>
+    <p>When a neighbour reports <code>true</code>, the call returns at once, before the restore line. So after a successful search the found path still holds <code>#</code> in every cell: step to the end of <b>"ABCCED"</b> and the board shows it. LeetCode only checks the bool, so the solution is accepted, but a caller that reuses the board would find it damaged. After a failed search the board is always back to how it started.</p>
+  </section>
+
+  <footer class="foot">
+    Notes: <a href="https://github.com/sumnoon/90-days-of-dp/blob/main/weeks/week-04-backtracking-ii-and-divide-conquer/notes/lc0079_word_search.md">LC 79</a> &middot;
+    <a href="../subsets/">Choose, explore, un-choose</a> &middot;
+    <a href="../">All visualizations</a>
+  </footer>
+
+</div>
+
+<script src="../assets/stepper.js"></script>
+<script>
+(function () {
+  "use strict";
+  var S = window.Schematic, NS = S.svgNS;
+  var E = function (id) { return document.getElementById(id); };
+
+  var EX = ["ABCE", "SFCS", "ADEE"];
+  var CASES = [
+    { board: EX, word: "ABCCED" },
+    { board: EX, word: "SEE" },
+    { board: EX, word: "ABCB" },
+    { board: ["AB"], word: "ABA" },
+    { board: ["ABCE", "SFES", "ADEE"], word: "ABCESEEEFS" }
+  ];
+
+  var CODE = [
+    "bool backtrack(int i, int j, int n, int m, vector<vector<char>>& board, const string& word, int idx) {",
+    "    if (word[idx] != board[i][j]) {",
+    "        return false;",
+    "    }",
+    "    if (idx == word.length() - 1) {",
+    "        return true;",
+    "    }",
+    "",
+    "    board[i][j] = '#';",
+    "",
+    "    for (int k = 0; k < 4; ++k) {",
+    "        int tx = fx[k] + i;",
+    "        int ty = fy[k] + j;",
+    "        if (valid(tx, ty, n, m)) {",
+    "            if (backtrack(tx, ty, n, m, board, word, idx + 1)) return true;",
+    "        }",
+    "    }",
+    "",
+    "    board[i][j] = word[idx];",
+    "",
+    "    return false;",
+    "}",
+    "",
+    "bool exist(vector<vector<char>>& board, string word) {",
+    "    // n = board.size(), m = board[0].size()",
+    "    for (int i = 0; i < n; ++i)",
+    "        for (int j = 0; j < m; ++j)",
+    "            if (backtrack(i, j, n, m, board, word, 0)) return true;",
+    "    return false;",
+    "}"
+  ];
+  var FX = [0, 0, 1, -1], FY = [1, -1, 0, 0];
+  var DIR = ["right", "left", "down", "up"];
+
+  function cellName(i, j) { return "(" + i + ", " + j + ")"; }
+
+  /* ---------- steps: replay the real code ---------- */
+
+  function buildSteps(c) {
+    var n = c.board.length, m = c.board[0].length, word = c.word, L = word.length;
+    var board = c.board.map(function (r) { return r.split(""); });
+    var steps = [], frames = [], path = [], now = null, miss = null, back = null, found = null, result = "exist = <b>?</b>";
+    var explained = { mark: false, miss: false, back: false };
+
+    function snap(line, note, idx) {
+      steps.push({ line: line, note: note, idx: idx,
+        board: board.map(function (r) { return r.slice(); }), path: path.slice(),
+        now: now, miss: miss, back: back, found: found, result: result,
+        frames: frames.map(function (f) { return { main: f.main, aside: f.aside }; }) });
+      miss = null; back = null;
+    }
+
+    function bt(i, j, idx) {
+      frames.push({ main: "backtrack" + cellName(i, j) + ", idx " + idx, aside: "need '" + word[idx] + "'" });
+      now = [i, j];
+      var here = board[i][j];
+      if (word[idx] !== here) {
+        miss = [i, j];
+        snap(3, "Cell " + cellName(i, j) + " holds <b>" + here + "</b>, but the word needs <b>" + word[idx] + "</b> here. Return false." +
+          (here === "#" && !explained.miss ? " A <code>#</code> is a cell already on the path: it can never match, so the path can't reuse it." : ""), idx);
+        if (here === "#") explained.miss = true;
+        frames.pop();
+        return false;
+      }
+      if (idx === L - 1) {
+        path.push([i, j]);
+        snap(6, "Cell " + cellName(i, j) + " is <b>" + here + "</b>, the last letter. The whole word is matched: return <b>true</b>.", idx);
+        return true;
+      }
+      board[i][j] = "#"; path.push([i, j]);
+      snap(9, "<b>" + here + "</b> matches. Mark the cell <code>#</code>" +
+        (explained.mark ? "." : ": it's on the path now, and no deeper call may use it again.") +
+        " Then try its neighbours for '" + word[idx + 1] + "'.", idx);
+      explained.mark = true;
+      for (var k = 0; k < 4; k++) {
+        var tx = FX[k] + i, ty = FY[k] + j;
+        if (tx < 0 || tx >= n || ty < 0 || ty >= m) continue;
+        frames[frames.length - 1].aside = "trying " + DIR[k];
+        now = [i, j];
+        snap(15, "From " + cellName(i, j) + ", try " + DIR[k] + ": " + cellName(tx, ty) + ".", idx);
+        if (bt(tx, ty, idx + 1)) {
+          now = [i, j];
+          snap(15, "A neighbour reported <b>true</b>, so " + cellName(i, j) + " returns true at once. The restore line is skipped: this cell keeps its <code>#</code>.", idx);
+          frames.pop();
+          return true;
+        }
+        now = [i, j];
+      }
+      board[i][j] = word[idx]; path.pop(); back = [i, j];
+      snap(19, "No neighbour can continue the word from " + cellName(i, j) + ". Put <b>" + word[idx] + "</b> back" +
+        (explained.back ? "" : " (it's <code>word[idx]</code>, the letter this call matched)") + " and return false.", idx);
+      explained.back = true;
+      frames.pop();
+      return false;
+    }
+
+    snap(null, "Press <b>Next</b> to look for \"" + word + "\". <code>exist</code> tries every cell as a start, row by row.", 0);
+    var ans = false;
+    outer:
+    for (var i = 0; i < n; i++) {
+      for (var j = 0; j < m; j++) {
+        frames = [];
+        if (bt(i, j, 0)) { ans = true; break outer; }
+      }
+    }
+    now = null; frames = [];
+    if (ans) {
+      found = path.slice();
+      result = "exist = <b>true</b>";
+      var left = 0;
+      board.forEach(function (r) { r.forEach(function (ch) { if (ch === "#") left++; }); });
+      snap(28, "Found: <b>true</b>. Look at the board: the " + left + " cells before the last letter still hold <code>#</code>, because every call on the path returned before its restore line.", L);
+    } else {
+      result = "exist = <b class=\"is-false\">false</b>";
+      snap(29, "Every start failed: <b>false</b>. Every cell got its letter back, so the board is exactly as it started.", 0);
+    }
+    return steps;
+  }
+
+  /* ---------- drawing ---------- */
+
+  var c = CASES[0], cells = [], stepper;
+
+  function draw() {
+    var b = E("board"), n = c.board.length, m = c.board[0].length;
+    b.style.gridTemplateColumns = "repeat(" + m + ", auto)";
+    b.textContent = ""; cells = [];
+    for (var i = 0; i < n; i++) {
+      cells.push([]);
+      for (var j = 0; j < m; j++) {
+        var d = S.el("div", "cell");
+        d.appendChild(S.el("small", null, ""));
+        d.appendChild(document.createTextNode(c.board[i][j]));
+        b.appendChild(d);
+        cells[i].push(d);
+      }
+    }
+    var lt = E("letters");
+    lt.textContent = "";
+    c.word.split("").forEach(function (ch) { lt.appendChild(S.el("span", null, ch)); });
+  }
+
+  function center(i, j) {
+    var el = cells[i][j], st = E("stage").getBoundingClientRect(), r = el.getBoundingClientRect();
+    return (r.left - st.left + r.width / 2) + "," + (r.top - st.top + r.height / 2);
+  }
+
+  function has(list, i, j) { return list && list.some(function (p) { return p[0] === i && p[1] === j; }); }
+
+  function render(st) {
+    var n = c.board.length, m = c.board[0].length;
+    for (var i = 0; i < n; i++) {
+      for (var j = 0; j < m; j++) {
+        var d = cells[i][j], ch = st.board[i][j];
+        d.lastChild.nodeValue = ch;
+        var pos = -1;
+        st.path.forEach(function (p, k) { if (p[0] === i && p[1] === j) pos = k; });
+        d.firstChild.textContent = pos >= 0 ? String(pos + 1) : "";
+        var isNow = st.now && st.now[0] === i && st.now[1] === j;
+        d.classList.toggle("is-now", !!isNow && !(st.miss && st.miss[0] === i && st.miss[1] === j));
+        d.classList.toggle("is-miss", !!(st.miss && st.miss[0] === i && st.miss[1] === j));
+        d.classList.toggle("is-path", ch === "#" && !isNow && !has(st.found, i, j));
+        d.classList.toggle("is-back", !!(st.back && st.back[0] === i && st.back[1] === j));
+        d.classList.toggle("is-found", has(st.found, i, j));
+        d.setAttribute("aria-label", "row " + i + " column " + j + ": " + ch);
+      }
+    }
+    E("trailLine").setAttribute("points", st.path.map(function (p) { return center(p[0], p[1]); }).join(" "));
+    var stage = E("stage").getBoundingClientRect();
+    E("trail").setAttribute("viewBox", "0 0 " + stage.width + " " + stage.height);
+    E("trail").setAttribute("width", stage.width);
+    E("trail").setAttribute("height", stage.height);
+
+    var spans = E("letters").children;
+    for (var k = 0; k < spans.length; k++) {
+      spans[k].classList.toggle("is-done", k < st.idx || (st.found && true));
+      spans[k].classList.toggle("is-need", !st.found && k === st.idx && st.now != null);
+    }
+    E("result").innerHTML = st.result;
+  }
+
+  draw();
+  stepper = S.stepper({
+    id: "grid",
+    steps: buildSteps(c),
+    codeLines: CODE,
+    transport: E("transport"),
+    say: E("say"),
+    code: E("code"),
+    frames: E("frames"),
+    frameLabel: function (f) { return { main: f.main, aside: f.aside }; },
+    playMs: 700,
+    render: render
+  });
+
+  E("casePick").addEventListener("change", function () {
+    c = CASES[Number(this.value)];
+    stepper.stop();
+    draw();
+    stepper.rebuild(buildSteps(c), false);
+  });
+  window.addEventListener("resize", function () { stepper.go(stepper.at()); });
+})();
+</script>
+</body>
+</html>
