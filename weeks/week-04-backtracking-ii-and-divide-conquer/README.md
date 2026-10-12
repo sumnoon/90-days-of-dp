@@ -19,7 +19,7 @@
 
 ⭐ = core, don't skip
 
-- [ ] ⭐ LC 79 Word Search
+- [x] ⭐ LC 79 Word Search — [notes](notes/lc0079_word_search.md)
 - [ ] ⭐ LC 51 N-Queens
 - [ ] LC 37 Sudoku Solver
 - [ ] ⭐ LC 131 Palindrome Partitioning
@@ -34,4 +34,6 @@
 
 ## Notes
 
-<!-- For each problem: state, transition, base case, key insight. -->
+One note per problem in [`notes/`](notes/): what the call returns or records, what it
+passes down, where the choice is undone, complexity, and the idea that
+unlocked it. Start at the [notes index](notes/README.md).
