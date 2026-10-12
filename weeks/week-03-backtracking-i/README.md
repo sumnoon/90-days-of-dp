@@ -31,7 +31,8 @@
 
 ## Checkpoint
 
-- [ ] Write the template from memory and solve Subsets and Permutations in under 10 minutes each.
+- [x] Write the template from memory and solve Subsets and Permutations in under 10 minutes each.
+  Passed Sat Oct 10: [template](redos/backtracking_template.md), [LC 78](redos/lc0078_subsets_checkpoint.cpp) in 2:38, [LC 46](redos/lc0046_permutations_checkpoint.cpp) in 8:31.
 
 ## Notes
 
