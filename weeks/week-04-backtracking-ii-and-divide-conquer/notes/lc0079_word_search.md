@@ -81,6 +81,14 @@ a two-cell board (needs a cell twice: false), a word around a 2 × 2 square,
 LeetCode's long-snake case `ABCESEEEFS` (true on its own board, false on
 example 1's), and the 6 × 6 worst case above.
 
+## See it
+
+- **The board is the visited set:** https://sumnoon.github.io/90-days-of-dp/grid/ —
+  cells turn `#` as they join the path and get their letter back when a
+  branch fails. Try *"ABA" on [A B]* to see a `#` refuse a second visit, and
+  step to the end of *"ABCCED"* to see the `#`s left behind after a success.
+  ([source](../../../docs/grid/index.html))
+
 ## Key insight
 
 The board is the visited set: write `'#'` going in, put the letter back coming out.
