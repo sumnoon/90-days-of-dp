@@ -87,6 +87,13 @@ and too long inputs, `"1"` and `""`, plus 300 random digit strings of length
 1–20: every result matches a brute force that tries all three-dot
 placements.
 
+## See it
+
+- **Where do the dots go?** https://sumnoon.github.io/90-days-of-dp/ip/ —
+  the digits with the dots placed so far, and the search as an outline: one
+  row per call or rejected part, with the reason. Try *"010010"* to see the
+  leading-zero rule cut most of the tree. ([source](../../../docs/ip/index.html))
+
 ## Key insight
 
 Each level chooses how many digits the next part takes; after three dots the rest must be the last part.

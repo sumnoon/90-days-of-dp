@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="sumnoon">
+<meta name="description" content="Step through LC 93 Restore IP Addresses: each level chooses how many digits the next part takes, invalid parts are rejected, and after three dots the rest must be the last part.">
+<title>Where do the dots go? — 90 Days of DP</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Spline+Sans+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="../assets/system.css">
+<style>
+  @media (min-width: 801px) { .work { grid-template-columns: minmax(0, 1fr) 380px; } }
+
+  /* the digits, with the dots placed so far */
+  .digits { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0; font: 700 24px/1.3 var(--data); }
+  .digits .d { width: 26px; text-align: center; color: var(--ink-3); border-bottom: 3px solid transparent;
+    transition: color var(--t-state) var(--ease-out), border-color var(--t-state) var(--ease-out); }
+  .digits .d.is-placed { color: var(--ink); }
+  .digits .d.is-try { color: var(--now); border-bottom-color: var(--now-line); }
+  .digits .d.is-ok { color: var(--set); border-bottom-color: var(--set-line); }
+  .digits .dot { width: 12px; text-align: center; color: var(--ink); }
+
+  /* the search, as an outline */
+  .outline { list-style: none; margin: var(--s4) 0 0; padding: 0; font: 400 13px/1.3 var(--data);
+    border-top: 1px solid var(--hair); max-height: 360px; overflow-y: auto; }
+  .outline li { display: flex; gap: var(--s3); align-items: baseline; padding: 5px var(--s2); border-bottom: 1px solid var(--hair); }
+  .outline .seg { font-weight: 700; color: var(--ink); min-width: 4ch; }
+  .outline .why { color: var(--ink-3); }
+  .outline li.is-call .seg::before { content: "+ "; color: var(--ink-3); }
+  .outline li.is-bad .seg { color: var(--now); text-decoration: line-through; }
+  .outline li.is-bad .why { color: var(--now); }
+  .outline li.is-rec { background: var(--base-wash); }
+  .outline li.is-rec .seg { color: var(--base); }
+  .outline li.is-now { outline: 3px solid var(--now-line); outline-offset: -3px; background: var(--now-wash); }
+  .outline li.is-open .seg { text-decoration: underline; text-underline-offset: 3px; }
+
+  .strip { display: flex; align-items: center; flex-wrap: wrap; gap: var(--s2) var(--s3); margin-top: var(--s4); }
+  .strip__k { font: 700 11px/1.3 var(--data); color: var(--ink-3); letter-spacing: .12em; text-transform: uppercase; }
+  .chip { font: 700 12px/1.3 var(--data); padding: 4px 7px; border: var(--w-rule) solid var(--base-line); background: var(--base-wash); color: var(--ink); }
+  .chip.is-new { border-color: var(--now-line); background: var(--now-wash); }
+  .none { font: 400 12.5px/1.3 var(--data); color: var(--ink-3); }
+
+  @media (prefers-reduced-motion: reduce) { .digits .d { transition-duration: 80ms; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <nav class="rail">
+    <a class="rail__home" href="../">90 Days of DP</a>
+    <span class="rail__where">Week <b>4</b> &middot; Day <b>23</b> &middot; LC 93</span>
+  </nav>
+
+  <header class="masthead">
+    <h1>Where do the dots go?</h1>
+    <p class="claim">Each level chooses how many digits the next part takes. After three dots, the rest is the last part.</p>
+    <p class="lede">The Week 3 template with a new kind of choice: 1, 2 or 3 digits. A part is only valid as a number from 0 to 255 with no leading zero, so most choices are rejected on the spot. Watch the outline grow: each row is one call, or one part that was turned down and why.</p>
+  </header>
+
+  <div class="setup">
+    <label for="casePick">s
+      <select id="casePick">
+        <option value="25525511135" selected>"25525511135"</option>
+        <option value="0000">"0000"</option>
+        <option value="101023">"101023"</option>
+        <option value="010010">"010010"</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:var(--s4)">
+      <div class="plate">
+        <div class="scroll-x"><div class="digits" id="digits" aria-label="The digits, with dots placed so far"></div></div>
+        <ol class="outline" id="outline" aria-label="The calls made so far"></ol>
+        <div class="strip"><span class="strip__k">ans</span><span id="ans"></span></div>
+        <div class="legend">
+          <span><i style="background:var(--now-line)"></i>being tried / rejected</span>
+          <span><i style="background:var(--set-line)"></i>part accepted</span>
+          <span><i style="background:var(--base-line)"></i>address recorded</span>
+        </div>
+      </div>
+
+      <p class="say" id="say">Press <b>Next</b> to start.</p>
+      <div class="transport" id="transport"></div>
+    </div>
+
+    <div class="aside">
+      <div class="panel"><h2 class="panel__head">Call stack</h2><ul class="frames" id="frames"></ul></div>
+      <div class="panel"><h2 class="panel__head">LC 93</h2><div class="panel__body"><div class="code" id="code"></div></div></div>
+    </div>
+  </div>
+
+  <section class="read">
+    <h2>Three ways a part is rejected</h2>
+    <p><b>Leading zero:</b> <code>"01"</code> or <code>"00"</code> are not numbers an address can contain, though a lone <code>"0"</code> is. <b>Over 255:</b> <code>"256"</code>. <b>Too long:</b> only the last part can be, since the loop never takes more than 3 digits; after three dots the whole tail is checked, and a tail of 4+ digits fails. Pick <b>"010010"</b>: the leading 0 forces the first part to be just <code>0</code>, and most later choices die on the same rule.</p>
+    <p class="pull">A choice is only valid if the part it makes is a legal number.</p>
+
+    <h2>No un-choose step</h2>
+    <p>The code passes <code>cur + segment + "."</code> to the child: a new string, so the parent's <code>cur</code> never changes and there is nothing to pop. That's the same trade-off as LC 17. The loop also keeps at least one digit for later (<code>idx + i &lt; s.length()</code>), which is why the outline never shows a call left with nothing to split.</p>
+  </section>
+
+  <footer class="foot">
+    Notes: <a href="https://github.com/sumnoon/90-days-of-dp/blob/main/weeks/week-04-backtracking-ii-and-divide-conquer/notes/lc0093_restore_ip_addresses.md">LC 93</a> &middot;
+    <a href="../subsets/">Choose, explore, un-choose</a> &middot;
+    <a href="../">All visualizations</a>
+  </footer>
+
+</div>
+
+<script src="../assets/stepper.js"></script>
+<script>
+(function () {
+  "use strict";
+  var S = window.Schematic;
+  var E = function (id) { return document.getElementById(id); };
+
+  var CODE = [
+    "bool valid(string cur) {",
+    "    if (cur.empty() || cur.length() > 3) return false;",
+    "    if (cur.length() > 1 && cur[0] == '0') return false;",
+    "    int val = stoi(cur);",
+    "    return val >= 0 && val <= 255;",
+    "}",
+    "void backtrack(int idx, int dot_cnts, string s, string cur) {",
+    "    if (dot_cnts == 3) {",
+    "        string segment = s.substr(idx);",
+    "        if (valid(segment)) {",
+    "            ans.push_back(cur + segment);",
+    "        }",
+    "        return;",
+    "    }",
+    "",
+    "    for (int i = 1; i <= 3 && idx + i < s.length(); ++i) {",
+    "        string segment = s.substr(idx, i);",
+    "        if (valid(segment)) {",
+    "            backtrack(idx + i, dot_cnts + 1, s, cur + segment + \".\");",
+    "        }",
+    "    }",
+    "}"
+  ];
+
+  /* why valid() says no, with the line that says it */
+  function check(seg) {
+    if (seg.length === 0 || seg.length > 3) return { ok: false, why: seg.length > 3 ? seg.length + " digits" : "empty", line: 2 };
+    if (seg.length > 1 && seg[0] === "0") return { ok: false, why: "leading 0", line: 3 };
+    if (Number(seg) > 255) return { ok: false, why: "over 255", line: 5 };
+    return { ok: true, line: 5 };
+  }
+
+  function buildSteps(s) {
+    var steps = [], rows = [], frames = [], ans = [], cuts = [], tryRange = null, tryOk = false, now = -1, newAns = false;
+    function snap(line, note) {
+      steps.push({ line: line, note: note, rows: rows.map(function (r) { return Object.assign({}, r); }),
+        cuts: cuts.slice(), tryRange: tryRange, tryOk: tryOk, now: now, ans: ans.slice(), newAns: newAns,
+        frames: frames.map(function (f) { return { main: f.main, aside: f.aside }; }) });
+      newAns = false;
+    }
+
+    function bt(idx, dots, cur, depth) {
+      frames.push({ main: "backtrack(" + idx + ", " + dots + ")", aside: cur ? "\"" + cur + "\"" : "\"\"" });
+      if (dots === 3) {
+        var tail = s.slice(idx), c = check(tail);
+        tryRange = [idx, s.length]; tryOk = c.ok;
+        rows.push({ depth: depth, seg: tail, why: c.ok ? "last part: recorded" : "last part: " + c.why, kind: c.ok ? "rec" : "bad" });
+        now = rows.length - 1;
+        if (c.ok) { ans.push(cur + tail); newAns = true; }
+        snap(c.ok ? 11 : c.line, c.ok
+          ? "Three dots placed, so <b>" + tail + "</b> must be the last part. It's valid: record <b>" + cur + tail + "</b>."
+          : "Three dots placed, so <b>" + tail + "</b> must be the last part, but it's not valid (" + c.why + "). Nothing recorded.");
+        frames.pop();
+        return;
+      }
+      for (var i = 1; i <= 3 && idx + i < s.length; i++) {
+        var seg = s.slice(idx, idx + i), c2 = check(seg);
+        tryRange = [idx, idx + i]; tryOk = c2.ok;
+        frames[frames.length - 1].aside = "try " + i + " digit" + (i > 1 ? "s" : "");
+        if (!c2.ok) {
+          rows.push({ depth: depth, seg: seg, why: c2.why, kind: "bad" });
+          now = rows.length - 1;
+          snap(c2.line, "Try <b>" + seg + "</b> as part " + (dots + 1) + ": rejected, " + c2.why + ".");
+          continue;
+        }
+        rows.push({ depth: depth, seg: seg, why: "part " + (dots + 1) + (dots + 1 < 4 ? ", then a dot" : ""), kind: "call", open: true });
+        var me = rows.length - 1;
+        now = me;
+        snap(19, "Try <b>" + seg + "</b> as part " + (dots + 1) + ": valid. Place dot " + (dots + 1) + " after it and recurse on the rest, <b>" + s.slice(idx + i) + "</b>.");
+        cuts.push(idx + i);
+        bt(idx + i, dots + 1, cur + seg + ".", depth + 1);
+        cuts.pop();
+        rows[me].open = false;
+      }
+      frames.pop();
+    }
+
+    snap(null, "Press <b>Next</b> to split <b>\"" + s + "\"</b> into four parts.");
+    if (s.length < 4 || s.length > 12) {
+      snap(null, "\"" + s + "\" has " + s.length + " digits: it can't make four parts of 1 to 3 digits.");
+    } else {
+      bt(0, 0, "", 0);
+    }
+    now = -1; tryRange = null; frames = []; cuts = [];
+    var bad = rows.filter(function (r) { return r.kind === "bad"; }).length;
+    snap(null, "Done: <b>" + ans.length + "</b> address" + (ans.length === 1 ? "" : "es") + ". " + bad + " parts were rejected along the way.");
+    return steps;
+  }
+
+  var s = "25525511135", stepper;
+
+  function render(st) {
+    var dg = E("digits");
+    dg.textContent = "";
+    for (var k = 0; k < s.length; k++) {
+      if (st.cuts.indexOf(k) >= 0) dg.appendChild(S.el("span", "dot", "."));
+      var cls = "d";
+      var lastCut = st.cuts.length ? st.cuts[st.cuts.length - 1] : 0;
+      if (k < lastCut) cls += " is-placed";
+      if (st.tryRange && k >= st.tryRange[0] && k < st.tryRange[1]) cls += st.tryOk ? " is-ok" : " is-try";
+      dg.appendChild(S.el("span", cls, s[k]));
+    }
+
+    var ol = E("outline");
+    ol.textContent = "";
+    st.rows.forEach(function (r, i) {
+      var li = S.el("li", "is-" + r.kind + (r.open ? " is-open" : "") + (i === st.now ? " is-now" : ""));
+      li.style.paddingLeft = (8 + r.depth * 22) + "px";
+      li.appendChild(S.el("span", "seg", r.seg));
+      li.appendChild(S.el("span", "why", r.why));
+      ol.appendChild(li);
+    });
+    var cur = ol.children[st.now];
+    if (cur) {
+      var top = cur.offsetTop - ol.offsetTop, bottom = top + cur.offsetHeight;
+      if (top < ol.scrollTop || bottom > ol.scrollTop + ol.clientHeight) ol.scrollTop = Math.max(0, top - ol.clientHeight / 2);
+    }
+
+    var a = E("ans");
+    a.textContent = "";
+    st.ans.forEach(function (x, i) { a.appendChild(S.el("span", "chip" + (st.newAns && i === st.ans.length - 1 ? " is-new" : ""), x)); a.appendChild(document.createTextNode(" ")); });
+    if (!st.ans.length) a.appendChild(S.el("span", "none", "none yet"));
+  }
+
+  stepper = S.stepper({
+    id: "ip",
+    steps: buildSteps(s),
+    codeLines: CODE,
+    transport: E("transport"),
+    say: E("say"),
+    code: E("code"),
+    frames: E("frames"),
+    frameLabel: function (f) { return { main: f.main, aside: f.aside }; },
+    playMs: 650,
+    render: render
+  });
+
+  E("casePick").addEventListener("change", function () {
+    s = this.value;
+    stepper.stop();
+    stepper.rebuild(buildSteps(s), false);
+  });
+})();
+</script>
+</body>
+</html>
