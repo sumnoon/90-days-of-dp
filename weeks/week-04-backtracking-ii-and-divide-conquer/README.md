@@ -23,7 +23,7 @@
 - [ ] ⭐ LC 51 N-Queens
 - [ ] LC 37 Sudoku Solver
 - [ ] ⭐ LC 131 Palindrome Partitioning
-- [ ] LC 93 Restore IP Addresses
+- [x] LC 93 Restore IP Addresses — [notes](notes/lc0093_restore_ip_addresses.md)
 - [ ] ⭐ LC 912 Sort an Array (write merge sort)
 - [ ] ⭐ LC 241 Different Ways to Add Parentheses
 - [ ] LC 95 Unique Binary Search Trees II
