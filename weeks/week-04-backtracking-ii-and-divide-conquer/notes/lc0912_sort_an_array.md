@@ -92,6 +92,14 @@ LeetCode's two examples, one and two numbers, negatives and the value limits
 numbers drawn from a small range (lots of duplicates), and 50,000 random
 numbers: every result matches `std::sort`.
 
+## See it
+
+- **Split, trust, merge:** https://sumnoon.github.io/90-days-of-dp/mergesort/ —
+  one row per depth of the recursion, one box per call. Splitting does
+  nothing; merging fills each parent box from the two fronts below it, and a
+  counter beside each row adds up the merging done on that level: at most n,
+  on about log n levels. ([source](../../../docs/mergesort/index.html))
+
 ## Key insight
 
 Trust each half to come back sorted; the only real work is merging two sorted lists, LC 21 again.

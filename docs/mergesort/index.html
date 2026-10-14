@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="sumnoon">
+<meta name="description" content="Step through merge sort (LC 912) level by level: split in half, trust both halves to come back sorted, merge. Each level merges n elements, and there are log n levels.">
+<title>Split, trust, merge — 90 Days of DP</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Spline+Sans+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="../assets/system.css">
+<style>
+  @media (min-width: 801px) { .work { grid-template-columns: minmax(0, 1fr) 380px; } }
+
+  .levels { display: grid; gap: 14px 0; align-items: center; }
+  .seg { display: flex; justify-self: start; margin: 0 4px; border: var(--w-rule) solid var(--idle); border-style: dashed;
+    transition: border-color var(--t-state) var(--ease-out); }
+  .seg .v { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
+    font: 700 13px/1.3 var(--data); color: var(--ink-3); border-right: 1px solid var(--hair);
+    transition: background-color var(--t-state) var(--ease-out), color var(--t-state) var(--ease-out); }
+  .seg .v:last-child { border-right: 0; }
+  .seg.is-open { border-style: solid; border-color: var(--ink); }
+  .seg.is-open .v { color: var(--ink-2); }
+  .seg.is-merging { border-style: solid; border-color: var(--now-line); }
+  .seg.is-merging .v { color: var(--ink-3); background: transparent; }
+  .seg.is-merging .v.is-filled { color: var(--ink); background: var(--set-wash); }
+  .seg.is-merging .v.is-new { background: var(--now-wash); color: var(--ink); }
+  .seg.is-done { border-style: solid; border-color: var(--set-line); }
+  .seg.is-done .v { color: var(--ink); background: var(--set-wash); }
+  .seg.is-feed { border-style: solid; border-color: var(--ink); }
+  .seg.is-feed .v { color: var(--ink); background: var(--set-wash); }
+  .seg.is-feed .v.is-used { color: var(--ink-3); background: transparent; text-decoration: line-through; }
+  .seg.is-feed .v.is-front { background: var(--now-wash); box-shadow: inset 0 0 0 2px var(--now-line); }
+  .lvl { font: 400 12px/1.3 var(--data); color: var(--ink-3); white-space: nowrap; padding-left: var(--s3); }
+  .lvl b { color: var(--ink); }
+
+  .result { margin-top: var(--s4); font: 400 13px/1.4 var(--data); color: var(--ink-3); }
+  .result b { color: var(--set); }
+
+  @media (max-width: 520px) { .seg .v { width: 26px; height: 30px; font-size: 11.5px; } .seg { margin: 0 2px; } }
+  @media (prefers-reduced-motion: reduce) { .seg, .seg .v { transition-duration: 80ms; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <nav class="rail">
+    <a class="rail__home" href="../">90 Days of DP</a>
+    <span class="rail__where">Week <b>4</b> &middot; Day <b>24</b> &middot; LC 912</span>
+  </nav>
+
+  <header class="masthead">
+    <h1>Split, trust, merge</h1>
+    <p class="claim">Each level of the recursion merges at most n elements, and there are about log n levels.</p>
+    <p class="lede">Merge sort is divide &amp; conquer: split the range in half, trust both calls to hand their half back sorted, then merge two sorted lists, which is LC 21 again. Each row below is one depth of the recursion; each box is one call to <code class="inline">mergeSort</code> over its range.</p>
+  </header>
+
+  <div class="setup">
+    <label for="casePick">nums
+      <select id="casePick">
+        <option value="0">[5, 2, 3, 1]</option>
+        <option value="1">[5, 1, 1, 2, 0, 0]</option>
+        <option value="2" selected>[38, 27, 43, 3, 9, 82, 10]</option>
+        <option value="3">[8, 7, 6, 5, 4, 3, 2, 1]</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:var(--s4)">
+      <div class="plate">
+        <div class="scroll-x"><div class="levels" id="levels"></div></div>
+        <p class="result" id="result"></p>
+        <div class="legend">
+          <span><i style="background:var(--ink)"></i>call waiting on its halves</span>
+          <span><i style="background:var(--now-line)"></i>merging / fronts compared</span>
+          <span><i style="background:var(--set-line)"></i>sorted and returned</span>
+        </div>
+      </div>
+
+      <p class="say" id="say">Press <b>Next</b> to start.</p>
+      <div class="transport" id="transport"></div>
+    </div>
+
+    <div class="aside">
+      <div class="panel"><h2 class="panel__head">Call stack</h2><ul class="frames" id="frames"></ul></div>
+      <div class="panel"><h2 class="panel__head">LC 912</h2><div class="panel__body"><div class="code" id="code"></div></div></div>
+    </div>
+  </div>
+
+  <section class="read">
+    <h2>Where the work happens</h2>
+    <p>Splitting costs nothing: it's one line computing <code>mid</code>. All the work is in <code>merge</code>, which touches every element of its two halves once. So add up the merging on one row: the boxes on a row never overlap, so together they merge <b>at most n</b> elements. Step to the end and read the counters beside the rows. With 8 numbers every merging row reports exactly 8; with 6 or 7 the deepest merging row reports a little less, because some of its boxes are single elements that don't merge at all.</p>
+    <p>Each level halves the boxes, so after about log₂ n levels they're single elements and the splitting stops. At most n work on each of about log n levels is <b>O(n log n)</b>, the cost the recurrence T(n) = 2T(n/2) + n describes. Try the 8-element input: 3 levels of merging, 8 elements each, 24 in all.</p>
+    <p class="pull">Splitting is free; merging costs at most n per level; there are about log n levels.</p>
+
+    <h2>Why it's stable</h2>
+    <p>On a tie, <code>a[i] &lt;= b[j]</code> takes from the <b>left</b> half first, so equal values keep their original order. Pick <b>[5, 1, 1, 2, 0, 0]</b> and watch the two 0s and the two 1s.</p>
+  </section>
+
+  <footer class="foot">
+    Notes: <a href="https://github.com/sumnoon/90-days-of-dp/blob/main/weeks/week-04-backtracking-ii-and-divide-conquer/notes/lc0912_sort_an_array.md">LC 912</a> &middot;
+    <a href="../lc21/">Which head goes first (LC 21)</a> &middot;
+    <a href="../">All visualizations</a>
+  </footer>
+
+</div>
+
+<script src="../assets/stepper.js"></script>
+<script>
+(function () {
+  "use strict";
+  var S = window.Schematic;
+  var E = function (id) { return document.getElementById(id); };
+
+  var CASES = [[5, 2, 3, 1], [5, 1, 1, 2, 0, 0], [38, 27, 43, 3, 9, 82, 10], [8, 7, 6, 5, 4, 3, 2, 1]];
+
+  var CODE = [
+    "vector<int> merge(vector<int>& a, vector<int>& b) {",
+    "    if (a.empty()) {",
+    "        return b;",
+    "    }",
+    "    if (b.empty()) {",
+    "        return a;",
+    "    }",
+    "    int i = 0, j = 0;",
+    "    vector<int> ans;",
+    "",
+    "    while (i < a.size() && j < b.size()) {",
+    "        if (a[i] <= b[j]) {",
+    "            ans.push_back(a[i]);",
+    "            ++i;",
+    "        } else {",
+    "            ans.push_back(b[j]);",
+    "            ++j;",
+    "        }",
+    "    }",
+    "",
+    "    while (i < a.size()) {",
+    "        ans.push_back(a[i]);",
+    "        i++;",
+    "    }",
+    "",
+    "    while (j < b.size()) {",
+    "        ans.push_back(b[j]);",
+    "        j++;",
+    "    }",
+    "",
+    "    return ans;",
+    "}",
+    "",
+    "vector<int> mergeSort(vector<int>& nums, int start, int end) {",
+    "    if (start == end) {",
+    "        return {nums[start]};",
+    "    }",
+    "    int mid = start + (end - start) / 2;",
+    "    vector<int> left = mergeSort(nums, start, mid);",
+    "    vector<int> right = mergeSort(nums, mid + 1, end);",
+    "",
+    "    return merge(left, right);",
+    "}"
+  ];
+
+  /* every call the code makes, as a box: range, depth, children */
+  function buildTree(n) {
+    var nodes = [];
+    (function grow(s, e, d) {
+      var nd = { id: nodes.length, s: s, e: e, d: d, kids: [] };
+      nodes.push(nd);
+      if (s === e) return nd;
+      var mid = s + Math.floor((e - s) / 2);
+      nd.kids.push(grow(s, mid, d + 1));
+      nd.kids.push(grow(mid + 1, e, d + 1));
+      return nd;
+    })(0, n - 1, 0);
+    return nodes;
+  }
+
+  function buildSteps(nums, nodes) {
+    var steps = [], frames = [], state = {}, vals = {}, feed = {}, work = {}, merging = null;
+    nodes.forEach(function (nd) { state[nd.id] = "idle"; vals[nd.id] = nums.slice(nd.s, nd.e + 1); });
+    function fmt(a) { return "[" + a.join(", ") + "]"; }
+    function snap(line, note) {
+      steps.push({ line: line, note: note, state: Object.assign({}, state),
+        vals: JSON.parse(JSON.stringify(vals)), feed: JSON.parse(JSON.stringify(feed)),
+        merging: merging ? JSON.parse(JSON.stringify(merging)) : null, work: Object.assign({}, work),
+        frames: frames.map(function (f) { return { main: f.main, aside: f.aside }; }) });
+    }
+
+    function ms(nd) {
+      frames.push({ main: "mergeSort(" + nd.s + ", " + nd.e + ")", aside: nd.e - nd.s + 1 + " element" + (nd.e > nd.s ? "s" : "") });
+      state[nd.id] = "open";
+      if (nd.s === nd.e) {
+        state[nd.id] = "done";
+        snap(36, "<b>mergeSort(" + nd.s + ", " + nd.e + ")</b>: one element, <b>" + nums[nd.s] + "</b>, is already sorted. Return it.");
+        frames.pop();
+        return vals[nd.id];
+      }
+      var mid = nd.s + Math.floor((nd.e - nd.s) / 2);
+      snap(38, "<b>mergeSort(" + nd.s + ", " + nd.e + ")</b> splits at mid = " + mid + ": left half " + nd.s + "&ndash;" + mid + ", right half " + (mid + 1) + "&ndash;" + nd.e + ". No work yet, just the split.");
+      var a = ms(nd.kids[0]);
+      snap(40, "Back in <b>mergeSort(" + nd.s + ", " + nd.e + ")</b>: the left half came back sorted, " + fmt(a) + ". Now the right half.");
+      var b = ms(nd.kids[1]);
+      /* merge, one push at a time */
+      frames.push({ main: "merge(" + fmt(a) + ", " + fmt(b) + ")", aside: "" });
+      state[nd.id] = "merging"; state[nd.kids[0].id] = "feed"; state[nd.kids[1].id] = "feed";
+      var i = 0, j = 0, ans = [];
+      merging = { id: nd.id, ans: ans.slice(), fresh: -1 };
+      feed[nd.kids[0].id] = { used: 0 }; feed[nd.kids[1].id] = { used: 0 };
+      function push(v, line, note) {
+        ans.push(v);
+        merging = { id: nd.id, ans: ans.slice(), fresh: ans.length - 1 };
+        feed[nd.kids[0].id] = { used: i }; feed[nd.kids[1].id] = { used: j };
+        frames[frames.length - 1].aside = "i = " + i + ", j = " + j;
+        snap(line, note);
+      }
+      while (i < a.length && j < b.length) {
+        if (a[i] <= b[j]) {
+          var x = a[i]; i++;
+          push(x, 13, "Fronts " + x + " and " + b[j] + ": " + (x === b[j] ? x + " = " + b[j] + ", and on a tie the <b>left</b> one goes first" : x + " is smaller") + ". Take <b>" + x + "</b> from the left.");
+        } else {
+          var y = b[j]; j++;
+          push(y, 16, "Fronts " + a[i] + " and " + y + ": " + y + " is smaller. Take <b>" + y + "</b> from the right.");
+        }
+      }
+      while (i < a.length) { var p = a[i]; i++; push(p, 22, "The right half is used up: copy what's left of the left, <b>" + p + "</b>."); }
+      while (j < b.length) { var q = b[j]; j++; push(q, 27, "The left half is used up: copy what's left of the right, <b>" + q + "</b>."); }
+      frames.pop();
+      vals[nd.id] = ans.slice();
+      state[nd.id] = "done"; state[nd.kids[0].id] = "spent"; state[nd.kids[1].id] = "spent";
+      delete feed[nd.kids[0].id]; delete feed[nd.kids[1].id];
+      merging = null;
+      work[nd.d] = (work[nd.d] || 0) + ans.length;
+      snap(42, "Merged: <b>" + fmt(ans) + "</b>, " + ans.length + " elements of work on level " + nd.d + ". Return it.");
+      frames.pop();
+      return ans;
+    }
+
+    snap(null, "Press <b>Next</b> to call <b>mergeSort(0, " + (nums.length - 1) + ")</b> on " + fmt(nums) + ".");
+    var out = ms(nodes[0]);
+    var levels = Object.keys(work).length;
+    var total = Object.keys(work).reduce(function (t, k) { return t + work[k]; }, 0);
+    snap(null, "Done: <b>" + fmt(out) + "</b>. " + levels + " level" + (levels === 1 ? "" : "s") + " of merging, " + total + " elements merged in all.");
+    return steps;
+  }
+
+  var nums = CASES[2], nodes, boxes = [], lvlTags = [], stepper;
+
+  function draw() {
+    nodes = buildTree(nums.length);
+    var L = E("levels"), depth = 0;
+    nodes.forEach(function (nd) { depth = Math.max(depth, nd.d); });
+    L.style.gridTemplateColumns = "repeat(" + nums.length + ", auto) auto";
+    L.textContent = ""; boxes = []; lvlTags = [];
+    nodes.forEach(function (nd) {
+      var b = S.el("div", "seg");
+      b.style.gridRow = String(nd.d + 1);
+      b.style.gridColumn = (nd.s + 1) + " / " + (nd.e + 2);
+      for (var k = nd.s; k <= nd.e; k++) b.appendChild(S.el("span", "v", ""));
+      L.appendChild(b);
+      boxes[nd.id] = b;
+    });
+    for (var d = 0; d <= depth; d++) {
+      var t = S.el("span", "lvl", "");
+      t.style.gridRow = String(d + 1);
+      t.style.gridColumn = String(nums.length + 1);
+      L.appendChild(t);
+      lvlTags.push(t);
+    }
+  }
+
+  function render(st) {
+    nodes.forEach(function (nd) {
+      var b = boxes[nd.id], s = st.state[nd.id];
+      ["is-open", "is-merging", "is-done", "is-feed"].forEach(function (c) { b.classList.remove(c); });
+      var cells = b.children, v = st.vals[nd.id];
+      if (s === "open") b.classList.add("is-open");
+      if (s === "done" || s === "spent") b.classList.add("is-done");
+      if (s === "feed") b.classList.add("is-feed");
+      if (s === "merging") {
+        b.classList.add("is-merging");
+        var m = st.merging;
+        for (var k = 0; k < cells.length; k++) {
+          var on = m && k < m.ans.length;
+          cells[k].textContent = on ? String(m.ans[k]) : "";
+          cells[k].className = "v" + (on ? " is-filled" : "") + (m && k === m.fresh ? " is-new" : "");
+        }
+        return;
+      }
+      var f = st.feed[nd.id];
+      for (var q = 0; q < cells.length; q++) {
+        cells[q].textContent = String(v[q]);
+        cells[q].className = "v" + (f && q < f.used ? " is-used" : "") + (f && q === f.used ? " is-front" : "");
+      }
+    });
+    lvlTags.forEach(function (t, d) {
+      var w = st.work[d];
+      t.innerHTML = w ? "merged <b>" + w + "</b>" : "";
+    });
+    var top = st.vals[0];
+    E("result").innerHTML = st.state[0] === "done" ? "sortArray = <b>[" + top.join(", ") + "]</b>" : "";
+  }
+
+  draw();
+  stepper = S.stepper({
+    id: "mergesort",
+    steps: buildSteps(nums, nodes),
+    codeLines: CODE,
+    transport: E("transport"),
+    say: E("say"),
+    code: E("code"),
+    frames: E("frames"),
+    frameLabel: function (f) { return { main: f.main, aside: f.aside }; },
+    playMs: 650,
+    render: render
+  });
+
+  E("casePick").addEventListener("change", function () {
+    nums = CASES[Number(this.value)];
+    stepper.stop();
+    draw();
+    stepper.rebuild(buildSteps(nums, nodes), false);
+  });
+})();
+</script>
+</body>
+</html>
