@@ -24,7 +24,7 @@
 - [ ] LC 37 Sudoku Solver
 - [ ] ⭐ LC 131 Palindrome Partitioning
 - [x] LC 93 Restore IP Addresses — [notes](notes/lc0093_restore_ip_addresses.md)
-- [ ] ⭐ LC 912 Sort an Array (write merge sort)
+- [x] ⭐ LC 912 Sort an Array (write merge sort) — [notes](notes/lc0912_sort_an_array.md)
 - [ ] ⭐ LC 241 Different Ways to Add Parentheses
 - [ ] LC 95 Unique Binary Search Trees II
 
