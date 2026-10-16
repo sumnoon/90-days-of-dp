@@ -22,7 +22,7 @@
 - [x] ⭐ LC 79 Word Search — [notes](notes/lc0079_word_search.md)
 - [ ] ⭐ LC 51 N-Queens
 - [ ] LC 37 Sudoku Solver
-- [ ] ⭐ LC 131 Palindrome Partitioning
+- [x] ⭐ LC 131 Palindrome Partitioning — [notes](notes/lc0131_palindrome_partitioning.md)
 - [x] LC 93 Restore IP Addresses — [notes](notes/lc0093_restore_ip_addresses.md)
 - [ ] ⭐ LC 912 Sort an Array (write merge sort)
 - [ ] ⭐ LC 241 Different Ways to Add Parentheses
