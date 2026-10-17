@@ -8,6 +8,7 @@ it. Written to be re-read before a redo, not while solving.
 |---|---|---|---|
 | [⭐ LC 79 Word Search](lc0079_word_search.md) | 22 | clean | The board is the visited set: write `'#'` going in, put the letter back coming out. |
 | [LC 93 Restore IP Addresses](lc0093_restore_ip_addresses.md) | 23 | clean | Each level chooses how many digits the next part takes; after three dots the rest must be the last part. |
+| [⭐ LC 131 Palindrome Partitioning](lc0131_palindrome_partitioning.md) | 25 | clean | Each level chooses where the next cut goes; a cut is only valid if the piece before it is a palindrome. |
 | [⭐ LC 912 Sort an Array](lc0912_sort_an_array.md) | 24 | clean | Trust each half to come back sorted; the only real work is merging two sorted lists, LC 21 again. |
 
 ## Visualizations
