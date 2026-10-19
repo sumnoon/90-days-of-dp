@@ -25,7 +25,7 @@
 - [x] ⭐ LC 131 Palindrome Partitioning — [notes](notes/lc0131_palindrome_partitioning.md)
 - [x] LC 93 Restore IP Addresses — [notes](notes/lc0093_restore_ip_addresses.md)
 - [x] ⭐ LC 912 Sort an Array (write merge sort) — [notes](notes/lc0912_sort_an_array.md)
-- [ ] ⭐ LC 241 Different Ways to Add Parentheses
+- [x] ⭐ LC 241 Different Ways to Add Parentheses — [notes](notes/lc0241_different_ways_to_add_parentheses.md)
 - [ ] LC 95 Unique Binary Search Trees II
 
 ## Checkpoint
