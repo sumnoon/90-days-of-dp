@@ -77,6 +77,14 @@ results, both 24), `10-5-2-1`, `11*2-3+4*5-6`, and 200 random expressions of
 up to 20 characters: every result list matches, as a multiset, a reference
 that combines token ranges bottom-up.
 
+## See it
+
+- **Every operator goes last once:** https://sumnoon.github.io/90-days-of-dp/exprs/ —
+  one row per call, with each operator taking its turn as the last one
+  applied; rows for substrings already solved before are shaded, with a
+  running count. *1+1+1+1* makes 27 calls for 4 different substrings.
+  ([source](../../../docs/exprs/index.html))
+
 ## Key insight
 
 Every operator takes a turn as the last one applied; combine every left answer with every right answer.

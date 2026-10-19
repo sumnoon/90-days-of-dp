@@ -19,6 +19,7 @@ it. Written to be re-read before a redo, not while solving.
 | [The board is the visited set](https://sumnoon.github.io/90-days-of-dp/grid/) | LC 79: cells marked `#` on the way in and given back on the way out; the path a success leaves behind. |
 | [Where do the dots go?](https://sumnoon.github.io/90-days-of-dp/ip/) | LC 93: the dots placed so far, and every call or rejected part as an outline row with its reason. |
 | [Split, trust, merge](https://sumnoon.github.io/90-days-of-dp/mergesort/) | LC 912: merge sort level by level, with the merging done on each level counted. |
+| [Every operator goes last once](https://sumnoon.github.io/90-days-of-dp/exprs/) | LC 241: each operator split in turn, with every substring solved more than once counted. |
 
 "clean" = solved without a hint. Anything else is on the
 [redo list](../../../redo-list.md).
