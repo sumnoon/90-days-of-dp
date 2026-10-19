@@ -55,6 +55,45 @@ code makes 19,683 calls to answer questions about only 10 different strings.
 That's Fibonacci's overlapping subproblems again, and **Sunday's Month 1
 checkpoint** is to remove it by adding a cache.
 
+## With a cache: the Month 1 checkpoint
+
+[`solutions/lc0241_different_ways_to_add_parentheses_memo.cpp`](../solutions/lc0241_different_ways_to_add_parentheses_memo.cpp)
+
+```cpp
+vector<int> memo[20][20];
+vector<int> func(const string& expression, int start, int end) {
+    if (!memo[start][end].empty()) return memo[start][end];   // solved before
+    ... same splitting and combining, on expression[start..end] ...
+    return memo[start][end] = move(results);                   // remember it
+}
+```
+
+Two changes from the plain version:
+
+- **The key is a position range, not a string.** `func` works on
+  `expression[start..end]` instead of `substr` copies, and the answer for each
+  range is stored in `memo[start][end]` the first time it's computed. (The
+  expression has at most 20 characters, so a 20 × 20 table always fits.)
+- **An empty entry means "not solved yet".** That's safe here because every
+  range that gets solved has at least one result.
+
+Measured, against the plain version:
+
+| Expression | plain calls | cached calls | ranges actually computed |
+|---|---|---|---|
+| `2*3-4*5` | 27 | 21 | 10 |
+| `1+2-3*4+5` | 81 | 41 | 15 |
+| `1+1+…+1` (ten 1s) | **19,683** | **331** | **55** |
+| `9-8*7+6-5*4+3-2*1` | 6,561 | 241 | 45 |
+
+With ten numbers there are only 10 + 9 + … + 1 = **55** ranges of whole
+numbers, and each is computed exactly once; every other call is a cache hit.
+The work now depends on the number of **different subproblems**, not on how
+often they're asked for. That's memoization, and the first DP of the 90 days.
+
+The result lists themselves can still be long (Catalan-sized): the cache
+removes the repeated work, not the size of the answer.
+
 ## Complexity
 
 Without a cache: the number of results alone is a **Catalan number**
