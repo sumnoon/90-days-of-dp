@@ -72,9 +72,9 @@ complete answer covers:
     - The $n/2$ (Size of Each Subproblem — Divide): You split the current array of length $n$ right down the middle (mid), producing two sub-arrays of length $n/2$ each. Calculating the midpoint index takes $\mathcal{O}(1)$ constant time, so the split itself adds negligible cost.
    - The $2$ (Number of Recursive Branches — Conquer): Because you have two independent halves (Left and Right), the function calls itself twice. Sorting a single half of size $n/2$ costs $T(n/2)$, so sorting both halves costs $2 \times T(n/2)$.
    - The $+ n$ (The Two-Pointer Merge Step — Combine): Once the two recursive calls return, you have two sorted halves of size $n/2$. Merging them into a single sorted array of size $n$ uses two pointers (i and j). On each iteration, you compare left_half[i] and right_half[j] and copy the smaller element into a temporary buffer. Because each step places one element into its final sorted position, placing all $n$ elements takes linear work proportional to $n$.
-2. how many levels the recursion has, and how much merging happens on each
-   level
-   - The recursion has $\log_2 n$ merging levels (or $\log_2 n + 1$ total levels including the base cases), and every level performs exactly $n$ total merge operations because $2^i$ subproblems of size $n/2^i$ always multiply out to $n$.
+   - So it takes O(n * log n) in worst case
+2. how many levels the recursion has, and how much merging happens on each level
+   - The recursion has $\log_2 n$ merging levels (or $\log_2 n + 1$ total levels including the base cases), and every level performs highest $n$ total merge operations because $2^i$ subproblems of size $n/2^i$ always multiply out to $n$.
 
 ## Complexity
 
