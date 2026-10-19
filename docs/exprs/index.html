@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="sumnoon">
+<meta name="description" content="Step through LC 241 Different Ways to Add Parentheses: every operator takes a turn as the last one applied, and the same substrings get solved again and again.">
+<title>Every operator goes last once — 90 Days of DP</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Spline+Sans+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="../assets/system.css">
+<style>
+  @media (min-width: 801px) { .work { grid-template-columns: minmax(0, 1fr) 380px; } }
+
+  .expr { display: flex; flex-wrap: wrap; font: 700 24px/1.3 var(--data); }
+  .expr span { padding: 0 3px; color: var(--ink-3); border-bottom: 3px solid transparent;
+    transition: color var(--t-state) var(--ease-out), border-color var(--t-state) var(--ease-out); }
+  .expr span.is-in { color: var(--ink); }
+  .expr span.is-op { color: var(--now); border-bottom-color: var(--now-line); }
+
+  .outline { list-style: none; margin: var(--s4) 0 0; padding: 0; font: 400 13px/1.3 var(--data);
+    border-top: 1px solid var(--hair); max-height: 360px; overflow-y: auto; }
+  .outline li { display: flex; gap: var(--s3); align-items: baseline; padding: 5px var(--s2); border-bottom: 1px solid var(--hair); flex-wrap: wrap; }
+  .outline .sub { font-weight: 700; color: var(--ink); }
+  .outline .res { color: var(--set); }
+  .outline .again { font-weight: 700; color: var(--now); }
+  .outline li.is-again { background: var(--now-wash); }
+  .outline li.is-open .sub { text-decoration: underline; text-underline-offset: 3px; }
+  .outline li.is-now { outline: 3px solid var(--now-line); outline-offset: -3px; }
+
+  .tally { margin-top: var(--s4); display: flex; flex-wrap: wrap; gap: var(--s2) var(--s3); align-items: center; font: 400 12.5px/1.3 var(--data); color: var(--ink-3); }
+  .tally .k { font: 700 11px/1.3 var(--data); letter-spacing: .12em; text-transform: uppercase; }
+  .tally .chip { font: 700 12px/1.3 var(--data); padding: 3px 6px; border: var(--w-rule) solid var(--now-line); background: var(--now-wash); color: var(--ink); }
+  .tally b { color: var(--ink); }
+
+  .result { margin-top: var(--s3); font: 400 13px/1.4 var(--data); color: var(--ink-3); }
+  .result b { color: var(--set); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <nav class="rail">
+    <a class="rail__home" href="../">90 Days of DP</a>
+    <span class="rail__where">Week <b>4</b> &middot; Day <b>26</b> &middot; LC 241</span>
+  </nav>
+
+  <header class="masthead">
+    <h1>Every operator goes last once</h1>
+    <p class="claim">Split at each operator, solve both sides, combine every pair. The same sides come up again and again.</p>
+    <p class="lede">Whatever the bracketing, one operator is applied last, and it splits the expression into a left part and a right part. The code tries every operator in that role. Each row below is one call; rows shaded red are substrings that were already solved earlier, and get solved again from scratch.</p>
+  </header>
+
+  <div class="setup">
+    <label for="casePick">expression
+      <select id="casePick">
+        <option value="2-1-1">2-1-1</option>
+        <option value="2*3-4*5" selected>2*3-4*5</option>
+        <option value="1+1+1+1">1+1+1+1</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:var(--s4)">
+      <div class="plate">
+        <div class="scroll-x"><div class="expr" id="expr" aria-label="The expression, with the current call's part and operator marked"></div></div>
+        <ol class="outline" id="outline" aria-label="The calls made so far"></ol>
+        <div class="tally" id="tally"></div>
+        <p class="result" id="result"></p>
+        <div class="legend">
+          <span><i style="background:var(--ink)"></i>call waiting on its sides</span>
+          <span><i style="background:var(--set-line)"></i>values returned</span>
+          <span><i style="background:var(--now-line)"></i>applied last</span>
+          <span><i style="background:var(--now-wash)"></i>solved again</span>
+        </div>
+      </div>
+
+      <p class="say" id="say">Press <b>Next</b> to start.</p>
+      <div class="transport" id="transport"></div>
+    </div>
+
+    <div class="aside">
+      <div class="panel"><h2 class="panel__head">Call stack</h2><ul class="frames" id="frames"></ul></div>
+      <div class="panel"><h2 class="panel__head">LC 241</h2><div class="panel__body"><div class="code" id="code"></div></div></div>
+    </div>
+  </div>
+
+  <section class="read">
+    <h2>Why every operator gets a turn</h2>
+    <p>Bracket <code>2*3-4*5</code> any way you like: one operator is evaluated last, and everything to its left is one complete sub-expression, everything to its right another. So the answers are exactly: for each operator, every value of the left side combined with every value of the right side. That's the whole recursion. Each side is the same problem, smaller.</p>
+    <p class="pull">The operator done last splits the problem in two.</p>
+
+    <h2>The same question, asked again</h2>
+    <p>Step through <b>2*3-4*5</b> and watch the red rows: <code>"3"</code> and <code>"4"</code> are each solved five times, <code>"2*3"</code> and <code>"4*5"</code> twice. Pick <b>1+1+1+1</b> and almost every row is red: 27 calls for only 4 different substrings. Every repeat recomputes exactly the same list of values. Storing each substring's answer the first time it's solved would answer every repeat instantly. That's Sunday's checkpoint, and the whole idea of Week 5.</p>
+  </section>
+
+  <footer class="foot">
+    Notes: <a href="https://github.com/sumnoon/90-days-of-dp/blob/main/weeks/week-04-backtracking-ii-and-divide-conquer/notes/lc0241_different_ways_to_add_parentheses.md">LC 241</a> &middot;
+    <a href="../fib/">The same answer, computed again and again (Fibonacci)</a> &middot;
+    <a href="../">All visualizations</a>
+  </footer>
+
+</div>
+
+<script src="../assets/stepper.js"></script>
+<script>
+(function () {
+  "use strict";
+  var S = window.Schematic;
+  var E = function (id) { return document.getElementById(id); };
+
+  var CODE = [
+    "vector<int> diffWaysToCompute(string expression) {",
+    "    vector<int> results;",
+    "",
+    "    for (int i = 0; i < expression.length(); ++i) {",
+    "        char c = expression[i];",
+    "        if (c == '+' || c == '-' || c == '*') {",
+    "            vector<int> left = diffWaysToCompute(expression.substr(0, i));",
+    "            vector<int> right = diffWaysToCompute(expression.substr(i + 1));",
+    "",
+    "            for (int j = 0; j < left.size(); ++j) {",
+    "                for (int k = 0; k < right.size(); ++k) {",
+    "                    if (c == '+')",
+    "                        results.push_back(left[j] + right[k]);",
+    "                    else if (c == '-')",
+    "                        results.push_back(left[j] - right[k]);",
+    "                    else if (c == '*')",
+    "                        results.push_back(left[j] * right[k]);",
+    "                }",
+    "            }",
+    "        }",
+    "    }",
+    "",
+    "    if (results.empty()) {",
+    "        results.push_back(stoi(expression));",
+    "    }",
+    "    return results;",
+    "}"
+  ];
+  var OP_LINE = { "+": 13, "-": 15, "*": 17 };
+
+  function fmt(a) { return "[" + a.join(", ") + "]"; }
+  function apply(c, a, b) { return c === "+" ? a + b : c === "-" ? a - b : a * b; }
+
+  function buildSteps(expr) {
+    var steps = [], frames = [], rows = [], seen = {}, now = -1, span = null, opAt = -1;
+    function snap(line, note) {
+      steps.push({ line: line, note: note, rows: rows.map(function (r) { return Object.assign({}, r); }),
+        now: now, span: span, opAt: opAt, seen: Object.assign({}, seen),
+        frames: frames.map(function (f) { return { main: f.main, aside: f.aside }; }) });
+    }
+    /* off = where this substring starts in the full expression, so it can be marked above */
+    function go(sub, off, depth) {
+      seen[sub] = (seen[sub] || 0) + 1;
+      var times = seen[sub];
+      var row = { depth: depth, sub: sub, res: null, open: true, again: times > 1, times: times };
+      rows.push(row);
+      var me = rows.length - 1;
+      now = me; span = [off, off + sub.length]; opAt = -1;
+      frames.push({ main: "diffWays(\"" + sub + "\")", aside: times > 1 ? "solved " + (times - 1) + "x before" : "" });
+      snap(1, "Call on <b>\"" + sub + "\"</b>." + (times > 1 ? " This exact substring has already been solved " + (times - 1) + " time" + (times > 2 ? "s" : "") + " before: the same work, done again." : ""));
+      var results = [];
+      for (var i = 0; i < sub.length; i++) {
+        var c = sub[i];
+        if (c !== "+" && c !== "-" && c !== "*") continue;
+        now = me; span = [off, off + sub.length]; opAt = off + i;
+        frames[frames.length - 1].aside = "'" + c + "' goes last";
+        snap(7, "In <b>\"" + sub + "\"</b>, let <b>" + c + "</b> be applied last: solve the left side <b>\"" + sub.slice(0, i) + "\"</b>, then the right side <b>\"" + sub.slice(i + 1) + "\"</b>.");
+        var L = go(sub.slice(0, i), off, depth + 1);
+        var R = go(sub.slice(i + 1), off + i + 1, depth + 1);
+        var made = [];
+        L.forEach(function (a) { R.forEach(function (b) { made.push(apply(c, a, b)); }); });
+        results = results.concat(made);
+        now = me; span = [off, off + sub.length]; opAt = off + i;
+        frames[frames.length - 1].aside = "'" + c + "' goes last";
+        snap(OP_LINE[c], "Combine every left value " + fmt(L) + " with every right value " + fmt(R) + " using <b>" + c + "</b>: " + fmt(made) + ".");
+      }
+      if (!results.length) {
+        results.push(Number(sub));
+        rows[me].res = results.slice(); rows[me].open = false;
+        now = me; span = [off, off + sub.length]; opAt = -1;
+        snap(24, "<b>\"" + sub + "\"</b> has no operator: it's a plain number. Return <b>" + fmt(results) + "</b>.");
+      } else {
+        rows[me].res = results.slice(); rows[me].open = false;
+        now = me; span = [off, off + sub.length]; opAt = -1;
+        snap(26, "<b>\"" + sub + "\"</b> returns <b>" + fmt(results) + "</b>.");
+      }
+      frames.pop();
+      return results;
+    }
+    snap(null, "Press <b>Next</b> to find every value of <b>" + expr + "</b>.");
+    var all = go(expr, 0, 0);
+    now = -1; span = null; opAt = -1;
+    var distinct = Object.keys(seen).length, calls = rows.length;
+    var rep = Object.keys(seen).filter(function (k) { return seen[k] > 1; }).length;
+    snap(null, "Done: " + all.length + " value" + (all.length === 1 ? "" : "s") + ", <b>" + fmt(all) + "</b>. " + calls + " calls for " + distinct + " different substrings; " + rep + " of them were solved more than once.");
+    return steps;
+  }
+
+  var expr = "2*3-4*5", stepper;
+
+  function render(st) {
+    var ex = E("expr");
+    ex.textContent = "";
+    for (var k = 0; k < expr.length; k++) {
+      var cls = "";
+      if (st.span && k >= st.span[0] && k < st.span[1]) cls = "is-in";
+      if (k === st.opAt) cls = "is-op";
+      ex.appendChild(S.el("span", cls, expr[k]));
+    }
+
+    var ol = E("outline");
+    ol.textContent = "";
+    st.rows.forEach(function (r, i) {
+      var li = S.el("li", (r.again ? "is-again" : "") + (r.open ? " is-open" : "") + (i === st.now ? " is-now" : ""));
+      li.style.paddingLeft = (8 + r.depth * 20) + "px";
+      li.appendChild(S.el("span", "sub", "\"" + r.sub + "\""));
+      if (r.res) li.appendChild(S.el("span", "res", "→ " + fmt(r.res)));
+      if (r.again) li.appendChild(S.el("span", "again", "×" + r.times));
+      ol.appendChild(li);
+    });
+    var cur = ol.children[st.now];
+    if (cur) {
+      var top = cur.offsetTop - ol.offsetTop, bottom = top + cur.offsetHeight;
+      if (top < ol.scrollTop || bottom > ol.scrollTop + ol.clientHeight) ol.scrollTop = Math.max(0, top - ol.clientHeight / 2);
+    }
+
+    var t = E("tally");
+    t.textContent = "";
+    t.appendChild(S.el("span", "k", "solved again"));
+    var reps = Object.keys(st.seen).filter(function (k) { return st.seen[k] > 1; });
+    if (!reps.length) t.appendChild(S.el("span", null, "nothing yet"));
+    reps.forEach(function (k) { t.appendChild(S.el("span", "chip", "\"" + k + "\" ×" + st.seen[k])); });
+    var calls = st.rows.length, distinct = Object.keys(st.seen).length;
+    var c = S.el("span", null, "");
+    c.innerHTML = "calls <b>" + calls + "</b> &middot; different substrings <b>" + distinct + "</b>";
+    t.appendChild(c);
+
+    var top0 = st.rows[0];
+    E("result").innerHTML = top0 && top0.res ? "diffWaysToCompute = <b>" + fmt(top0.res) + "</b>" : "";
+  }
+
+  stepper = S.stepper({
+    id: "exprs",
+    steps: buildSteps(expr),
+    codeLines: CODE,
+    transport: E("transport"),
+    say: E("say"),
+    code: E("code"),
+    frames: E("frames"),
+    frameLabel: function (f) { return { main: f.main, aside: f.aside }; },
+    playMs: 700,
+    render: render
+  });
+
+  E("casePick").addEventListener("change", function () {
+    expr = this.value;
+    stepper.stop();
+    stepper.rebuild(buildSteps(expr), false);
+  });
+})();
+</script>
+</body>
+</html>
