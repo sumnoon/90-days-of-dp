@@ -19,7 +19,7 @@
 
 ⭐ = core, don't skip
 
-- [ ] ⭐ LC 70 Climbing Stairs
+- [x] ⭐ LC 70 Climbing Stairs — [notes](notes/lc0070_climbing_stairs.md)
 - [ ] ⭐ LC 746 Min Cost Climbing Stairs
 - [ ] ⭐ LC 198 House Robber
 - [ ] ⭐ LC 213 House Robber II
