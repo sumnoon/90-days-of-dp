@@ -30,7 +30,8 @@
 
 ## Checkpoint
 
-- [ ] Solve LC 241 with plain recursion, then add a hashmap cache. You've just written your first DP.
+- [x] Solve LC 241 with plain recursion, then add a hashmap cache. You've just written your first DP.
+  Passed Mon Oct 19 (Sunday's checkpoint, a day late): [cached version](solutions/lc0241_different_ways_to_add_parentheses_memo.cpp), keyed on (start, end). Ten 1s: 19,683 calls → 331.
 
 ## Notes
 
