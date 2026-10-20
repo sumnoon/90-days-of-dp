@@ -7,6 +7,7 @@ it. Written to be re-read before a redo, not while solving.
 | Problem | Day | Solved | The one idea |
 |---|---|---|---|
 | [⭐ LC 79 Word Search](lc0079_word_search.md) | 22 | clean | The board is the visited set: write `'#'` going in, put the letter back coming out. |
+| [⭐ LC 51 N-Queens](lc0051_n_queens.md) | 27 | clean | One queen per row is the structure; `row - col` and `row + col` name each diagonal, so every check is O(1). |
 | [LC 93 Restore IP Addresses](lc0093_restore_ip_addresses.md) | 23 | clean | Each level chooses how many digits the next part takes; after three dots the rest must be the last part. |
 | [⭐ LC 131 Palindrome Partitioning](lc0131_palindrome_partitioning.md) | 25 | clean | Each level chooses where the next cut goes; a cut is only valid if the piece before it is a palindrome. |
 | [⭐ LC 241 Different Ways to Add Parentheses](lc0241_different_ways_to_add_parentheses.md) | 26 | clean | Every operator takes a turn as the last one applied; combine every left answer with every right one. Many substrings are solved repeatedly; a cache on (start, end) cuts ten 1s from 19,683 calls to 331 (Month 1 checkpoint). |
