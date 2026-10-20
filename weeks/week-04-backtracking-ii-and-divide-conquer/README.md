@@ -20,7 +20,7 @@
 ⭐ = core, don't skip
 
 - [x] ⭐ LC 79 Word Search — [notes](notes/lc0079_word_search.md)
-- [ ] ⭐ LC 51 N-Queens
+- [x] ⭐ LC 51 N-Queens — [notes](notes/lc0051_n_queens.md)
 - [ ] LC 37 Sudoku Solver
 - [x] ⭐ LC 131 Palindrome Partitioning — [notes](notes/lc0131_palindrome_partitioning.md)
 - [x] LC 93 Restore IP Addresses — [notes](notes/lc0093_restore_ip_addresses.md)
