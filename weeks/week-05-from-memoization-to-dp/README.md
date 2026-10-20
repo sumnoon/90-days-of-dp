@@ -34,4 +34,10 @@
 
 ## Notes
 
-<!-- For each problem: state, transition, base case, key insight. -->
+One note per problem in [`notes/`](notes/): the state, the recurrence, the base
+cases, the order a table is filled in, complexity, and the idea that unlocked
+it. Start at the [notes index](notes/README.md).
+
+Also this week:
+
+- [LC 509 Fibonacci, three ways](notes/lc0509_fibonacci_number_three_ways.md) — Monday: recursion, memoized, table, timed at n = 40
