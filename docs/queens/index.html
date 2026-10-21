@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="sumnoon">
+<meta name="description" content="Step through LC 51 N-Queens: one queen per row, and each square checked against three arrays for its column and its two diagonals.">
+<title>One queen per row — 90 Days of DP</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Spline+Sans+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="../assets/system.css">
+<style>
+  @media (min-width: 801px) { .work { grid-template-columns: minmax(0, 1fr) 400px; } }
+
+  .board { display: inline-grid; gap: 0; border: var(--w-rule) solid var(--rule); }
+  .cell { width: 56px; height: 56px; position: relative; display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--hair); background: var(--plate); font: 700 24px/1 var(--data); color: var(--ink);
+    transition: background-color var(--t-state) var(--ease-out), box-shadow var(--t-state) var(--ease-out); }
+  .cell .dm, .cell .da { position: absolute; font: 700 10px/1 var(--data); color: var(--ink-3); display: none; }
+  .cell .dm { left: 4px; top: 4px; }
+  .cell .da { right: 4px; bottom: 4px; }
+  .board.show-d .cell .dm, .board.show-d .cell .da { display: block; }
+  .cell.is-hit { background: repeating-linear-gradient(135deg, var(--plate) 0 5px, var(--plate-2) 5px 10px); }
+  .cell.is-queen { background: var(--set-wash); color: var(--set); box-shadow: inset 0 0 0 3px var(--set-line); }
+  .cell.is-blocked { background: var(--now-wash); box-shadow: inset 0 0 0 4px var(--now-line); }
+  .cell.is-blocked::after { content: "\00D7"; color: var(--now); font-size: 28px; }
+  .cell.is-blocker { box-shadow: inset 0 0 0 4px var(--now-line); color: var(--now); }
+  .cell.is-new { color: var(--ink); box-shadow: inset 0 0 0 4px var(--ink); }
+  .cell.is-gone { box-shadow: inset 0 0 0 3px var(--idle); }
+  .cell.is-gone::after { content: "Q"; color: var(--idle); }
+  .cell.is-solved { background: var(--base-wash); color: var(--base); box-shadow: inset 0 0 0 3px var(--base-line); }
+
+  .rowlab { display: flex; flex-direction: column; }
+  .boardwrap { display: inline-flex; gap: var(--s2); align-items: stretch; }
+  .rowlab span { height: 56px; display: flex; align-items: center; font: 700 11px/1 var(--data); color: var(--ink-3); }
+  .rowlab span.is-row { color: var(--now); }
+
+  .arrays { margin-top: var(--s5); display: flex; flex-direction: column; gap: var(--s3); }
+  .arr .k { font: 400 12px/1.4 var(--data); color: var(--ink-2); margin-bottom: var(--s1); }
+  .arr .k b { color: var(--ink); }
+  .slots { display: inline-flex; }
+  .slots span { width: 28px; height: 30px; margin-right: -2px; display: inline-flex; align-items: center; justify-content: center;
+    border: var(--w-rule) solid var(--hair); background: var(--plate); font: 400 11px/1 var(--data); color: var(--ink-3); position: relative; }
+  .slots span.is-used { background: var(--set-wash); border-color: var(--set-line); color: var(--set); font-weight: 700; z-index: 1; }
+  .slots span.is-look { border-color: var(--ink); color: var(--ink); font-weight: 700; z-index: 2; box-shadow: 0 0 0 1px var(--ink); }
+  .slots span.is-stop { background: var(--now-wash); border-color: var(--now-line); color: var(--now); font-weight: 700; z-index: 2; box-shadow: 0 0 0 1px var(--now-line); }
+
+  .tally { margin-top: var(--s4); font: 400 13px/1.5 var(--data); color: var(--ink-3); display: flex; flex-wrap: wrap; gap: var(--s1) var(--s4); }
+  .tally b { color: var(--ink); }
+
+  .sols { display: flex; flex-wrap: wrap; gap: var(--s3); padding: var(--s3) var(--s4); }
+  .sols .none { font: 400 12.5px/1.4 var(--data); color: var(--ink-3); }
+  .mini { display: inline-grid; border: var(--w-rule) solid var(--base-line); }
+  .mini i { width: 11px; height: 11px; background: var(--plate); border: 1px solid var(--hair); }
+  .mini i.q { background: var(--base-line); border-color: var(--base-line); }
+
+  @media (max-width: 520px) {
+    .cell { width: 44px; height: 44px; font-size: 19px; }
+    .rowlab span { height: 44px; }
+    .slots span { width: 24px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .cell { transition-duration: 80ms; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <nav class="rail">
+    <a class="rail__home" href="../">90 Days of DP</a>
+    <span class="rail__where">Week <b>4</b> &middot; Day <b>27</b> &middot; LC 51</span>
+  </nav>
+
+  <header class="masthead">
+    <h1>One queen per row</h1>
+    <p class="claim">Rows come free. Check a column and two diagonals.</p>
+    <p class="lede">Each call fills one row, so no two queens can ever share a row. What's left to check is the column and the two diagonals, and three arrays answer each of those in one lookup: <code class="inline">col</code>, <code class="inline">row - col + n - 1</code> and <code class="inline">row + col</code>.</p>
+  </header>
+
+  <div class="setup">
+    <label for="casePick">board
+      <select id="casePick">
+        <option value="4" selected>n = 4</option>
+        <option value="5">n = 5</option>
+        <option value="6">n = 6</option>
+        <option value="3">n = 3 (no answer)</option>
+      </select>
+    </label>
+    <span class="grp">
+      <button type="button" class="toggle" id="tBlocked" aria-pressed="true">Stop at blocked squares</button>
+      <button type="button" class="toggle" id="tHit" aria-pressed="true">Shade attacked squares</button>
+      <button type="button" class="toggle" id="tDiag" aria-pressed="false">Diagonal numbers</button>
+    </span>
+  </div>
+
+  <div class="work">
+    <div style="display:flex;flex-direction:column;gap:var(--s4)">
+      <div class="plate">
+        <div class="scroll-x">
+          <div class="boardwrap">
+            <div class="rowlab" id="rowlab" aria-hidden="true"></div>
+            <div class="board" id="board"></div>
+          </div>
+        </div>
+        <div class="arrays" id="arrays"></div>
+        <p class="tally" id="tally"></p>
+        <div class="legend">
+          <span><i style="background:var(--set-line)"></i>queen placed, slot marked</span>
+          <span><i style="background:var(--ink)"></i>square being tried</span>
+          <span><i style="background:var(--now-line)"></i>blocked, and what blocks it</span>
+          <span><i style="background:var(--base-line)"></i>a full board</span>
+        </div>
+      </div>
+
+      <p class="say" id="say">Press <b>Next</b> to start.</p>
+      <div class="transport" id="transport"></div>
+    </div>
+
+    <div class="aside">
+      <div class="panel"><h2 class="panel__head">Boards found</h2><div class="sols" id="sols"></div></div>
+      <div class="panel"><h2 class="panel__head">Call stack</h2><ul class="frames" id="frames"></ul></div>
+      <div class="panel"><h2 class="panel__head">LC 51</h2><div class="panel__body"><div class="code" id="code"></div></div></div>
+    </div>
+  </div>
+
+  <section class="read">
+    <h2>A diagonal in one number</h2>
+    <p>Walk down a <b>&#x2198;</b> diagonal and the row and the column both go up by one, so <code>row - col</code> never changes. Walk down a <b>&#x2199;</b> diagonal and the row goes up while the column goes down, so <code>row + col</code> never changes. Turn on <b>Diagonal numbers</b>: every square shows its &#x2198; number in the top corner and its &#x2199; number in the bottom one, and each diagonal is one repeated number.</p>
+    <p><code>row + col</code> already runs from 0 to 2n &minus; 2. <code>row - col</code> runs from &minus;(n &minus; 1) to n &minus; 1, and adding <code>n - 1</code> shifts it to 0 &hellip; 2n &minus; 2 so it can index an array. That's why both diagonal arrays have 2n &minus; 1 slots.</p>
+    <p class="pull">Mark three slots going in, clear the same three coming out.</p>
+
+    <h2>Where the time goes</h2>
+    <p>Turn off <b>Stop at blocked squares</b> to see only the placements and removals. Most of the work is in squares turned down on the spot. The counter keeps going either way: for n = 6 the search makes 153 calls and checks 894 squares (6 for each of the 149 calls that aren't a full board) to find 4 boards. Without the arrays every one of those checks would walk back up the column and both diagonals, which is what the unused <code>valid()</code> in the solution does.</p>
+  </section>
+
+  <footer class="foot">
+    Notes: <a href="https://github.com/sumnoon/90-days-of-dp/blob/main/weeks/week-04-backtracking-ii-and-divide-conquer/notes/lc0051_n_queens.md">LC 51</a> &middot;
+    <a href="../grid/">The board is the visited set</a> &middot;
+    <a href="../subsets/">Choose, explore, un-choose</a> &middot;
+    <a href="../">All visualizations</a>
+  </footer>
+
+</div>
+
+<script src="../assets/stepper.js"></script>
+<script>
+(function () {
+  "use strict";
+  var S = window.Schematic;
+  var E = function (id) { return document.getElementById(id); };
+
+  var CODE = [
+    "void backtrack(int row, int n, vector<string>& board) {",
+    "    if (row == board.size()) {",
+    "        ans.push_back(board);",
+    "        return;",
+    "    }",
+    "    for (int col = 0; col < board.size(); ++col) {",
+    "        int main_d = row - col + n - 1;",
+    "        int anti_d = row + col;",
+    "",
+    "        if (col_used[col] || main_diag_used[main_d] || anti_diag_used[anti_d]) continue;",
+    "",
+    "        board[row][col] = 'Q';",
+    "        col_used[col] = anti_diag_used[anti_d] = main_diag_used[main_d] = true;",
+    "",
+    "        backtrack(row + 1, n, board);",
+    "",
+    "        board[row][col] = '.';",
+    "        col_used[col] = anti_diag_used[anti_d] = main_diag_used[main_d] = false;",
+    "    }",
+    "}",
+    "",
+    "vector<vector<string>> solveNQueens(int n) {",
+    "    vector<string> board(n, string(n, '.'));",
+    "    col_used.assign(n, false);",
+    "    main_diag_used.assign(2 * n - 1, false);",
+    "    anti_diag_used.assign(2 * n - 1, false);",
+    "",
+    "    backtrack(0, n, board);",
+    "    return ans;",
+    "}"
+  ];
+
+  function sq(r, c) { return "(" + r + ", " + c + ")"; }
+
+  /* ---------- steps: replay the real code ---------- */
+
+  function buildSteps(n, stopBlocked) {
+    var colU = [], mainU = [], antiU = [], queens = [], sols = [], frames = [];
+    var i;
+    for (i = 0; i < n; i++) colU.push(false);
+    for (i = 0; i < 2 * n - 1; i++) { mainU.push(false); antiU.push(false); }
+    var steps = [], calls = 0, checks = 0;
+    var told = { col: false, main: false, anti: false, place: false, remove: false };
+
+    function snap(line, note, x) {
+      x = x || {};
+      steps.push({ line: line, note: note, row: x.row, look: x.look || null, blocked: !!x.blocked, by: x.by || [],
+        isNew: x.isNew || null, gone: x.gone || null, solved: !!x.solved,
+        queens: queens.map(function (q) { return q.slice(); }),
+        colU: colU.slice(), mainU: mainU.slice(), antiU: antiU.slice(),
+        sols: sols.slice(), calls: calls, checks: checks,
+        frames: frames.map(function (f) { return { main: f.main, aside: f.aside }; }) });
+    }
+
+    function holder(test) {
+      for (var k = 0; k < queens.length; k++) if (test(queens[k])) return queens[k];
+      return null;
+    }
+
+    function bt(row) {
+      calls++;
+      frames.push({ main: "backtrack(row " + row + ")", aside: "" });
+      if (row === n) {
+        sols.push(queens.map(function (q) { return q[1]; }));
+        frames[frames.length - 1].aside = "board full";
+        snap(3, "Row " + row + " is past the last row: every row has a queen, and each one passed the check when it was placed. Record board <b>#" + sols.length + "</b>.", { row: row, solved: true });
+        frames.pop();
+        return;
+      }
+      var placed = false;
+      for (var col = 0; col < n; col++) {
+        var d = row - col + n - 1, a = row + col;
+        checks++;
+        frames[frames.length - 1].aside = "col " + col;
+        var look = { col: col, d: d, a: a, r: row };
+        if (colU[col] || mainU[d] || antiU[a]) {
+          if (!stopBlocked) continue;
+          var by = [], why = [];
+          if (colU[col]) {
+            var q1 = holder(function (q) { return q[1] === col; });
+            by.push({ kind: "col", q: q1 });
+            why.push("column " + col + " already has the queen at " + sq(q1[0], q1[1]) +
+              (told.col ? "" : " (<code>col_used[" + col + "]</code>)"));
+            told.col = true;
+          }
+          if (mainU[d]) {
+            var q2 = holder(function (q) { return q[0] - q[1] + n - 1 === d; });
+            by.push({ kind: "main", q: q2 });
+            why.push("&#x2198; diagonal " + d + " has the queen at " + sq(q2[0], q2[1]) +
+              (told.main ? "" : " (<code>row - col + n - 1</code> = " + row + " &minus; " + col + " + " + (n - 1) + " = " + d + " for both)"));
+            told.main = true;
+          }
+          if (antiU[a]) {
+            var q3 = holder(function (q) { return q[0] + q[1] === a; });
+            by.push({ kind: "anti", q: q3 });
+            why.push("&#x2199; diagonal " + a + " has the queen at " + sq(q3[0], q3[1]) +
+              (told.anti ? "" : " (<code>row + col</code> = " + row + " + " + col + " = " + a + " for both)"));
+            told.anti = true;
+          }
+          snap(10, sq(row, col) + " is blocked: " + why.join(", and ") + ". <code>continue</code> to the next column.",
+            { row: row, look: look, blocked: true, by: by });
+          continue;
+        }
+        placed = true;
+        colU[col] = mainU[d] = antiU[a] = true;
+        queens.push([row, col]);
+        snap(13, sq(row, col) + " is free. Place a queen and mark <b>column " + col + "</b>, <b>&#x2198; " + d + "</b> and <b>&#x2199; " + a + "</b>" +
+          (told.place ? "." : ": every square these three cover is now off limits to the rows below.") + " Then fill row " + (row + 1) + ".",
+          { row: row, look: look, isNew: [row, col] });
+        told.place = true;
+        bt(row + 1);
+        frames[frames.length - 1].aside = "col " + col;
+        colU[col] = mainU[d] = antiU[a] = false;
+        queens.pop();
+        snap(18, "Back in row " + row + ". Everything below the queen at " + sq(row, col) + " has been tried. Remove it and clear column " + col + ", &#x2198; " + d + " and &#x2199; " + a +
+          (told.remove ? "" : ", the same three slots it marked, so the next column starts from a clean slate") + ".",
+          { row: row, look: look, gone: [row, col] });
+        told.remove = true;
+      }
+      if (!placed && row < n) {
+        snap(19, "Every square in row " + row + " is blocked. Dead end: return, and row " + (row - 1) + " moves its queen along.", { row: row });
+      }
+      frames.pop();
+    }
+
+    snap(28, "Press <b>Next</b> to place " + n + " queens on a " + n + " &times; " + n + " board. <code>backtrack(0)</code> starts at the top row.", { row: 0 });
+    bt(0);
+    frames = [];
+    snap(29, sols.length ? "Done: <b>" + sols.length + "</b> board" + (sols.length > 1 ? "s" : "") + ", after " + calls + " calls and " + checks + " squares checked." :
+      "Done: <b>no board</b> exists for n = " + n + ". " + calls + " calls and " + checks + " squares checked, and every queen placed was taken back off.", {});
+    return steps;
+  }
+
+  /* ---------- drawing ---------- */
+
+  var n = 4, cells = [], stepper, slots = {};
+
+  function draw() {
+    var b = E("board"), rl = E("rowlab");
+    b.style.gridTemplateColumns = "repeat(" + n + ", auto)";
+    b.textContent = ""; rl.textContent = ""; cells = [];
+    for (var i = 0; i < n; i++) {
+      cells.push([]);
+      rl.appendChild(S.el("span", null, String(i)));
+      for (var j = 0; j < n; j++) {
+        var d = S.el("div", "cell");
+        d.appendChild(S.el("span", "dm", String(i - j + n - 1)));
+        d.appendChild(S.el("span", "da", String(i + j)));
+        d.appendChild(document.createTextNode(""));
+        b.appendChild(d);
+        cells[i].push(d);
+      }
+    }
+    var host = E("arrays");
+    host.textContent = "";
+    [["col", "col_used", "[col]", n], ["main", "main_diag_used", "[row - col + n - 1] &#x2198;", 2 * n - 1],
+     ["anti", "anti_diag_used", "[row + col] &#x2199;", 2 * n - 1]].forEach(function (a) {
+      var box = S.el("div", "arr"), k = S.el("div", "k"), row = S.el("div", "slots");
+      k.innerHTML = "<b>" + a[1] + "</b>" + a[2];
+      slots[a[0]] = [];
+      for (var s = 0; s < a[3]; s++) { var sp = S.el("span", null, String(s)); row.appendChild(sp); slots[a[0]].push(sp); }
+      box.appendChild(k); box.appendChild(row); host.appendChild(box);
+    });
+  }
+
+  function attacked(st, r, c) {
+    return st.queens.some(function (q) { return q[1] === c || q[0] - q[1] === r - c || q[0] + q[1] === r + c; });
+  }
+  function same(p, r, c) { return p && p[0] === r && p[1] === c; }
+
+  function render(st) {
+    var hit = E("tHit").getAttribute("aria-pressed") === "true";
+    for (var r = 0; r < n; r++) {
+      for (var c = 0; c < n; c++) {
+        var d = cells[r][c];
+        var isQ = st.queens.some(function (q) { return q[0] === r && q[1] === c; });
+        var isLook = st.look && st.look.r === r && st.look.col === c;
+        var isBy = st.by.some(function (b) { return same(b.q, r, c); });
+        d.lastChild.nodeValue = isQ ? "Q" : "";
+        d.classList.toggle("is-queen", isQ && !st.solved);
+        d.classList.toggle("is-solved", isQ && st.solved);
+        d.classList.toggle("is-new", same(st.isNew, r, c));
+        d.classList.toggle("is-blocker", isBy);
+        d.classList.toggle("is-blocked", !!isLook && st.blocked);
+        d.classList.toggle("is-gone", same(st.gone, r, c));
+        d.classList.toggle("is-hit", hit && !isQ && !isLook && !same(st.gone, r, c) && attacked(st, r, c));
+        d.setAttribute("aria-label", "row " + r + " column " + c + (isQ ? ": queen" : ""));
+      }
+    }
+    var labs = E("rowlab").children;
+    for (var k = 0; k < labs.length; k++) labs[k].classList.toggle("is-row", st.row === k);
+
+    var stops = {};
+    st.by.forEach(function (b) { stops[b.kind] = true; });
+    [["col", st.colU, "col"], ["main", st.mainU, "d"], ["anti", st.antiU, "a"]].forEach(function (a) {
+      slots[a[0]].forEach(function (sp, s) {
+        var looking = st.look && st.look[a[2]] === s;
+        sp.classList.toggle("is-used", a[1][s]);
+        sp.classList.toggle("is-stop", !!looking && !!stops[a[0]]);
+        sp.classList.toggle("is-look", !!looking && !stops[a[0]]);
+      });
+    });
+
+    E("tally").innerHTML = "calls <b>" + st.calls + "</b> squares checked <b>" + st.checks + "</b> boards <b>" + st.sols.length + "</b>";
+
+    var sh = E("sols");
+    sh.textContent = "";
+    if (!st.sols.length) sh.appendChild(S.el("span", "none", "none yet"));
+    st.sols.forEach(function (cols) {
+      var m = S.el("span", "mini");
+      m.style.gridTemplateColumns = "repeat(" + n + ", auto)";
+      m.setAttribute("aria-label", "queens in columns " + cols.join(", "));
+      for (var r2 = 0; r2 < n; r2++) for (var c2 = 0; c2 < n; c2++) m.appendChild(S.el("i", cols[r2] === c2 ? "q" : null));
+      sh.appendChild(m);
+    });
+  }
+
+  function stopBlocked() { return E("tBlocked").getAttribute("aria-pressed") === "true"; }
+
+  draw();
+  stepper = S.stepper({
+    id: "queens",
+    steps: buildSteps(n, true),
+    codeLines: CODE,
+    transport: E("transport"),
+    say: E("say"),
+    code: E("code"),
+    frames: E("frames"),
+    frameLabel: function (f) { return { main: f.main, aside: f.aside }; },
+    playMs: 550,
+    render: render
+  });
+
+  E("casePick").addEventListener("change", function () {
+    n = Number(this.value);
+    stepper.stop();
+    draw();
+    stepper.rebuild(buildSteps(n, stopBlocked()), false);
+  });
+  function flip(id, after) {
+    E(id).addEventListener("click", function () {
+      this.setAttribute("aria-pressed", this.getAttribute("aria-pressed") === "true" ? "false" : "true");
+      after();
+    });
+  }
+  flip("tBlocked", function () { stepper.stop(); stepper.rebuild(buildSteps(n, stopBlocked()), false); });
+  flip("tHit", function () { stepper.go(stepper.at()); });
+  flip("tDiag", function () { E("board").classList.toggle("show-d", E("tDiag").getAttribute("aria-pressed") === "true"); });
+})();
+</script>
+</body>
+</html>

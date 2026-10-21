@@ -77,6 +77,14 @@ n = 1 … 9 (LeetCode's range), each on a fresh `Solution`:
   queens share a column or a diagonal;
 - no board appears twice.
 
+## See it
+
+- **One queen per row:** https://sumnoon.github.io/90-days-of-dp/queens/ —
+  every square tried, row by row. A blocked square shows the queen that
+  blocks it and the array slot that says so; the three `used` arrays fill and
+  clear beside the board, and each full board is kept as a thumbnail.
+  ([source](../../../docs/queens/index.html))
+
 ## Key insight
 
 One queen per row is the structure; the only checks are the column and the two diagonals, and `row - col` and `row + col` name a diagonal in one number.
