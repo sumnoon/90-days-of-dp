@@ -13,7 +13,7 @@
 | Thu | 1–1.5 h | LC 131 (try every split point). |
 | Fri | 1–1.5 h | LC 241 using plain recursion only. Note which substrings get solved more than once. |
 | **Sat** (weekend) | 3–4 h | The hard ones: LC 51 (sets for columns and both diagonals), LC 37, and LC 95. |
-| **Sun** (weekend) | 2–3 h | **Month 1 checkpoint:** add a cache to LC 241. Clear the redo list. Preview Week 5 with the first hour of the freeCodeCamp DP video. |
+| **Sun** (weekend) | 2–3 h | **Month 1 checkpoint:** add a cache to LC 241. Clear the redo list. Preview Week 5 with the first hour of the [freeCodeCamp DP video](https://www.youtube.com/watch?v=oBt53YbR9Kk), [0:00:00](https://www.youtube.com/watch?v=oBt53YbR9Kk&t=0s)–[1:09:56](https://www.youtube.com/watch?v=oBt53YbR9Kk&t=4196s): fib, gridTraveler and the memoization recipe. |
 
 ## Problems
 

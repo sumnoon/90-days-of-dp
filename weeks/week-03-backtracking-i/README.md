@@ -1,6 +1,6 @@
-# Week 3: Backtracking I
+# Week 3: Backtracking I (Subsets, Permutations, Combinations)
 
-**Dates:** Subsets, Permutations, Combinations) (Oct 5 – Oct 11  
+**Dates:** Oct 5 – Oct 11  
 **Full guide:** [PLAN.md](../../PLAN.md)
 
 ## Schedule

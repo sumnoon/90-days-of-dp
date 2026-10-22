@@ -13,7 +13,29 @@
 | Thu | 1–1.5 h | LC 198 in four versions: recursion, memoized, table, O(1) space. |
 | Fri | 1–1.5 h | LC 1137 and LC 740 (turns into House Robber). |
 | **Sat** (weekend) | 3–4 h | Watch the MIT 6.006 SRTBOT lecture. Solve LC 213 and LC 96, then AtCoder A, B, and C. |
-| **Sun** (weekend) | 2–3 h | Do the **checkpoint** and CSES Dice Combinations. Preview Week 6 with the tabulation half of the freeCodeCamp video. |
+| **Sun** (weekend) | 2–3 h | Do the **checkpoint** and CSES Dice Combinations. Preview Week 6 with the tabulation half of the [freeCodeCamp DP video](https://www.youtube.com/watch?v=oBt53YbR9Kk), [3:10:53](https://www.youtube.com/watch?v=oBt53YbR9Kk&t=11453s)–[5:07:44](https://www.youtube.com/watch?v=oBt53YbR9Kk&t=18464s). |
+
+## Video: the memoization half
+
+[freeCodeCamp: *Dynamic Programming – Learn to Solve Algorithmic Problems*](https://www.youtube.com/watch?v=oBt53YbR9Kk)
+(Alvin Zablan). The code is JavaScript; write the problems in C++.
+
+The first hour, up to canSum, is the Week 5 preview (fib, gridTraveler and the
+memoization recipe). The rest of this half, about 2 hours, is for this week.
+The tabulation half starts at [3:10:53](https://www.youtube.com/watch?v=oBt53YbR9Kk&t=11453s) and is Sunday's preview of Week 6.
+
+| Time | Chapter |
+|---|---|
+| [0:00:00](https://www.youtube.com/watch?v=oBt53YbR9Kk&t=0s) | course introduction |
+| [0:03:30](https://www.youtube.com/watch?v=oBt53YbR9Kk&t=210s) | fib memoization |
+| [0:38:39](https://www.youtube.com/watch?v=oBt53YbR9Kk&t=2319s) | gridTraveler memoization |
+| [1:04:52](https://www.youtube.com/watch?v=oBt53YbR9Kk&t=3892s) | memoization recipe |
+| [1:09:56](https://www.youtube.com/watch?v=oBt53YbR9Kk&t=4196s) | canSum memoization |
+| [1:29:29](https://www.youtube.com/watch?v=oBt53YbR9Kk&t=5369s) | howSum memoization |
+| [1:52:06](https://www.youtube.com/watch?v=oBt53YbR9Kk&t=6726s) | bestSum memoization |
+| [2:12:45](https://www.youtube.com/watch?v=oBt53YbR9Kk&t=7965s) | canConstruct memoization |
+| [2:38:36](https://www.youtube.com/watch?v=oBt53YbR9Kk&t=9516s) | countConstruct memoization |
+| [2:47:30](https://www.youtube.com/watch?v=oBt53YbR9Kk&t=10050s) | allConstruct memoization |
 
 ## Problems
 

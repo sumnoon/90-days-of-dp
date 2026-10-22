@@ -21,7 +21,7 @@ You don't need to finish all of these. Choose **one video series and one text re
 | [Jeff Erickson, *Algorithms*](https://jeffe.cs.illinois.edu/teaching/algorithms/) (free book): Ch 1 Recursion, Ch 2 Backtracking, Ch 3 Dynamic Programming | Book | The best written explanation of how recursion leads to DP |
 | [Competitive Programmer's Handbook](https://cses.fi/book/book.pdf) (free PDF): Ch 5 Complete Search, Ch 7 Dynamic Programming | Book | Short, clear, and aimed at contest-style problems |
 | [MIT 6.006 Spring 2020](https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/): the DP lectures (the "SRTBOT" framework) | Video lectures | A rigorous way to design DP solutions |
-| freeCodeCamp: *Dynamic Programming – Learn to Solve Algorithmic Problems* (Alvin Zablan, YouTube) | Video | Beginner-friendly, moves step by step from memoization to tabulation |
+| freeCodeCamp: [*Dynamic Programming – Learn to Solve Algorithmic Problems*](https://www.youtube.com/watch?v=oBt53YbR9Kk) (Alvin Zablan, YouTube, 5 h; chapter times in the description) | Video | Beginner-friendly, moves step by step from memoization to tabulation |
 | Striver / takeUforward: [Recursion playlist](https://www.youtube.com/playlist?list=PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9) (lectures *Re 1–Re 5*, then *L6–L19*), [Tree series](https://www.youtube.com/playlist?list=PLgUwDviBIf0q8Hkd7bK2Bpryj2xVJk8Vk) (*L1–L53*) and [DP series](https://www.youtube.com/playlist?list=PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY) (*DP 1–DP 56*); notes on [takeuforward.org](https://takeuforward.org) | Video + notes | A structured problem-by-problem walkthrough that matches this plan closely. Lecture numbers in this plan are the ones in the video titles. |
 | Aditya Verma: Recursion and DP playlists (YouTube) | Video | Excellent on knapsack, LCS, and matrix-chain families |
 | [USACO Guide](https://usaco.guide) (Gold/Platinum DP modules) | Text + problems | Knapsack, trees, bitmask, range, and digit DP |
@@ -287,7 +287,7 @@ backtrack(state):
 | Thu | 1–1.5 h | LC 131 (try every split point). |
 | Fri | 1–1.5 h | LC 241 using plain recursion only. Note which substrings get solved more than once. |
 | **Sat** (weekend) | 3–4 h | The hard ones: LC 51 (sets for columns and both diagonals), LC 37, and LC 95. |
-| **Sun** (weekend) | 2–3 h | **Month 1 checkpoint:** add a cache to LC 241. Clear the redo list. Preview Week 5 with the first hour of the freeCodeCamp DP video. |
+| **Sun** (weekend) | 2–3 h | **Month 1 checkpoint:** add a cache to LC 241. Clear the redo list. Preview Week 5 with the first hour of the [freeCodeCamp DP video](https://www.youtube.com/watch?v=oBt53YbR9Kk), [0:00:00](https://www.youtube.com/watch?v=oBt53YbR9Kk&t=0s)–[1:09:56](https://www.youtube.com/watch?v=oBt53YbR9Kk&t=4196s): fib, gridTraveler and the memoization recipe. |
 
 **Key ideas**
 
@@ -321,7 +321,7 @@ backtrack(state):
 
 ### Resources
 
-- 🎥 freeCodeCamp: *Dynamic Programming – Learn to Solve Algorithmic Problems* (Alvin Zablan). Watch the memoization half this week.
+- 🎥 freeCodeCamp: [*Dynamic Programming – Learn to Solve Algorithmic Problems*](https://www.youtube.com/watch?v=oBt53YbR9Kk) (Alvin Zablan). Watch the memoization half this week, [0:00:00](https://www.youtube.com/watch?v=oBt53YbR9Kk&t=0s)–[3:10:53](https://www.youtube.com/watch?v=oBt53YbR9Kk&t=11453s): the first hour (to [1:09:56](https://www.youtube.com/watch?v=oBt53YbR9Kk&t=4196s)) is the Week 4 Sunday preview, and canSum through allConstruct is the rest.
 - 🎥 MIT 6.006 Spring 2020, the first DP lecture (SRTBOT: Subproblems, Relate, Topological order, Base, Original, Time).
 - 📖 Jeff Erickson, *Algorithms*, Ch 3.1–3.4.
 - 🎥 Striver DP series, **DP 1–DP 6**: introduction, climbing stairs, frog jump, frog jump with k distance, max sum of non-adjacent elements, house robber II.
@@ -338,7 +338,7 @@ backtrack(state):
 | Thu | 1–1.5 h | LC 198 in four versions: recursion, memoized, table, O(1) space. |
 | Fri | 1–1.5 h | LC 1137 and LC 740 (turns into House Robber). |
 | **Sat** (weekend) | 3–4 h | Watch the MIT 6.006 SRTBOT lecture. Solve LC 213 and LC 96, then AtCoder A, B, and C. |
-| **Sun** (weekend) | 2–3 h | Do the **checkpoint** and CSES Dice Combinations. Preview Week 6 with the tabulation half of the freeCodeCamp video. |
+| **Sun** (weekend) | 2–3 h | Do the **checkpoint** and CSES Dice Combinations. Preview Week 6 with the tabulation half of the [freeCodeCamp DP video](https://www.youtube.com/watch?v=oBt53YbR9Kk), [3:10:53](https://www.youtube.com/watch?v=oBt53YbR9Kk&t=11453s)–[5:07:44](https://www.youtube.com/watch?v=oBt53YbR9Kk&t=18464s). |
 
 **Key ideas**
 
@@ -371,7 +371,7 @@ backtrack(state):
 
 ### Resources
 
-- 🎥 freeCodeCamp DP video: the tabulation half (canSum / howSum / bestSum are the same idea as Coin Change).
+- 🎥 [freeCodeCamp DP video](https://www.youtube.com/watch?v=oBt53YbR9Kk): the tabulation half, [3:10:53](https://www.youtube.com/watch?v=oBt53YbR9Kk&t=11453s)–[5:07:44](https://www.youtube.com/watch?v=oBt53YbR9Kk&t=18464s) (canSum / howSum / bestSum are the same idea as Coin Change).
 - 📖 [USACO Guide](https://usaco.guide): Gold → *Longest Increasing Subsequence* module (covers the O(n log n) method).
 - 🎥 Striver DP series, **DP 41–DP 47**: the LIS lectures (LIS, printing it, LIS with binary search, largest divisible subset, longest string chain, bitonic subsequence, number of LIS).
 - 🎥 NeetCode: LC 322, LC 139, LC 91.
