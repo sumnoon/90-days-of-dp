@@ -1,21 +1,17 @@
-// Week 5 Friday: LC 740 Delete and Earn (sort, then memoized take / skip)
-// The recursion goes up to 20,000 calls deep, more than Windows' 1 MB default
-// stack holds at -O0. To run the LeetCode-size tests, build with a bigger stack:
-//   g++ -std=c++20 -Wl,--stack,8388608 -o t lc0740_delete_and_earn.cpp && ./t --limits
+// Week 5 Friday: LC 740 Delete and Earn (House Robber over the values, memoized)
 #include <algorithm>
 #include <chrono>
 #include <cstring>
 #include <iostream>
 #include <random>
-#include <string>
 #include <vector>
 using namespace std;
 
 class Solution {
    public:
     int memo[20001];
-    int calcMemo(int idx, vector<int>& nums) {
-        if (idx >= nums.size()) {
+    int calcMemo(int idx, vector<int>& sums) {
+        if (idx >= sums.size()) {
             return 0;
         }
 
@@ -23,45 +19,30 @@ class Solution {
             return memo[idx];
         }
 
-        int cur = nums[idx];
-        int sum = nums[idx];
-        int ind = idx + 1;
-
-        while (ind < nums.size() && nums[ind] == cur) {
-            sum += nums[idx];
-            ind++;
-        }
-
-        while (ind < nums.size() && nums[ind] == cur + 1) {
-            ind++;
-        }
-
-        return memo[idx] = max(sum + calcMemo(ind, nums), calcMemo(idx + 1, nums));
+        return memo[idx] = max(calcMemo(idx + 2, sums) + sums[idx], calcMemo(idx + 1, sums));
     }
-    int calcRecurse(int idx, vector<int>& nums) {
-        if (idx >= nums.size()) {
+    int calcRecurse(int idx, vector<int>& sums) {
+        if (idx >= sums.size()) {
             return 0;
         }
 
-        int cur = nums[idx];
-        int sum = nums[idx];
-        int ind = idx + 1;
-
-        while (ind < nums.size() && nums[ind] == cur) {
-            sum += nums[idx];
-            ind++;
-        }
-
-        while (ind < nums.size() && nums[ind] == cur + 1) {
-            ind++;
-        }
-
-        return max(sum + calcRecurse(ind, nums), calcRecurse(idx + 1, nums));
+        return max(calcRecurse(idx + 2, sums) + sums[idx], calcRecurse(idx + 1, sums));
     }
     int deleteAndEarn(vector<int>& nums) {
+        int mx = 0;
+
+        for (int i = 0; i < nums.size(); ++i) {
+            mx = max(mx, nums[i]);
+        }
+
+        vector<int> sums(mx + 1, 0);
+
+        for (auto num : nums) {
+            sums[num] += num;
+        }
+
         memset(memo, -1, sizeof(memo));
-        sort(nums.begin(), nums.end());
-        return calcMemo(0, nums);
+        return calcMemo(0, sums);
     }
 };
 
@@ -75,7 +56,7 @@ int reference(const vector<int>& nums) {
     return cur;
 }
 
-int main(int argc, char** argv) {
+int main() {
     vector<vector<int>> tests = {{3, 4, 2}, {2, 2, 3, 3, 3, 4}, {1}, {1, 1, 1}, {1, 2}, {1, 3}, {8, 10, 4, 9, 1, 3, 5, 9, 4, 10}};
     mt19937 rng(740);
     for (int t = 0; t < 500; ++t) {                    // random, up to 30 numbers from a small range
@@ -88,14 +69,13 @@ int main(int argc, char** argv) {
     for (auto a : tests) {
         int want = reference(a);
         int got = Solution().deleteAndEarn(a);
-        vector<int> b = a;
-        sort(b.begin(), b.end());
-        int plain = b.size() <= 20 ? Solution().calcRecurse(0, b) : want;
+        vector<int> pts(*max_element(a.begin(), a.end()) + 1, 0);
+        for (int x : a) pts[x] += x;
+        int plain = pts.size() <= 25 ? Solution().calcRecurse(0, pts) : want;
         if (got != want || plain != want) { ++failed; cout << "FAIL on " << a.size() << " numbers" << endl; }
     }
     cout << tests.size() << " arrays (7 fixed + 500 random): " << (failed ? "some FAILED" : "memoized and plain both match the reference") << endl;
 
-    if (argc < 2 || string(argv[1]) != "--limits") return failed != 0;
     for (int kind = 0; kind < 2; ++kind) {             // LeetCode's limits: 20,000 numbers, each up to 10,000
         vector<int> a(20000);
         for (int i = 0; i < 20000; ++i) a[i] = kind == 0 ? 1 + rng() % 10000 : 10000;
