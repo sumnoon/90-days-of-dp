@@ -43,9 +43,9 @@ The tabulation half starts at [3:10:53](https://www.youtube.com/watch?v=oBt53YbR
 
 - [x] ⭐ LC 70 Climbing Stairs — [notes](notes/lc0070_climbing_stairs.md)
 - [x] ⭐ LC 746 Min Cost Climbing Stairs — [notes](notes/lc0746_min_cost_climbing_stairs.md)
-- [ ] ⭐ LC 198 House Robber
+- [x] ⭐ LC 198 House Robber — [notes](notes/lc0198_house_robber.md)
 - [ ] ⭐ LC 213 House Robber II
-- [ ] LC 740 Delete and Earn
+- [x] LC 740 Delete and Earn — [notes](notes/lc0740_delete_and_earn.md)
 - [ ] LC 1137 N-th Tribonacci Number
 - [ ] LC 96 Unique Binary Search Trees
 - [ ] CSES: Dice Combinations
