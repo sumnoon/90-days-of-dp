@@ -36,10 +36,9 @@ would stay 0.
   recursion is **one call deep per unit of `n`**: a million calls at CSES's
   limit. That crashes with Windows' default stack (already at n ≈ 50,000),
   and with a 256 MB stack it runs.
-- **Table, `calcTab`:** what `main` uses. Filling `memo[1]`, `memo[2]`, …
+- **Table, `calcTab`:** filling `memo[1]`, `memo[2]`, …
   in order means `memo[i − 6 … i − 1]` are always ready, and there's no
   recursion. n = 1,000,000 takes about 0.2 s with the normal stack.
-
 - **O(1) space, `calcConst`:** what `main` uses now. See below.
 
 This is the practical reason to know the table form: same answers, but no
