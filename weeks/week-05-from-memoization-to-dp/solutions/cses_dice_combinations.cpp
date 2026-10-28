@@ -36,11 +36,24 @@ int calcTab(int n) {
     }
     return memo[n];
 }
+
+int calcConst(int n) {
+    int ret[6] = {1, 0, 0, 0, 0, 0};
+    for (int i = 1; i <= n; ++i) {
+        int sum = 0;
+        for (int j = 0; j < 6; ++j) {
+            sum = (sum + ret[j]) % mod;
+        }
+        ret[i % 6] = sum;
+    }
+    return ret[n % 6];
+}
+
 int main() {
     int n, ans;
     cin >> n;
     memo.resize(n + 1);
-    ans = calcTab(n);
+    ans = calcConst(n);
     cout << ans << endl;
     return 0;
 }
