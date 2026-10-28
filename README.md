@@ -52,7 +52,7 @@ Source in [`docs/`](docs/).
 ## Progress
 
 Month 1 (recursion and backtracking) is done; the Month 1 checkpoint, LC 241
-with a cache, passed. **Now: Week 5**, turning that cache into tables.
+with a cache, passed. **Now: Week 6**, 1D DP: writing the state in one sentence before the code.
 
 | Week | Dates | Topic | Done |
 |---|---|---|---|

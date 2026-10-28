@@ -39,7 +39,7 @@ Wednesday).
 
 ⭐ = core, don't skip
 
-- [ ] ⭐ LC 53 Maximum Subarray
+- [x] ⭐ LC 53 Maximum Subarray ([notes](notes/lc0053_maximum_subarray.md))
 - [ ] LC 152 Maximum Product Subarray
 - [ ] ⭐ LC 322 Coin Change
 - [ ] ⭐ LC 139 Word Break
@@ -57,3 +57,5 @@ Wednesday).
 ## Notes
 
 <!-- For each problem: state, transition, base case, key insight. -->
+
+One note per solved problem, indexed in [notes/README.md](notes/README.md).
