@@ -48,7 +48,7 @@ The tabulation half starts at [3:10:53](https://www.youtube.com/watch?v=oBt53YbR
 - [x] LC 740 Delete and Earn — [notes](notes/lc0740_delete_and_earn.md)
 - [x] LC 1137 N-th Tribonacci Number — [notes](notes/lc1137_nth_tribonacci_number.md)
 - [ ] LC 96 Unique Binary Search Trees
-- [ ] CSES: Dice Combinations
+- [x] CSES: Dice Combinations — [notes](notes/cses_dice_combinations.md)
 
 ## Checkpoint
 
