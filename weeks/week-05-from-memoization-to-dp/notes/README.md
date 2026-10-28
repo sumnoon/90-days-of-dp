@@ -13,6 +13,7 @@ Written to be re-read before a redo, not while solving.
 | [⭐ LC 746 Min Cost Climbing Stairs](lc0746_min_cost_climbing_stairs.md) | 31 | clean | LC 70 with `min` in place of `+`: pay for this step, then take the cheaper next move. |
 | [LC 509 Fibonacci, three ways](lc0509_fibonacci_number_three_ways.md) | 29 | clean | Same recurrence three ways: recompute (331M calls at n = 40), remember (79), or fill in order (39 steps). |
 | [LC 1137 N-th Tribonacci Number](lc1137_nth_tribonacci_number.md) | 33 | clean | Fibonacci with a third term; uncached, n = 37 makes 4 billion calls, cached it's 37 values. |
+| [CSES Dice Combinations](cses_dice_combinations.md) | 35 | clean | Split on the last throw: ways(i) = ways(i − 1) + … + ways(i − 6). The table avoids a million-deep recursion. |
 
 "clean" = solved without a hint. Anything else is on the
 [redo list](../../../redo-list.md).
