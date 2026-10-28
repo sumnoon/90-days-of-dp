@@ -52,7 +52,6 @@ int calcConst(int n) {
 int main() {
     int n, ans;
     cin >> n;
-    memo.resize(n + 1);
     ans = calcConst(n);
     cout << ans << endl;
     return 0;

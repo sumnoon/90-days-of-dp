@@ -79,9 +79,8 @@ reducing, the largest a sum can be is about 2 × 10⁹, still under `INT_MAX`
 
 ## Small notes on the code
 
-- `main` still calls `memo.resize(n + 1)`, allocating a million `int`s that
-  `calcConst` never touches. Drop it when using `calcConst` to make the whole
-  program O(1) space.
+- `main` no longer calls `memo.resize(n + 1)`, so the whole program is O(1)
+  space. `calc` and `calcTab` need it back if `main` switches to them.
 - `calc` is no longer called. If it were, it would need the vector filled with
   −1 first: `main` now resizes with zeros, which `calc` would read as "already
   computed, 0 ways".
