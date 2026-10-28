@@ -52,7 +52,8 @@ The tabulation half starts at [3:10:53](https://www.youtube.com/watch?v=oBt53YbR
 
 ## Checkpoint
 
-- [ ] Write all 4 versions of House Robber from memory.
+- [x] Write all 4 versions of House Robber from memory.
+  Passed Wed Oct 28 (Sunday's checkpoint, three days late): [checkpoint solve](redos/lc0198_house_robber_checkpoint.cpp). Written fresh, with a different table from Thursday's (`memo[i]` = best of houses 0..i). The memoized version first called the plain recursion inside it (40 houses: 2.4 s); fixed after a hint, and 100 houses now take 0 ms.
 
 ## Notes
 
