@@ -1,8 +1,9 @@
-# ⭐ LC 53: Maximum Subarray, four versions
+# ⭐ LC 53: Maximum Subarray, five versions
 
 - **Solution:** [`solutions/lc0053_maximum_subarray.cpp`](../solutions/lc0053_maximum_subarray.cpp)
 - **Day:** 36 (Week 6 Mon), solved on Wed 28 Oct
-- **Solved without help?** Kadane, the table and the memoized version, yes.
+- **Solved without help?** Kadane, the table, the memoized version and
+  divide and conquer, yes.
   The plain recursion needed a hint (a trace of `[5, -10, 1]`), so it's on the
   [redo list](../../../redo-list.md).
 
@@ -29,7 +30,22 @@ the old run is dead weight and you start over.
 
 `dp[0] = nums[0]`: the only subarray ending at index 0 is `[nums[0]]`.
 
-## Four versions
+## Five versions
+
+Each one is a single call that takes `nums` and returns the answer, so it can
+be run or submitted on its own:
+
+| Call | Version |
+|---|---|
+| `recurse(nums)` | plain recursion: sets `global_max`, calls `calcRecurse(n − 1)` |
+| `memoized(nums)` | sizes `memo` and `visited`, takes the max of `calcMemo(i)` over every `i` |
+| `calcTab(nums)` | the table, sizing `memo` itself |
+| `kadane(nums)` | Kadane |
+| `maxSubArray(nums)` | divide and conquer (submitted) |
+
+`memo` is a `vector` sized per call instead of `int memo[100010]`, so a
+`Solution` is small enough to create anywhere, and one object can run every
+version on any array.
 
 - **`calcRecurse`:** returns `dp[idx]` and records the overall best in
   `global_max` on the way back up. Each call makes **one** call, so it's
@@ -41,11 +57,37 @@ the old run is dead weight and you start over.
   again, O(n²).
 - **`calcTab`:** fill `dp[0]`, `dp[1]`, … in order and keep the max as you go.
   This is the form the plan asks for.
-- **`maxSubArray` (submitted), Kadane:** `calcTab` with the table squeezed into
+- **`kadane`:** `calcTab` with the table squeezed into
   one variable. `sum` is `dp[i − 1]` clamped at 0: resetting `sum` to 0 when it
   goes negative is the same choice as `max(nums[i], dp[i − 1] + nums[i])`.
   `ans` is updated *before* the reset, so an all-negative array still returns
   its largest number, not 0.
+- **`maxSubArray` (submitted), divide and conquer:** see below.
+
+## Divide and conquer
+
+```cpp
+return max({cross_max, leftVal, rightVal});
+```
+
+Split at `mid`. The best subarray lies entirely in the left half, entirely in
+the right half, or **crosses `mid`**. The first two are recursive calls. A
+crossing subarray is a piece ending at `mid` plus a piece starting at
+`mid + 1`, and the two pieces can be chosen separately:
+
+- walk left from `mid`, keeping the best running sum: `leftPrefixVal`;
+- walk right from `mid + 1` the same way: `rightPrefixVal`.
+
+Both start at `INT_MIN` and take at least one number, so each side is
+non-empty, as a crossing subarray needs.
+
+It's not a DP: the halves don't share subproblems, so there's nothing to
+cache. Each level of the recursion scans every number once, and there are
+log n levels: **O(n log n)**, against Kadane's O(n). On LeetCode's 100,000
+numbers that's about 10 ms. The recursion is only about 17 calls deep, so
+unlike `recurse` it has no stack problem. It's the Week 4 merge-sort shape, and
+the same split is what a segment tree stores for range-maximum-subarray
+queries.
 
 ## The bug in the first `calcRecurse`
 
@@ -63,19 +105,18 @@ catches exactly this mix-up.
 
 ## Small notes on the code
 
-- `global_max` isn't initialised in the class, so the caller has to set it to
-  `INT_MIN` before calling `calcRecurse`; the test does.
+- `recurse` resets `global_max` to `INT_MIN` before each run; without that a
+  second call would start from the previous array's answer.
 - `calcRecurse` is one call deep per index. On Windows' default 1 MB stack at
   `-O0` it ran at n = 20,000 and crashed at 50,000; LeetCode allows 100,000.
-  `calcTab` and `maxSubArray` have no such limit.
-- `int memo[100010]` makes each `Solution` 400 KB, too big to create as a local
-  variable on Windows. The test allocates it with `make_unique`.
-- `maxSubArray` compares `int i` with `nums.size()` (`-Wall`).
+  `memoized` has the same limit. `calcTab`, `kadane` and `maxSubArray` don't.
+- `divideAndConquire` is a typo for `divideAndConquer`.
 
 ## Complexity
 
-O(n) time for all four. O(n) space for the recursion, memo and table; O(1)
-for Kadane.
+O(n) time for the four DP versions, O(n log n) for divide and conquer. O(n)
+space for the recursion, memo and table; O(1) for Kadane; O(log n) stack for
+divide and conquer.
 
 ## Tested
 
@@ -83,11 +124,12 @@ for Kadane.
 - small cases: `[-1]`, `[-3, -1, -2]` (all negative), `[5, -10, 1]` and
   `[0, 0]`
 - 2,000 random arrays of 1–12 numbers from −10 to 10
-- LeetCode's limits: 100,000 copies of −10,000 (Kadane and the table)
+- LeetCode's limits: 100,000 copies of −10,000, and 100,000 random numbers
+  (the table, Kadane and divide and conquer)
 
-All four versions were checked against a brute force that tries every
+All five versions were checked against a brute force that tries every
 subarray.
 
 ## Key insight
 
-Define the state as the best subarray *ending at* `i`: then it either starts fresh or extends `dp[i − 1]`, and the answer is the max over all `i`. Kadane is that table kept in one variable.
+Define the state as the best subarray *ending at* `i`: then it either starts fresh or extends `dp[i − 1]`, and the answer is the max over all `i`. Kadane is that table kept in one variable. Divide and conquer gets the same answer in O(n log n) by splitting at the middle and handling the crossing case.
