@@ -110,7 +110,6 @@ catches exactly this mix-up.
 - `calcRecurse` is one call deep per index. On Windows' default 1 MB stack at
   `-O0` it ran at n = 20,000 and crashed at 50,000; LeetCode allows 100,000.
   `memoized` has the same limit. `calcTab`, `kadane` and `maxSubArray` don't.
-- `divideAndConquire` is a typo for `divideAndConquer`.
 
 ## Complexity
 
