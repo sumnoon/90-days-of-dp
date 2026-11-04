@@ -1,6 +1,6 @@
 # Week 8: String DP (Two Sequences)
 
-**Dates:** Nov 9 – Nov 15  
+**Dates:** Nov 23 – Nov 29  
 **Full guide:** [PLAN.md](../../PLAN.md)
 
 ## Schedule

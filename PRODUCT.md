@@ -20,7 +20,7 @@ craft carries the portfolio weight.
 ## Product Purpose
 
 `docs/` is the public face of a personal 12-week training log that runs from
-Day 0 (Sun Sep 20, 2026) to Week 12 (Dec 7–13, 2026), plus a mastery test.
+Day 0 (Sun Sep 20, 2026) to Week 12 (Dec 21–27, 2026), plus a mastery test.
 
 The site holds **interactive explanations of ideas a static diagram cannot
 carry** — things whose whole point is *when* something happens, or *how many

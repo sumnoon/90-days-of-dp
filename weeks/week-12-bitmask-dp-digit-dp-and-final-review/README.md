@@ -1,6 +1,6 @@
 # Week 12: Bitmask DP, Digit DP, and Final Review
 
-**Dates:** Dec 7 – Dec 13  
+**Dates:** Dec 21 – Dec 27  
 **Full guide:** [PLAN.md](../../PLAN.md)
 
 ## Schedule
