@@ -69,7 +69,7 @@ Wednesday).
 ⭐ = core, don't skip
 
 - [x] ⭐ LC 53 Maximum Subarray ([notes](notes/lc0053_maximum_subarray.md))
-- [ ] LC 152 Maximum Product Subarray
+- [x] LC 152 Maximum Product Subarray ([notes](notes/lc0152_maximum_product_subarray.md))
 - [ ] ⭐ LC 322 Coin Change
 - [ ] ⭐ LC 139 Word Break
 - [ ] ⭐ LC 91 Decode Ways
