@@ -79,13 +79,13 @@ class Solution {
     }
 
     // 5. Divide and conquer: best in the left half, the right half, or crossing mid.
-    int divideAndConquire(int left, int right, vector<int>& nums) {
+    int divideAndConquer(int left, int right, vector<int>& nums) {
         if (left == right) {
             return nums[left];
         }
         int mid = left + (right - left) / 2;
-        int leftVal = divideAndConquire(left, mid, nums);
-        int rightVal = divideAndConquire(mid + 1, right, nums);
+        int leftVal = divideAndConquer(left, mid, nums);
+        int rightVal = divideAndConquer(mid + 1, right, nums);
 
         int leftPrefixVal = INT_MIN, sum = 0;
 
@@ -107,7 +107,7 @@ class Solution {
     }
     int maxSubArray(vector<int>& nums) {
         int n = nums.size();
-        int ans = divideAndConquire(0, n - 1, nums);
+        int ans = divideAndConquer(0, n - 1, nums);
         return ans;
     }
 };
@@ -123,9 +123,15 @@ int brute(const vector<int>& a) {
 }
 
 int main() {
-    vector<vector<int>> tests = {{-2, 1, -3, 4, -1, 2, 1, -5, 4}, {1}, {5, 4, -1, 7, 8}, {-1}, {-3, -1, -2}, {5, -10, 1}, {0, 0}};
+    vector<vector<int>> tests = {{-2, 1, -3, 4, -1, 2, 1, -5, 4},
+                                 {1},
+                                 {5, 4, -1, 7, 8},
+                                 {-1},
+                                 {-3, -1, -2},
+                                 {5, -10, 1},
+                                 {0, 0}};
     mt19937 rng(53);
-    for (int t = 0; t < 2000; ++t) {                   // random, 1..12 numbers, -10..10 each
+    for (int t = 0; t < 2000; ++t) {  // random, 1..12 numbers, -10..10 each
         vector<int> a(1 + rng() % 12);
         for (int& x : a) x = (int)(rng() % 21) - 10;
         tests.push_back(a);
@@ -134,22 +140,28 @@ int main() {
     int failed = 0;
     for (auto& a : tests) {
         int want = brute(a);
-        if (s.recurse(a) != want || s.memoized(a) != want || s.calcTab(a) != want || s.kadane(a) != want ||
-            s.maxSubArray(a) != want) {
+        if (s.recurse(a) != want || s.memoized(a) != want || s.calcTab(a) != want ||
+            s.kadane(a) != want || s.maxSubArray(a) != want) {
             ++failed;
             cout << "FAIL on " << a.size() << " numbers" << endl;
         }
     }
-    // LeetCode's limits. recurse and memoized are left out: 100,000 calls deep overflows Windows' 1 MB stack.
+    // LeetCode's limits. recurse and memoized are left out:
+    // 100,000 calls deep overflows Windows' 1 MB stack.
     vector<int> neg(100000, -10000), mixed(100000);
     for (int& x : mixed) x = (int)(rng() % 20001) - 10000;
     for (auto* a : {&neg, &mixed}) {
         int want = s.kadane(*a);
         auto t0 = chrono::steady_clock::now();
         int dc = s.maxSubArray(*a);
-        auto ms = chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now() - t0).count();
-        if (s.calcTab(*a) != want || dc != want) { ++failed; cout << "FAIL on 100,000 numbers" << endl; }
-        cout << "100,000 numbers: answer " << want << ", divide and conquer took " << ms << " ms" << endl;
+        auto ms =
+            chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now() - t0).count();
+        if (s.calcTab(*a) != want || dc != want) {
+            ++failed;
+            cout << "FAIL on 100,000 numbers" << endl;
+        }
+        cout << "100,000 numbers: answer " << want << ", divide and conquer took " << ms << " ms"
+             << endl;
     }
     cout << tests.size() << " arrays (7 fixed + 2000 random): "
          << (failed ? "some FAILED" : "all five versions match the brute force") << endl;
