@@ -1,6 +1,6 @@
 # Week 9: The Knapsack Family
 
-**Dates:** Nov 30 – Dec 6  
+**Dates:** Dec 7 – Dec 13  
 **Full guide:** [PLAN.md](../../PLAN.md)
 
 ## Schedule

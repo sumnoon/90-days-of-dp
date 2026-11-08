@@ -45,18 +45,18 @@ You don't need to finish all of these. Choose **one video series and one text re
 | 3 | Oct 5 – Oct 11 | Backtracking I (Subsets, Permutations, Combinations) |
 | 4 | Oct 12 – Oct 18 | Backtracking II and Divide & Conquer |
 | 5 | Oct 19 – Oct 25 | From Memoization to DP |
-| 6 | Oct 26 – Nov 15 | 1D DP (Sequences and Decisions), stretched by a break |
-| 7 | Nov 16 – Nov 22 | 2D Grid DP |
-| 8 | Nov 23 – Nov 29 | String DP (Two Sequences) |
-| 9 | Nov 30 – Dec 6 | The Knapsack Family |
-| 10 | Dec 7 – Dec 13 | Interval DP |
-| 11 | Dec 14 – Dec 20 | Tree DP and State Machine DP |
-| 12 | Dec 21 – Dec 27 | Bitmask DP, Digit DP, and Final Review |
-| Test | Dec 28 – Jan 3 | Mastery test and the optional bonus weekend |
+| 6 | Oct 26 – Nov 22 | 1D DP (Sequences and Decisions), stretched by two breaks |
+| 7 | Nov 23 – Nov 29 | 2D Grid DP |
+| 8 | Nov 30 – Dec 6 | String DP (Two Sequences) |
+| 9 | Dec 7 – Dec 13 | The Knapsack Family |
+| 10 | Dec 14 – Dec 20 | Interval DP |
+| 11 | Dec 21 – Dec 27 | Tree DP and State Machine DP |
+| 12 | Dec 28 – Jan 3 | Bitmask DP, Digit DP, and Final Review |
+| Test | Jan 4 – Jan 10 | Mastery test and the optional bonus weekend |
 
-**Month milestones:** Month 1 checkpoint on **Sun Oct 18**, Month 2 on **Sun Nov 29**, and Month 3 (the Week 12 mock) on **Sun Dec 27**.
+**Month milestones:** Month 1 checkpoint on **Sun Oct 18**, Month 2 on **Sun Dec 6**, and Month 3 (the Week 12 mock) on **Sun Jan 3**.
 
-**Rescheduled on Wed Nov 4:** nothing was solved Oct 29 – Nov 4, so Week 6 resumes on Thu Nov 5 and runs to Sun Nov 15, and Weeks 7–12 each move two weeks later. No week loses content. The day-by-day catch-up is in the [Week 6 README](weeks/week-06-1d-dp/README.md#catch-up-schedule-thu-nov-5--sun-nov-15). Plan day numbers don't change: Week 7 Monday is still Day 43.
+**Rescheduled on Sun Nov 8:** after two interruptions, the rest of Week 6 restarts on Mon Nov 9 and runs to Sun Nov 22, with buffer days built in. Weeks 7–12 are now three weeks later than the original plan. No week loses content. The day-by-day catch-up is in the [Week 6 README](weeks/week-06-1d-dp/README.md#catch-up-schedule-mon-nov-9--sun-nov-22). Plan day numbers don't change: Week 7 Monday is still Day 43.
 
 ### Day 0: Today, Sunday Sep 20 (2–3 h)
 
@@ -367,7 +367,7 @@ backtrack(state):
 
 ---
 
-## Week 6: 1D DP (Sequences and Decisions) (Oct 26 – Nov 15)
+## Week 6: 1D DP (Sequences and Decisions) (Oct 26 – Nov 22)
 
 **Concepts:** "dp[i] = best answer ending at i" vs. "best answer using the first i items", and the LIS pattern.
 
@@ -418,7 +418,7 @@ backtrack(state):
 
 ---
 
-## Week 7: 2D Grid DP (Nov 16 – Nov 22)
+## Week 7: 2D Grid DP (Nov 23 – Nov 29)
 
 **Concepts:** dp[r][c] over a grid, fill order, rolling arrays for space optimization, and filling the table backward when the answer depends on future cells.
 
@@ -466,7 +466,7 @@ backtrack(state):
 
 ---
 
-## Week 8: String DP (Two Sequences) (Nov 23 – Nov 29)
+## Week 8: String DP (Two Sequences) (Nov 30 – Dec 6)
 
 **Concepts:** dp[i][j] over prefixes of two strings, and the match/mismatch transition. This family appears in interviews very often.
 
@@ -520,7 +520,7 @@ backtrack(state):
 
 # Month 3: Advanced DP Patterns
 
-## Week 9: The Knapsack Family (Nov 30 – Dec 6)
+## Week 9: The Knapsack Family (Dec 7 – Dec 13)
 
 **Concepts:** 0/1 knapsack (loop capacity **backward**), unbounded knapsack (loop capacity **forward**), counting vs. optimizing, and combinations vs. permutations (which loop goes on the outside).
 
@@ -572,7 +572,7 @@ backtrack(state):
 
 ---
 
-## Week 10: Interval DP (Dec 7 – Dec 13)
+## Week 10: Interval DP (Dec 14 – Dec 20)
 
 **Concepts:** dp[i][j] over a subarray, trying every split point k, iterating by **length** (short intervals first), and the "last action" trick.
 
@@ -623,7 +623,7 @@ backtrack(state):
 
 ---
 
-## Week 11: Tree DP and State Machine DP (Dec 14 – Dec 20)
+## Week 11: Tree DP and State Machine DP (Dec 21 – Dec 27)
 
 **Concepts:** returning a tuple of states from each subtree, and modeling a problem as a finite set of states with transitions between them.
 
@@ -681,7 +681,7 @@ backtrack(state):
 
 ---
 
-## Week 12: Bitmask DP, Digit DP, and Final Review (Dec 21 – Dec 27)
+## Week 12: Bitmask DP, Digit DP, and Final Review (Dec 28 – Jan 3)
 
 **Concepts:** using a bitmask to represent "which items are used" (practical when n ≤ 20), TSP-style DP, and digit DP with a "tight" flag.
 

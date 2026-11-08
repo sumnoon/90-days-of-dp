@@ -4,7 +4,7 @@ This repo is Sumnoon's personal **90 Days of DP** training log (#90DaysOfDP), sh
 
 ## The plan
 - Full plan: `PLAN.md` (12 weeks, recursion → backtracking → core DP → advanced DP).
-- Started **Sun Sep 20, 2026** (Day 0). Week 1 = Sep 21–27 … Week 5 = Oct 19–25. Week 6 was stretched to Oct 26 – Nov 15 after a break, so Week 7 = Nov 16–22 … Week 12 = Dec 21–27, and the mastery test is Dec 28 – Jan 3. Plan day numbers are unchanged (Week 7 Mon = Day 43).
+- Started **Sun Sep 20, 2026** (Day 0). Week 1 = Sep 21–27 … Week 5 = Oct 19–25. Week 6 was stretched to Oct 26 – Nov 22 after two breaks, so Week 7 = Nov 23–29 … Week 12 = Dec 28 – Jan 3, and the mastery test is Jan 4–10, 2027. Plan day numbers are unchanged (Week 7 Mon = Day 43).
 - Schedule is built around a Mon–Fri job: weekdays 1–1.5 h, Saturday 3–4 h (hard problems + videos), Sunday 2–3 h (redo, checkpoint, preview).
 
 ## Language

@@ -1,6 +1,6 @@
 # Week 10: Interval DP
 
-**Dates:** Dec 7 – Dec 13  
+**Dates:** Dec 14 – Dec 20  
 **Full guide:** [PLAN.md](../../PLAN.md)
 
 ## Schedule
