@@ -43,7 +43,7 @@ Wednesday).
 - [x] LC 152 Maximum Product Subarray ([notes](notes/lc0152_maximum_product_subarray.md))
 - [ ] ⭐ LC 322 Coin Change
 - [ ] ⭐ LC 139 Word Break
-- [ ] ⭐ LC 91 Decode Ways
+- [x] ⭐ LC 91 Decode Ways ([notes](notes/lc0091_decode_ways.md))
 - [ ] ⭐ LC 300 Longest Increasing Subsequence
 - [ ] LC 673 Number of Longest Increasing Subsequence
 - [ ] LC 1048 Longest String Chain
