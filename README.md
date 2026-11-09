@@ -3,7 +3,7 @@
 **From recursion to dynamic programming mastery, one day at a time.** Follow along with **#90DaysOfDP**.
 
 A 12-week plan to go from basic recursion to strong dynamic programming, built around a Monday–Friday job.
-The plan runs from **Sun Sep 20, 2026** (Day 0) to **Sun Dec 27, 2026**, with a mastery test Dec 28 – Jan 3. A break in Week 6 moved everything from Week 7 on two weeks later; see [PLAN.md](PLAN.md#your-calendar-starting-sunday-sep-20-2026).
+The plan runs from **Sun Sep 20, 2026** (Day 0) to **Sun Dec 13, 2026**, with a mastery test Dec 14–20.
 
 - 📘 **Full plan:** [PLAN.md](PLAN.md)
 - 🔁 **Redo list:** [redo-list.md](redo-list.md)
@@ -61,13 +61,13 @@ with a cache, passed. **Now: Week 6**, 1D DP: writing the state in one sentence 
 | [3](weeks/week-03-backtracking-i/) | Oct 5 – Oct 11 | Backtracking I (Subsets, Permutations, Combinations) | ☑ |
 | [4](weeks/week-04-backtracking-ii-and-divide-conquer/) | Oct 12 – Oct 18 | Backtracking II and Divide & Conquer | ☑ |
 | [5](weeks/week-05-from-memoization-to-dp/) | Oct 19 – Oct 25 | From Memoization to DP | ☑ |
-| [6](weeks/week-06-1d-dp/) | Oct 26 – Nov 15 | 1D DP (Sequences and Decisions) | ☐ |
-| [7](weeks/week-07-2d-grid-dp/) | Nov 16 – Nov 22 | 2D Grid DP | ☐ |
-| [8](weeks/week-08-string-dp/) | Nov 23 – Nov 29 | String DP (Two Sequences) | ☐ |
-| [9](weeks/week-09-the-knapsack-family/) | Nov 30 – Dec 6 | The Knapsack Family | ☐ |
-| [10](weeks/week-10-interval-dp/) | Dec 7 – Dec 13 | Interval DP | ☐ |
-| [11](weeks/week-11-tree-dp-and-state-machine-dp/) | Dec 14 – Dec 20 | Tree DP and State Machine DP | ☐ |
-| [12](weeks/week-12-bitmask-dp-digit-dp-and-final-review/) | Dec 21 – Dec 27 | Bitmask DP, Digit DP, and Final Review | ☐ |
+| [6](weeks/week-06-1d-dp/) | Oct 26 – Nov 1 | 1D DP (Sequences and Decisions) | ☐ |
+| [7](weeks/week-07-2d-grid-dp/) | Nov 2 – Nov 8 | 2D Grid DP | ☐ |
+| [8](weeks/week-08-string-dp/) | Nov 9 – Nov 15 | String DP (Two Sequences) | ☐ |
+| [9](weeks/week-09-the-knapsack-family/) | Nov 16 – Nov 22 | The Knapsack Family | ☐ |
+| [10](weeks/week-10-interval-dp/) | Nov 23 – Nov 29 | Interval DP | ☐ |
+| [11](weeks/week-11-tree-dp-and-state-machine-dp/) | Nov 30 – Dec 6 | Tree DP and State Machine DP | ☐ |
+| [12](weeks/week-12-bitmask-dp-digit-dp-and-final-review/) | Dec 7 – Dec 13 | Bitmask DP, Digit DP, and Final Review | ☐ |
 
 ## Repo layout
 

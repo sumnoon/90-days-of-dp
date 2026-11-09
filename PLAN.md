@@ -45,18 +45,16 @@ You don't need to finish all of these. Choose **one video series and one text re
 | 3 | Oct 5 – Oct 11 | Backtracking I (Subsets, Permutations, Combinations) |
 | 4 | Oct 12 – Oct 18 | Backtracking II and Divide & Conquer |
 | 5 | Oct 19 – Oct 25 | From Memoization to DP |
-| 6 | Oct 26 – Nov 15 | 1D DP (Sequences and Decisions), stretched by a break |
-| 7 | Nov 16 – Nov 22 | 2D Grid DP |
-| 8 | Nov 23 – Nov 29 | String DP (Two Sequences) |
-| 9 | Nov 30 – Dec 6 | The Knapsack Family |
-| 10 | Dec 7 – Dec 13 | Interval DP |
-| 11 | Dec 14 – Dec 20 | Tree DP and State Machine DP |
-| 12 | Dec 21 – Dec 27 | Bitmask DP, Digit DP, and Final Review |
-| Test | Dec 28 – Jan 3 | Mastery test and the optional bonus weekend |
+| 6 | Oct 26 – Nov 1 | 1D DP (Sequences and Decisions) |
+| 7 | Nov 2 – Nov 8 | 2D Grid DP |
+| 8 | Nov 9 – Nov 15 | String DP (Two Sequences) |
+| 9 | Nov 16 – Nov 22 | The Knapsack Family |
+| 10 | Nov 23 – Nov 29 | Interval DP |
+| 11 | Nov 30 – Dec 6 | Tree DP and State Machine DP |
+| 12 | Dec 7 – Dec 13 | Bitmask DP, Digit DP, and Final Review |
+| Test | Dec 14 – 20 | Mastery test and the optional bonus weekend |
 
-**Month milestones:** Month 1 checkpoint on **Sun Oct 18**, Month 2 on **Sun Nov 29**, and Month 3 (the Week 12 mock) on **Sun Dec 27**.
-
-**Rescheduled on Wed Nov 4:** nothing was solved Oct 29 – Nov 4, so Week 6 resumes on Thu Nov 5 and runs to Sun Nov 15, and Weeks 7–12 each move two weeks later. No week loses content. The day-by-day catch-up is in the [Week 6 README](weeks/week-06-1d-dp/README.md#catch-up-schedule-thu-nov-5--sun-nov-15). Plan day numbers don't change: Week 7 Monday is still Day 43.
+**Month milestones:** Month 1 checkpoint on **Sun Oct 18**, Month 2 on **Sun Nov 15**, and Month 3 (the Week 12 mock) on **Sun Dec 13**.
 
 ### Day 0: Today, Sunday Sep 20 (2–3 h)
 
@@ -367,7 +365,7 @@ backtrack(state):
 
 ---
 
-## Week 6: 1D DP (Sequences and Decisions) (Oct 26 – Nov 15)
+## Week 6: 1D DP (Sequences and Decisions) (Oct 26 – Nov 1)
 
 **Concepts:** "dp[i] = best answer ending at i" vs. "best answer using the first i items", and the LIS pattern.
 
@@ -418,7 +416,7 @@ backtrack(state):
 
 ---
 
-## Week 7: 2D Grid DP (Nov 16 – Nov 22)
+## Week 7: 2D Grid DP (Nov 2 – Nov 8)
 
 **Concepts:** dp[r][c] over a grid, fill order, rolling arrays for space optimization, and filling the table backward when the answer depends on future cells.
 
@@ -466,7 +464,7 @@ backtrack(state):
 
 ---
 
-## Week 8: String DP (Two Sequences) (Nov 23 – Nov 29)
+## Week 8: String DP (Two Sequences) (Nov 9 – Nov 15)
 
 **Concepts:** dp[i][j] over prefixes of two strings, and the match/mismatch transition. This family appears in interviews very often.
 
@@ -520,7 +518,7 @@ backtrack(state):
 
 # Month 3: Advanced DP Patterns
 
-## Week 9: The Knapsack Family (Nov 30 – Dec 6)
+## Week 9: The Knapsack Family (Nov 16 – Nov 22)
 
 **Concepts:** 0/1 knapsack (loop capacity **backward**), unbounded knapsack (loop capacity **forward**), counting vs. optimizing, and combinations vs. permutations (which loop goes on the outside).
 
@@ -572,7 +570,7 @@ backtrack(state):
 
 ---
 
-## Week 10: Interval DP (Dec 7 – Dec 13)
+## Week 10: Interval DP (Nov 23 – Nov 29)
 
 **Concepts:** dp[i][j] over a subarray, trying every split point k, iterating by **length** (short intervals first), and the "last action" trick.
 
@@ -593,7 +591,7 @@ backtrack(state):
 | Thu | 1–1.5 h | Game DP: LC 877 and LC 486. |
 | Fri | 1–1.5 h | LC 1547. |
 | **Sat** (weekend) | 3–4 h | LC 312 (choose the last balloon to burst), LC 132 (precompute a palindrome table), and AtCoder L. |
-| **Sun** (weekend) | 2–3 h | Do the **checkpoint**. Solve LC 375 and LC 96. AtCoder N and LC 1000 are stretches. Preview Week 11 with the USACO *DP on Trees* module. |
+| **Sun** (weekend) | 2–3 h | Do the **checkpoint**. Solve LC 375. AtCoder N and LC 1000 are stretches. Preview Week 11 with the USACO *DP on Trees* module. |
 
 **Key ideas**
 
@@ -613,7 +611,6 @@ backtrack(state):
 | ⭐ LC 1039 Minimum Score Triangulation of Polygon | |
 | ⭐ LC 132 Palindrome Partitioning II | |
 | LC 375 Guess Number Higher or Lower II | Minimax |
-| LC 96 Unique Binary Search Trees | Moved from Week 5: pick the root, split into two intervals |
 | LC 1547 Minimum Cost to Cut a Stick | |
 | LC 486 Predict the Winner | Game DP |
 | LC 877 Stone Game | |
@@ -623,7 +620,7 @@ backtrack(state):
 
 ---
 
-## Week 11: Tree DP and State Machine DP (Dec 14 – Dec 20)
+## Week 11: Tree DP and State Machine DP (Nov 30 – Dec 6)
 
 **Concepts:** returning a tuple of states from each subtree, and modeling a problem as a finite set of states with transitions between them.
 
@@ -681,7 +678,7 @@ backtrack(state):
 
 ---
 
-## Week 12: Bitmask DP, Digit DP, and Final Review (Dec 21 – Dec 27)
+## Week 12: Bitmask DP, Digit DP, and Final Review (Dec 7 – Dec 13)
 
 **Concepts:** using a bitmask to represent "which items are used" (practical when n ≤ 20), TSP-style DP, and digit DP with a "tight" flag.
 

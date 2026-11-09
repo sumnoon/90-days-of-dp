@@ -1,6 +1,6 @@
 # Week 11: Tree DP and State Machine DP
 
-**Dates:** Dec 14 – Dec 20  
+**Dates:** Nov 30 – Dec 6  
 **Full guide:** [PLAN.md](../../PLAN.md)
 
 ## Schedule

@@ -1,6 +1,6 @@
 # Week 7: 2D Grid DP
 
-**Dates:** Nov 16 – Nov 22  
+**Dates:** Nov 2 – Nov 8  
 **Full guide:** [PLAN.md](../../PLAN.md)
 
 ## Schedule
