@@ -10,6 +10,7 @@ Written to be re-read before a redo, not while solving.
 | [LC 152 Maximum Product Subarray](lc0152_maximum_product_subarray.md) | 37 | clean | Between zeros only the sign matters, so the best run is a prefix or a suffix: one pass from each end. |
 | [⭐ LC 91 Decode Ways](lc0091_decode_ways.md) | 40 | clean | Split on the first piece, one digit or two; an unreadable `'0'` just contributes 0. |
 | [⭐ LC 322 Coin Change, memoized and table](lc0322_coin_change.md) | 38 | clean | Take a coin and stay on it, or skip it for good; `INT_MAX - 1` for impossible so `1 +` can't overflow. |
+| [⭐ LC 139 Word Break, memoized and table](lc0139_word_break.md) | 39 | hint (table) | Split on the last word; a table by length needs `n + 1` slots, with `memo[0] = true` for the empty prefix. |
 
 "clean" = solved without a hint. Anything else is on the
 [redo list](../../../redo-list.md).
