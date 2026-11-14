@@ -9,6 +9,7 @@ Written to be re-read before a redo, not while solving.
 | [⭐ LC 53 Maximum Subarray, five versions](lc0053_maximum_subarray.md) | 36 | hint (recursion) | The best subarray ending at `i` starts fresh or extends the one ending at `i − 1`; Kadane keeps that table in one variable. Divide and conquer: left, right, or crossing `mid`. |
 | [LC 152 Maximum Product Subarray](lc0152_maximum_product_subarray.md) | 37 | clean | Between zeros only the sign matters, so the best run is a prefix or a suffix: one pass from each end. |
 | [⭐ LC 91 Decode Ways](lc0091_decode_ways.md) | 40 | clean | Split on the first piece, one digit or two; an unreadable `'0'` just contributes 0. |
+| [⭐ LC 322 Coin Change, memoized and table](lc0322_coin_change.md) | 38 | clean | Take a coin and stay on it, or skip it for good; `INT_MAX - 1` for impossible so `1 +` can't overflow. |
 
 "clean" = solved without a hint. Anything else is on the
 [redo list](../../../redo-list.md).
