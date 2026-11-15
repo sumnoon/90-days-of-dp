@@ -11,6 +11,7 @@ Written to be re-read before a redo, not while solving.
 | [⭐ LC 91 Decode Ways](lc0091_decode_ways.md) | 40 | clean | Split on the first piece, one digit or two; an unreadable `'0'` just contributes 0. |
 | [⭐ LC 322 Coin Change, memoized and table](lc0322_coin_change.md) | 38 | clean | Take a coin and stay on it, or skip it for good; `INT_MAX - 1` for impossible so `1 +` can't overflow. |
 | [⭐ LC 139 Word Break, memoized and table](lc0139_word_break.md) | 39 | hint (table) | Split on the last word; a table by length needs `n + 1` slots, with `memo[0] = true` for the empty prefix. |
+| [⭐ LC 300 Longest Increasing Subsequence](lc0300_longest_increasing_subsequence.md) | 41 | clean (O(n²) so far) | "From `idx` on, above `nums[prev]`" or "ending at `i`"; the second needs the max over every `i`. |
 
 "clean" = solved without a hint. Anything else is on the
 [redo list](../../../redo-list.md).

@@ -44,7 +44,7 @@ Wednesday).
 - [x] ⭐ LC 322 Coin Change ([notes](notes/lc0322_coin_change.md))
 - [x] ⭐ LC 139 Word Break ([notes](notes/lc0139_word_break.md))
 - [x] ⭐ LC 91 Decode Ways ([notes](notes/lc0091_decode_ways.md))
-- [ ] ⭐ LC 300 Longest Increasing Subsequence
+- [ ] ⭐ LC 300 Longest Increasing Subsequence: O(n²) done ([notes](notes/lc0300_longest_increasing_subsequence.md)), O(n log n) next
 - [ ] LC 673 Number of Longest Increasing Subsequence
 - [ ] LC 1048 Longest String Chain
 - [ ] LC 983 Minimum Cost For Tickets
