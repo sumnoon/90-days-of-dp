@@ -1,9 +1,9 @@
 # ⭐ LC 300: Longest Increasing Subsequence
 
 - **Solution:** [`solutions/lc0300_longest_increasing_subsequence.cpp`](../solutions/lc0300_longest_increasing_subsequence.cpp)
-- **Day:** 41 (Week 6 Sat), O(n²) versions solved on Mon 16 Nov
+- **Day:** 41 (Week 6 Sat). The O(n²) versions were solved on Mon 16 Nov, and
+  O(n log n) on Tue 17 Nov.
 - **Solved without help?** yes
-- **Still to do:** the O(n log n) version.
 
 Find the length of the longest strictly increasing subsequence. Its elements
 keep their order but needn't be next to each other.
@@ -50,17 +50,54 @@ The best subsequence can end anywhere, so the answer is **the largest
 It's LC 53's "ending at `i`" state, looking back at every earlier `j`
 instead of just `i − 1`.
 
-## Two versions, one class
+### 3. O(n log n): the smallest possible tail of each length
+
+`memo[k]` = **the smallest value that can end an increasing subsequence of
+length `k + 1`**, among the numbers seen so far.
+
+```cpp
+int pos = lower_bound(memo.begin(), memo.end(), nums[i]) - memo.begin();
+if (pos == memo.size()) memo.push_back(nums[i]);
+else memo[pos] = nums[i];
+```
+
+- `memo` is always **strictly increasing**: a longer subsequence's tail can't
+  be smaller than a shorter one's. That's what makes binary search possible.
+- `lower_bound` finds the first tail `>= nums[i]`. Everything before it is
+  smaller, so `nums[i]` extends the subsequence of length `pos` and ends one of
+  length `pos + 1`.
+- If no tail is that large, `nums[i]` makes a **new, longer** subsequence:
+  `push_back`.
+- Otherwise it replaces that tail with a smaller (or equal) one, which only
+  makes future extensions easier.
+
+The answer is `memo.size()`, the longest length reached. `memo` itself is
+**not** an increasing subsequence of `nums`: on `[3, 4, 1]` it ends as
+`[1, 4]`, though 1 comes after 4. Only its length is meaningful.
+
+`lower_bound` (first `>=`) rather than `upper_bound` (first `>`) is what keeps
+it **strictly** increasing. An equal value replaces its twin instead of
+extending it, so `[7, 7, 7]` gives 1.
+
+This isn't a DP over indices like the other two. It keeps the same
+information as the table, but organised by **length** instead of by **end
+position**, so a binary search can replace the inner loop.
+
+## Three versions, one class
 
 | Call | Version |
 |---|---|
 | `lengthOfLISMemo(nums)` | take / skip with `prev`; resets `memo` itself |
-| `lengthOfLIS(nums)` | ending at `i` (submitted) |
+| `lengthOfLISTable(nums)` | ending at `i` |
+| `lengthOfLIS(nums)` | smallest tail per length, O(n log n) (submitted) |
 
 ## Complexity
 
-Both are **O(n²)** time: n × (n + 1) states with one step each, or two nested
-loops. Space is O(n²) for the memoized version and O(n) for the table.
+| Version | Time | Space |
+|---|---|---|
+| memoized | O(n²): n × (n + 1) states, one step each | O(n²) |
+| table | O(n²): two nested loops | O(n) |
+| smallest tails | **O(n log n)**: one binary search per number | O(n) |
 
 ## Small notes on the code
 
@@ -70,7 +107,8 @@ loops. Space is O(n²) for the memoized version and O(n) for the table.
   stack. A `vector` sized `n × (n + 1)` per call would use only what's needed.
 - `calc`'s `n` parameter is never used.
 - The table's local `memo` hides the class member (`-Wshadow`), and its
-  `n + 1` slots are one more than it uses.
+  `n + 1` slots are one more than it uses. The O(n log n) version's local
+  `memo` does the same, and its `ans` is never used.
 - The recursion is at most n + 1 calls deep, 2,501 here, so the stack is fine.
 
 ## Tested
@@ -82,9 +120,9 @@ loops. Space is O(n²) for the memoized version and O(n) for the table.
 - LeetCode's limit: 2,500 increasing numbers, and 2,500 random ones
 
 The small cases were checked against a brute force that tries every
-subsequence. The 2,500-number cases are too long for that, so the two
+subsequence. The 2,500-number cases are too long for that, so the three
 versions were checked against each other.
 
 ## Key insight
 
-Choose the state first: "longest from `idx` on, above `nums[prev]`" needs `prev` in the state, while "longest ending at `i`" needs only `i`, but then the answer is the max over every `i`.
+Choose the state first: "longest from `idx` on, above `nums[prev]`" needs `prev` in the state, while "longest ending at `i`" needs only `i`, but then the answer is the max over every `i`. Keep only the smallest tail for each length, and that list is sorted, so a binary search gives O(n log n).
