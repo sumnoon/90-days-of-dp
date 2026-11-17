@@ -12,6 +12,7 @@ Written to be re-read before a redo, not while solving.
 | [⭐ LC 322 Coin Change, memoized and table](lc0322_coin_change.md) | 38 | clean | Take a coin and stay on it, or skip it for good; `INT_MAX - 1` for impossible so `1 +` can't overflow. |
 | [⭐ LC 139 Word Break, memoized and table](lc0139_word_break.md) | 39 | hint (table) | Split on the last word; a table by length needs `n + 1` slots, with `memo[0] = true` for the empty prefix. |
 | [⭐ LC 300 Longest Increasing Subsequence](lc0300_longest_increasing_subsequence.md) | 41 | clean | "From `idx` on, above `nums[prev]`" or "ending at `i`", which needs the max over every `i`. For O(n log n), keep the smallest tail per length: it's sorted, so binary search. |
+| [LC 673 Number of Longest Increasing Subsequence](lc0673_number_of_longest_increasing_subsequence.md) | 41 | clean | Carry a count beside LC 300's "longest ending at `i`": a longer way in resets it, an equal one adds. |
 
 "clean" = solved without a hint. Anything else is on the
 [redo list](../../../redo-list.md).
