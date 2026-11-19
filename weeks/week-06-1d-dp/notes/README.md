@@ -14,6 +14,7 @@ Written to be re-read before a redo, not while solving.
 | [⭐ LC 300 Longest Increasing Subsequence](lc0300_longest_increasing_subsequence.md) | 41 | clean | "From `idx` on, above `nums[prev]`" or "ending at `i`", which needs the max over every `i`. For O(n log n), keep the smallest tail per length: it's sorted, so binary search. |
 | [LC 673 Number of Longest Increasing Subsequence](lc0673_number_of_longest_increasing_subsequence.md) | 41 | clean | Carry a count beside LC 300's "longest ending at `i`": a longer way in resets it, an equal one adds. |
 | [LC 1048 Longest String Chain](lc1048_longest_string_chain.md) | 41 | clean | LIS over words sorted by length; delete each letter to list the only possible predecessors and look them up. |
+| [LC 983 Minimum Cost For Tickets](lc0983_minimum_cost_for_tickets.md) | 42 | clean | Index by travel day: each needs one decision, which ticket starts there, and that ticket picks the next uncovered day. |
 
 "clean" = solved without a hint. Anything else is on the
 [redo list](../../../redo-list.md).
