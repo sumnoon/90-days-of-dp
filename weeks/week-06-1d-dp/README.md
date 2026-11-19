@@ -47,7 +47,7 @@ Wednesday).
 - [x] ⭐ LC 300 Longest Increasing Subsequence, O(n²) and O(n log n) ([notes](notes/lc0300_longest_increasing_subsequence.md))
 - [x] LC 673 Number of Longest Increasing Subsequence ([notes](notes/lc0673_number_of_longest_increasing_subsequence.md))
 - [x] LC 1048 Longest String Chain ([notes](notes/lc1048_longest_string_chain.md))
-- [ ] LC 983 Minimum Cost For Tickets
+- [x] LC 983 Minimum Cost For Tickets ([notes](notes/lc0983_minimum_cost_for_tickets.md))
 - [ ] LC 354 Russian Doll Envelopes (stretch)
 
 ## Checkpoint
