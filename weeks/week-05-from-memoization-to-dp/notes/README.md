@@ -15,6 +15,7 @@ Written to be re-read before a redo, not while solving.
 | [LC 1137 N-th Tribonacci Number](lc1137_nth_tribonacci_number.md) | 33 | clean | Fibonacci with a third term; uncached, n = 37 makes 4 billion calls, cached it's 37 values. |
 | [CSES Dice Combinations](cses_dice_combinations.md) | 35 | clean | Split on the last throw: ways(i) = ways(i − 1) + … + ways(i − 6). The table avoids a million-deep recursion. |
 | [AtCoder DP A: Frog 1](atcoder_dp_a.md) | 34 | hint (array size) | LC 746 with costs between stones: the first jump is one stone or two. Size arrays from the limits. |
+| [AtCoder DP B: Frog 2](atcoder_dp_b.md) | 34 | clean | Frog 1 with a loop: the first jump lands on any of the next K stones, O(N · K). |
 
 "clean" = solved without a hint. Anything else is on the
 [redo list](../../../redo-list.md).
