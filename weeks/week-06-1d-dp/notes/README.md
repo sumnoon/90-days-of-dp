@@ -18,5 +18,7 @@ Written to be re-read before a redo, not while solving.
 | [CSES Minimizing Coins](cses_minimizing_coins.md) | 42 | hints (3 rounds) | LC 322 in one row: coins outside, amounts rising inside so coins repeat; `INT_MAX - 1` for impossible. |
 | [LC 354 Russian Doll Envelopes](lc0354_russian_doll_envelopes.md) (stretch) | 42 | clean | Sort by width, equal widths taller first, then LIS on heights in O(n log n). |
 
+**Checkpoint:** [one state sentence per problem](checkpoint.md), written from memory.
+
 "clean" = solved without a hint. Anything else is on the
 [redo list](../../../redo-list.md).

@@ -53,7 +53,8 @@ Wednesday).
 
 ## Checkpoint
 
-- [ ] For each problem, write the state definition in one sentence before you write any code.
+- [x] For each problem, write the state definition in one sentence before you write any code.
+  Passed Mon 23 Nov: [state sentences](notes/checkpoint.md) for all 11 problems, written from memory. All are correct; LC 322, LC 139 and LC 354 describe a different (also valid) version than the one in `solutions/`.
 
 ## Notes
 

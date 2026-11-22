@@ -52,7 +52,7 @@ Source in [`docs/`](docs/).
 ## Progress
 
 Month 1 (recursion and backtracking) is done; the Month 1 checkpoint, LC 241
-with a cache, passed. **Now: Week 6**, 1D DP: writing the state in one sentence before the code.
+with a cache, passed. **Now: Week 7**, 2D grid DP: two indices, and the order the table is filled in.
 
 | Week | Dates | Topic | Done |
 |---|---|---|---|
@@ -61,7 +61,7 @@ with a cache, passed. **Now: Week 6**, 1D DP: writing the state in one sentence 
 | [3](weeks/week-03-backtracking-i/) | Oct 5 – Oct 11 | Backtracking I (Subsets, Permutations, Combinations) | ☑ |
 | [4](weeks/week-04-backtracking-ii-and-divide-conquer/) | Oct 12 – Oct 18 | Backtracking II and Divide & Conquer | ☑ |
 | [5](weeks/week-05-from-memoization-to-dp/) | Oct 19 – Oct 25 | From Memoization to DP | ☑ |
-| [6](weeks/week-06-1d-dp/) | Oct 26 – Nov 1 | 1D DP (Sequences and Decisions) | ☐ |
+| [6](weeks/week-06-1d-dp/) | Oct 26 – Nov 1 | 1D DP (Sequences and Decisions) | ☑ |
 | [7](weeks/week-07-2d-grid-dp/) | Nov 2 – Nov 8 | 2D Grid DP | ☐ |
 | [8](weeks/week-08-string-dp/) | Nov 9 – Nov 15 | String DP (Two Sequences) | ☐ |
 | [9](weeks/week-09-the-knapsack-family/) | Nov 16 – Nov 22 | The Knapsack Family | ☐ |
