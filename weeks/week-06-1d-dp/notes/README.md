@@ -16,6 +16,7 @@ Written to be re-read before a redo, not while solving.
 | [LC 1048 Longest String Chain](lc1048_longest_string_chain.md) | 41 | clean | LIS over words sorted by length; delete each letter to list the only possible predecessors and look them up. |
 | [LC 983 Minimum Cost For Tickets](lc0983_minimum_cost_for_tickets.md) | 42 | clean | Index by travel day: each needs one decision, which ticket starts there, and that ticket picks the next uncovered day. |
 | [CSES Minimizing Coins](cses_minimizing_coins.md) | 42 | hints (3 rounds) | LC 322 in one row: coins outside, amounts rising inside so coins repeat; `INT_MAX - 1` for impossible. |
+| [LC 354 Russian Doll Envelopes](lc0354_russian_doll_envelopes.md) (stretch) | 42 | clean | Sort by width, equal widths taller first, then LIS on heights in O(n log n). |
 
 "clean" = solved without a hint. Anything else is on the
 [redo list](../../../redo-list.md).
