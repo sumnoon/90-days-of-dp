@@ -16,6 +16,7 @@ Written to be re-read before a redo, not while solving.
 | [CSES Dice Combinations](cses_dice_combinations.md) | 35 | clean | Split on the last throw: ways(i) = ways(i − 1) + … + ways(i − 6). The table avoids a million-deep recursion. |
 | [AtCoder DP A: Frog 1](atcoder_dp_a.md) | 34 | hint (array size) | LC 746 with costs between stones: the first jump is one stone or two. Size arrays from the limits. |
 | [AtCoder DP B: Frog 2](atcoder_dp_b.md) | 34 | clean | Frog 1 with a loop: the first jump lands on any of the next K stones, O(N · K). |
+| [AtCoder DP C: Vacation](atcoder_dp_c.md) | 34 | clean | Today's choices depend on yesterday's, so the state is (day, last activity). |
 
 "clean" = solved without a hint. Anything else is on the
 [redo list](../../../redo-list.md).
