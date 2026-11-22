@@ -49,6 +49,9 @@ The tabulation half starts at [3:10:53](https://www.youtube.com/watch?v=oBt53YbR
 - [x] LC 1137 N-th Tribonacci Number — [notes](notes/lc1137_nth_tribonacci_number.md)
 - [ ] LC 96 Unique Binary Search Trees
 - [x] CSES: Dice Combinations — [notes](notes/cses_dice_combinations.md)
+- [x] AtCoder DP A: Frog 1 — [notes](notes/atcoder_dp_a.md)
+- [x] AtCoder DP B: Frog 2 — [notes](notes/atcoder_dp_b.md)
+- [x] AtCoder DP C: Vacation — [notes](notes/atcoder_dp_c.md)
 
 ## Checkpoint
 
