@@ -49,7 +49,7 @@ Wednesday).
 - [x] LC 1048 Longest String Chain ([notes](notes/lc1048_longest_string_chain.md))
 - [x] LC 983 Minimum Cost For Tickets ([notes](notes/lc0983_minimum_cost_for_tickets.md))
 - [x] CSES Minimizing Coins ([notes](notes/cses_minimizing_coins.md))
-- [ ] LC 354 Russian Doll Envelopes (stretch)
+- [x] LC 354 Russian Doll Envelopes (stretch) ([notes](notes/lc0354_russian_doll_envelopes.md))
 
 ## Checkpoint
 
