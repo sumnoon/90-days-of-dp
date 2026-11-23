@@ -19,7 +19,7 @@
 
 ⭐ = core, don't skip
 
-- [ ] ⭐ LC 62 Unique Paths
+- [x] ⭐ LC 62 Unique Paths ([notes](notes/lc0062_unique_paths.md))
 - [ ] ⭐ LC 63 Unique Paths II
 - [ ] ⭐ LC 64 Minimum Path Sum
 - [ ] LC 120 Triangle
@@ -34,5 +34,7 @@
 - [ ] Reduce LC 64 from O(m·n) space to O(n).
 
 ## Notes
+
+One note per solved problem, indexed in [notes/README.md](notes/README.md).
 
 <!-- For each problem: state, transition, base case, key insight. -->
