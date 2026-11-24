@@ -20,7 +20,7 @@
 ⭐ = core, don't skip
 
 - [x] ⭐ LC 62 Unique Paths ([notes](notes/lc0062_unique_paths.md))
-- [ ] ⭐ LC 63 Unique Paths II
+- [x] ⭐ LC 63 Unique Paths II ([notes](notes/lc0063_unique_paths_ii.md))
 - [ ] ⭐ LC 64 Minimum Path Sum
 - [ ] LC 120 Triangle
 - [ ] LC 931 Minimum Falling Path Sum
